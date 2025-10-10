@@ -1,0 +1,76 @@
+.auth_bg {
+  background-image: linear-gradient(
+      rgba(3, 149, 138, 0.8),
+      rgba(34, 181, 115, 0.8)
+    ),
+    url("assets/login-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.bg-img {
+  background-image: url("assets/settingBg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 150px;
+  width: 100%;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #03958a, #22b573);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+.bg-gradient {
+  background: linear-gradient(88.41deg, #03958a -14.66%, #22b573 115.24%);
+}
+.bg-shadow {
+  box-shadow: 0px 4px 30px 0px #22b57314;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 4px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #d9d9d9;
+  
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(60.79deg, #03958a -24.45%, #22b573 120.65%);
+  border-radius: 100px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(60.79deg, #065751 -24.45%, #0b7445 120.65%);
+}
+.hidden-scrollbar::-webkit-scrollbar {
+  width: 0px;
+  height: 4px;
+}
+
+/* Track */
+.hidden-scrollbar::-webkit-scrollbar-track {
+  background: #d9d9d9;
+  
+}
+
+/* Handle */
+.hidden-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(60.79deg, #03958a -24.45%, #22b573 120.65%);
+  border-radius: 100px;
+}
+
+/* Handle on hover */
+.hidden-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(60.79deg, #065751 -24.45%, #0b7445 120.65%);
+}
