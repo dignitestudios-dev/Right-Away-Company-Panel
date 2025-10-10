@@ -1,6 +1,6 @@
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import "./App.css";
-import DashboardLayout from "./layouts/DashboardLayout";  
+import DashboardLayout from "./layouts/DashboardLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import Login from "./pages/authentication/Login";
 import TwoFactorAuthentication from "./pages/authentication/TwoFactorAuthorization";
@@ -14,14 +14,7 @@ import Dashboard from "./pages/app/Dashboard";
 function App() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <div className="text-7xl">
-            Project Template || Please read readme file
-          </div>
-        }
-      />
+      <Route path="/" element={<Navigate to={"/auth/login"} />} />
 
       <Route path="app" element={<DashboardLayout />}>
         <Route path="dashboard" element={<Dashboard />} />
@@ -30,7 +23,10 @@ function App() {
       <Route path="auth" element={<AuthLayout />}>
         <Route path="signup" element={<SignUp />} />
         <Route path="login" element={<Login />} />
-        <Route path="two-factor-verfication" element={<TwoFactorAuthentication />} />
+        <Route
+          path="two-factor-verfication"
+          element={<TwoFactorAuthentication />}
+        />
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="otp-verification" element={<OtpVerification />} />
         <Route path="reset-password" element={<ResetPassword />} />
