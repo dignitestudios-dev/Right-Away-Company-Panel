@@ -15,14 +15,16 @@ export default function Input({
   touched,
   maxLength,
   hideText,
-  options = [], // 👈 new for radio buttons
+  selectOptions = [], // ✅ Renamed for select inputs
+  options = [], // for radio buttons
+  bg,
 }) {
   const [isPassVisible, setIsPassVisible] = useState(true);
 
-  // 🧩 Handle Radio Input
+  // 🟢 Radio Input
   if (type === "radio") {
     return (
-      <div className="w-full h-auto flex flex-col justify-start items-start gap-2">
+      <div className="w-full flex flex-col gap-2">
         <label className="font-[700] capitalize text-[12px]">{text}</label>
         <div className="flex flex-col space-y-2">
           {options.map((option, idx) => (
@@ -42,17 +44,82 @@ export default function Input({
             </label>
           ))}
         </div>
-        {error && touched ? (
+        {error && touched && (
           <p className="text-red-700 text-sm font-medium">{error}</p>
-        ) : null}
+        )}
       </div>
     );
   }
 
-  // 🧩 Handle Textarea / Normal Inputs (same as before)
+  // 🟢 Select Input
+  if (type === "select") {
+    return (
+      <div className="w-full flex flex-col gap-1">
+        <label htmlFor={name} className="font-[700] capitalize text-[12px]">
+          {text}
+        </label>
+        <div
+          className={`h-[49px] flex justify-start items-center w-full relative border-[0.8px] rounded-[18px] px-3 bg-white ${
+            error && touched ? "border-red-500" : "border-[#D9D9D9]"
+          }`}
+        >
+          <select
+            id={name}
+            name={name}
+            value={value}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className="w-full bg-transparent outline-none text-[16px] text-[#262626]"
+          >
+            <option value="">{holder || "Select Option"}</option>
+            {selectOptions.map((opt, idx) => (
+              <option key={idx} value={opt.value || opt}>
+                {opt.label || opt}
+              </option>
+            ))}
+          </select>
+        </div>
+        {error && touched && (
+          <p className="text-red-700 text-sm font-medium">{error}</p>
+        )}
+      </div>
+    );
+  }
+
+  // 🟢 Textarea Input
+  if (type === "textarea") {
+    return (
+      <div className="w-full flex flex-col gap-1">
+        <label htmlFor={name} className="font-[700] capitalize text-[12px]">
+          {text}
+        </label>
+        <div
+          className={`h-[80px] flex bg-white justify-start items-start w-full relative border-[0.8px] rounded-[18px] ${
+            error && touched ? "border-red-500" : "border-[#D9D9D9]"
+          }`}
+        >
+          <textarea
+            id={name}
+            name={name}
+            maxLength={maxLength}
+            value={value}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            placeholder={holder}
+            className="w-full resize-none h-[80px] py-2 px-3 bg-transparent outline-none text-[#262626] text-[16px] placeholder:text-[#959393]"
+          />
+        </div>
+        {error && touched && (
+          <p className="text-red-700 text-sm font-medium">{error}</p>
+        )}
+      </div>
+    );
+  }
+
+  // 🟢 Default Text / Password Input
   return (
-    <div className="w-full h-auto flex flex-col justify-start items-start gap-1">
-      <div className="flex w-full justify-between items-center">
+    <div className="w-full flex flex-col gap-1">
+      <div className="flex justify-between items-center">
         <label htmlFor={name} className="font-[700] capitalize text-[12px]">
           {text}
         </label>
@@ -66,69 +133,43 @@ export default function Input({
         )}
       </div>
 
-      {type === "textarea" ? (
-        <>
-          <div
-            className={`h-[80px] flex justify-start bg-[#FFFFFF] items-start w-full relative border-[0.8px] rounded-[18px] ${
-              error && touched ? "border-red-500" : "border-[#D9D9D9]"
-            }`}
-          >
-            <textarea
-              id={name}
-              name={name}
-              maxLength={maxLength}
-              value={value}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              placeholder={holder}
-              className="w-full resize-none h-[80px] py-2 px-3 bg-transparent outline-none text-[#262626] text-[16px] placeholder:text-[#959393]"
-            />
-          </div>
-          {error && touched ? (
-            <p className="text-red-700 text-sm font-medium">{error}</p>
-          ) : null}
-        </>
-      ) : (
-        <>
-          <div
-            className={`h-[49px] flex justify-start bg-[#FFFFFF] items-start w-full relative border-[0.8px] rounded-[18px] ${
-              error && touched ? "border-red-500" : "border-[#D9D9D9]"
-            }`}
-          >
-            {text?.includes("Phone Number") && (
-              <img
-                src={PhoneNumberImage}
-                className="w-[80px] h-[100%] ml-2"
-                alt="PhoneNumberImage"
-              />
-            )}
+      <div
+        className={`h-[49px] flex justify-start items-center w-full relative border-[0.8px] rounded-[18px] ${
+          bg ? "bg-[#F8F8F899] border-none" : "bg-white"
+        } ${error && touched ? "border-red-500" : "border-[#D9D9D9]"}`}
+      >
+        {text?.includes("Phone Number") && (
+          <img
+            src={PhoneNumberImage}
+            className="w-[80px] h-[100%] ml-2"
+            alt="PhoneNumberImage"
+          />
+        )}
 
-            <input
-              type={isPassVisible ? type : "text"}
-              id={name}
-              name={name}
-              maxLength={maxLength}
-              value={value}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              placeholder={holder}
-              className="w-full h-[49px] bg-transparent outline-none px-3 text-[16px] text-[#262626] placeholder:text-[#959393]"
-            />
+        <input
+          type={isPassVisible ? type : "text"}
+          id={name}
+          name={name}
+          maxLength={maxLength}
+          value={value}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder={holder}
+          className="w-full h-[49px] bg-transparent outline-none px-3 text-[16px] text-[#262626] placeholder:text-[#959393]"
+        />
 
-            {type === "password" && (
-              <button
-                type="button"
-                onClick={() => setIsPassVisible((prev) => !prev)}
-                className="w-[10%] h-full bg-transparent text-md text-[#959393] flex items-center justify-center"
-              >
-                {isPassVisible ? <FaRegEyeSlash /> : <FaRegEye />}
-              </button>
-            )}
-          </div>
-          {error && touched ? (
-            <p className="text-red-700 text-sm font-medium">{error}</p>
-          ) : null}
-        </>
+        {type === "password" && (
+          <button
+            type="button"
+            onClick={() => setIsPassVisible((prev) => !prev)}
+            className="absolute right-3 text-[#959393]"
+          >
+            {isPassVisible ? <FaRegEyeSlash /> : <FaRegEye />}
+          </button>
+        )}
+      </div>
+      {error && touched && (
+        <p className="text-red-700 text-sm font-medium">{error}</p>
       )}
     </div>
   );

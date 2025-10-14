@@ -138,7 +138,7 @@ const TwoFactorAuthentication = () => {
             </div>
             <Button
               text={"Verify"}
-            //   onClick={() => navigate("")}
+              onClick={() => navigate("/app/dashboard")}
               type="button"
               customClass={"w-full"}
             />

@@ -49,12 +49,20 @@ import CalendarIcon from "./calendar.png";
 import MilkPackImg from "./milk-pack.png";
 import RatingIcon from "./ratingStar.png";
 import LogOutImg from "./Logout.png";
+import EditImg from "./edit.png";
+import DeleteImg from "./delete.png";
+import CameraImg from "./camera.png";
+import AddBtnImg from "./add-btn.png";
 
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
 export {
+  AddBtnImg,
+  CameraImg,
+  DeleteImg,
+  EditImg,
   LogOutImg,
   RatingIcon,
   MilkPackImg,

@@ -10,6 +10,8 @@ import ResetPassword from "./pages/authentication/ResetPassword";
 import PasswordUpdated from "./pages/authentication/PasswordUpdated";
 import SignUp from "./pages/onboarding/SignUp";
 import Dashboard from "./pages/app/Dashboard";
+import ProductManagment from "./pages/app/ProductManagment";
+import AddNewProduct from "./components/app/Product/AddProduct";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
 
       <Route path="app" element={<DashboardLayout />}>
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="product-management" element={<ProductManagment />} />
+        <Route path="add-product" element={<AddNewProduct />} />
       </Route>
 
       <Route path="auth" element={<AuthLayout />}>
