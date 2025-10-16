@@ -53,12 +53,22 @@ import EditImg from "./edit.png";
 import DeleteImg from "./delete.png";
 import CameraImg from "./camera.png";
 import AddBtnImg from "./add-btn.png";
+import LargeImageMilk from "./large-img-milk.png";
+import DelIcon from "./del-icon.png";
+import ReplyComment from "./reply-comment.png";
+import ReviewSubmit from "./review-submit.png";
+import Person2 from "./person2.png";
 
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
 export {
+  Person2,
+  ReviewSubmit,
+  DelIcon,
+  ReplyComment,
+  LargeImageMilk,
   AddBtnImg,
   CameraImg,
   DeleteImg,

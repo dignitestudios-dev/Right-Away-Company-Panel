@@ -30,7 +30,7 @@ export default function Stats() {
     },
   ];
   return (
-    <div className="grid grid-cols-4 mt-5 gap-3">
+    <div className="grid lg:grid-cols-4 mt-5 gap-3">
       {statsData?.map((item, i) => (
         <div key={i} className="p-5 flex justify-between items-center bg-[#FFFFFF]  rounded-[13px] shadow-sm ">
           <div className="" >

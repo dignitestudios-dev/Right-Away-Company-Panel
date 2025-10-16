@@ -1,5 +1,6 @@
-import { DeleteImg, EditImg } from "../../../assets/export";
+import { DeleteImg, EditImg, MilkPackImg } from "../../../assets/export";
 import Filter from "../../global/Filter";
+import Pagination from "../../global/Pagination";
 import GlobalTable from "../../global/Table";
 
 export default function ProductsData() {
@@ -51,7 +52,7 @@ export default function ProductsData() {
       </div>,
     ]);
   return (
-    <div className="py-5">
+    <div>
       <div className="flex justify-between ">
         <h3 className="font-[600] text-[32px]">Product Management</h3>
         <Filter />
@@ -59,6 +60,7 @@ export default function ProductsData() {
       <div className="mt-2">
         <GlobalTable data={data} columns={columns} />
       </div>
+       <Pagination />
     </div>
   );
 }

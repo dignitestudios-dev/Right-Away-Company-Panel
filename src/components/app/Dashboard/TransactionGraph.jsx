@@ -36,7 +36,7 @@ const TransactionGraph = () => {
         <g>
           <circle
             cx={cx}
-            cy={cy-30}
+            cy={cy - 30}
             r={6}
             fill="#10b981"
             stroke="#fff"
@@ -71,7 +71,7 @@ const TransactionGraph = () => {
   return (
     <div className="relative h-[400px] bg-white rounded-2xl shadow-sm p-5">
       {/* Header */}
-      <div className="flex border-b border-[#2121211C] justify-between items-start pb-4 mb-3">
+      <div className="flex flex-wrap border-b border-[#2121211C] justify-between items-start pb-4 mb-3">
         <div>
           <h1 className="text-[17px] font-[600] text-[#212121] mb-2">
             Total Number Of Transactions
@@ -132,7 +132,7 @@ const TransactionGraph = () => {
 
       {/* Chart */}
       <div className="bg-white rounded-2xl shadow-sm ">
-        <div className="w-full h-[280px]">
+        <div className="w-full h-[250px]  lg:h-[280px]">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart
               data={areaChartData}

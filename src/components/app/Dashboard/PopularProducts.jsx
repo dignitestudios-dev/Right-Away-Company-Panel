@@ -47,7 +47,7 @@ export default function PopularProducts() {
     },
   ];
   return (
-    <div className="col-span-4 overflow-auto relative h-[400px] bg-white rounded-2xl shadow-sm p-4">
+    <div className="col-span-12 lg:col-span-4 overflow-auto relative h-[400px] bg-white rounded-2xl shadow-sm p-4">
       <div className="flex items-center py-2 border-b border-[#2121211C] justify-between">
         <h3 className="font-[600] text-[#212121] text-[15px]">
           Popular Products

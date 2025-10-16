@@ -65,11 +65,11 @@ const SalesOverview = () => {
   };
 
   return (
-    <div className="col-span-8 relative h-[400px] bg-white rounded-2xl shadow-sm p-5">
+    <div className="col-span-12 lg:col-span-8 relative h-[400px] bg-white rounded-2xl shadow-sm p-5">
       {/* Header */}
-      <div className="flex border-b border-[#2121211C] justify-between items-start pb-4 mb-3">
+      <div className="flex flex-wrap border-b border-[#2121211C] justify-between items-start pb-4 mb-3">
         <div>
-          <h1 className="text-[17px] font-[600] text-[#212121] mb-2">
+          <h1 className="text-[17px] font-[600] text-[#212121] lg:mb-2">
             Sales Overview
           </h1>
           <p className="text-gray-400 text-[12px] font-[400]">
@@ -78,7 +78,7 @@ const SalesOverview = () => {
         </div>
 
         {/* Date Range Selectors */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 mt-2 lg:mt-0">
           <input type="date" className="border px-2 rounded-[7px] accent-[#22B573] focus:outline-none border-[#D9D9D9] h-[33px] w-[140px] text-[#838383] " />
           <input type="date" className="border px-2 rounded-[7px] accent-[#22B573] focus:outline-none border-[#D9D9D9] h-[33px] w-[140px] text-[#838383] " />
         </div>
@@ -124,7 +124,7 @@ const SalesOverview = () => {
       </div>
 
       {/* Chart */}
-      <div className="w-full h-[250px] mt-2">
+      <div className="w-full  h-[200px] lg:h-[250px] mt-2">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={monthlyData}

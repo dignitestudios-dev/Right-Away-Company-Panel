@@ -3,8 +3,10 @@ import { CiSearch } from "react-icons/ci";
 import Button from "./Button";
 import { FaPlus } from "react-icons/fa";
 import { TbFilter } from "react-icons/tb";
-export default function Filter() {
+import { useNavigate } from "react-router";
+export default function Filter({ hide }) {
   const [isFilter, setIsFilter] = useState(false);
+  const navigate = useNavigate("");
   return (
     <div className="flex gap-3 relative">
       <div className="relative">
@@ -15,17 +17,21 @@ export default function Filter() {
           placeholder="Search"
         />
       </div>
-      <div>
-        <Button
-          customClass={"w-[180px]"}
-          text={
-            <div className="flex items-center gap-2">
-              <FaPlus />
-              Add New Product
-            </div>
-          }
-        />
-      </div>
+      {!hide && (
+        <div>
+          <Button
+            onClick={() => navigate("/app/add-product")}
+            customClass={"w-[180px]"}
+            text={
+              <div className="flex items-center gap-2">
+                <FaPlus />
+                Add New Product
+              </div>
+            }
+          />
+        </div>
+      )}
+
       <div>
         <Button
           onClick={() => setIsFilter(!isFilter)}

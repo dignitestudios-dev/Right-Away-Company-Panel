@@ -12,6 +12,11 @@ import SignUp from "./pages/onboarding/SignUp";
 import Dashboard from "./pages/app/Dashboard";
 import ProductManagment from "./pages/app/ProductManagment";
 import AddNewProduct from "./components/app/Product/AddProduct";
+import ProductReview from "./components/app/Product/ProductReview";
+import ProductDetail from "./components/app/Product/ProductDetail";
+import EditProduct from "./components/app/Product/EditProduct";
+import OrderManagement from "./pages/app/OrderManagement";
+import OrderDetail from "./components/app/Order/OrderDetail";
 
 function App() {
   return (
@@ -20,8 +25,15 @@ function App() {
 
       <Route path="app" element={<DashboardLayout />}>
         <Route path="dashboard" element={<Dashboard />} />
+        {/* Product Routes */}
         <Route path="product-management" element={<ProductManagment />} />
         <Route path="add-product" element={<AddNewProduct />} />
+        <Route path="edit-product" element={<EditProduct />} />
+        <Route path="product-review" element={<ProductReview />} />
+        <Route path="product-detail" element={<ProductDetail />} />
+        {/* Order Routes */}
+        <Route path="order-management" element={<OrderManagement />} />
+        <Route path="order-detail" element={<OrderDetail />} />
       </Route>
 
       <Route path="auth" element={<AuthLayout />}>

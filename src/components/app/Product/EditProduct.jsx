@@ -10,11 +10,10 @@ import { useNavigate } from "react-router";
 import StoreCard from "./AddInventryCard";
 import EditInventory from "./EditInventory";
 import DeleteInventoryModal from "./DeleteInventory";
-export default function AddNewProduct() {
+export default function EditProduct() {
   const [isOpen, setIsOpen] = useState(false);
   const [actionType, setActionType] = useState("");
   const navigate = useNavigate("");
- console.log(actionType,"actionType")
   return (
     <div className=" min-h-screen p-2">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -27,10 +26,10 @@ export default function AddNewProduct() {
               onClick={() => navigate(-1)}
               size={21}
             />{" "}
-            Add New Product
+            Edit Product
           </h1>
           <Button
-            text={"Add Product"}
+            text={"Update Product"}
             onClick={() => navigate("/app/product-review")}
             customClass="px-5 py-3"
           />

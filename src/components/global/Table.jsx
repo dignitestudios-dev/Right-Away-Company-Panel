@@ -21,7 +21,7 @@ export default function GlobalTable({ columns = [], data = [] }) {
           {data.map((row, i) => (
             <tr
               key={i}
-              className="border-t border-gray-100 hover:bg-gray-50 transition"
+              className="border-t cursor-pointer border-gray-100 hover:bg-gray-50 transition"
             >
               {row.map((cell, j) => (
                 <td

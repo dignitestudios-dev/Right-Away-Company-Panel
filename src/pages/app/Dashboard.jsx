@@ -8,7 +8,7 @@ const Dashboard = () => {
     <div>
       <h3 className="font-[600] text-[32px]">Dashboard</h3>
       <Stats />
-      <div className="grid grid-cols-12 gap-2">
+      <div className="grid grid-cols-12 gap-6 lg:gap-2">
         <SalesOverview />
         <PopularProducts />
       </div>
