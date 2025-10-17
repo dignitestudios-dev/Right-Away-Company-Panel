@@ -8,7 +8,7 @@ export default function Filter({ hide }) {
   const [isFilter, setIsFilter] = useState(false);
   const navigate = useNavigate("");
   return (
-    <div className="flex gap-3 relative">
+    <div className="flex gap-3 ml-auto mt-2 relative">
       <div className="relative">
         <CiSearch color="#959393" className="absolute top-[15px] left-1" />
         <input

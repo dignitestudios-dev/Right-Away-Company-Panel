@@ -53,11 +53,11 @@ export default function ProductsData() {
     ]);
   return (
     <div>
-      <div className="flex justify-between ">
+      <div className="flex justify-between  flex-wrap">
         <h3 className="font-[600] text-[32px]">Product Management</h3>
         <Filter />
       </div>
-      <div className="mt-2">
+      <div className="mt-2 rounded-2xl shadow-sm border-t p-3 border-[#B9B9B9] bg-[#FFFFFF] ">
         <GlobalTable data={data} columns={columns} />
       </div>
        <Pagination />

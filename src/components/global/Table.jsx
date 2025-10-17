@@ -2,7 +2,7 @@ import React from "react";
 
 export default function GlobalTable({ columns = [], data = [] }) {
   return (
-    <div className="overflow-x-auto rounded-2xl shadow-sm border-t p-3 border-[#B9B9B9] bg-[#FFFFFF]">
+    <div className="overflow-x-auto">
       <table className="w-full text-left border-collapse">
         <thead className="bg-[#D2EFE34D] rounded-[12px]">
           <tr>

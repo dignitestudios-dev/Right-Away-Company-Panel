@@ -10,10 +10,10 @@ import Pagination from "../../global/Pagination";
 import GlobalTable from "../../global/Table";
 import { useState } from "react";
 
-export default function OrdersData() {
+export default function OrderTrackData() {
   const [activeStatus, setActiveStatus] = useState("All");
 
-  const statuses = ["All", "Incoming", "Processing", "Completed", "Cancelled"];
+  const statuses = ["All", "Ready for Pickup", "Out for Delivery", "Delivered"];
 
   const columns = [
     "Order ID",
@@ -26,117 +26,116 @@ export default function OrdersData() {
     "Action",
   ];
 
-  // Example data with different statuses
   const orders = [
     {
-      id: "#546871",
+      id: "#546879",
       name: "Christine Easom",
       date: "Jan 15, 2023, 10:21",
       type: "Immediate",
       qty: 100,
-      amount: "$12,500",
-      status: "Incoming",
-      color: "text-[#7D72F1]", // Purple
+      amount: "$12500",
+      status: "Ready For Pickup",
+      statusColor: "text-[#10CBFF]",
     },
     {
-      id: "#546872",
+      id: "#546879",
       name: "John Alex",
-      date: "Jan 15, 2023, 10:30",
+      date: "Jan 15, 2023, 10:21",
       type: "Immediate",
-      qty: 80,
-      amount: "$10,000",
-      status: "Processing",
-      color: "text-[#FFA500]", // Orange
+      qty: 100,
+      amount: "$12500",
+      status: "Out for Delivery",
+      statusColor: "text-[#FF6D08]",
     },
     {
-      id: "#546873",
+      id: "#546879",
       name: "James Bond",
-      date: "Jan 15, 2023, 11:10",
-      type: "Scheduled",
-      qty: 150,
-      amount: "$18,750",
-      status: "Completed",
-      color: "text-[#22B573]", // Green
+      date: "Jan 15, 2023, 10:21",
+      type: "Immediate",
+      qty: 100,
+      amount: "$12500",
+      status: "Delivered",
+      statusColor: "text-[#00C853]",
     },
     {
-      id: "#546874",
+      id: "#546879",
       name: "Olivia James",
-      date: "Jan 15, 2023, 11:25",
+      date: "Jan 15, 2023, 10:21",
       type: "Immediate",
-      qty: 120,
-      amount: "$15,000",
-      status: "Incoming",
-      color: "text-[#7D72F1]",
+      qty: 100,
+      amount: "$12500",
+      status: "Ready For Pickup",
+      statusColor: "text-[#10CBFF]",
     },
     {
-      id: "#546875",
+      id: "#546879",
       name: "Sophia Turner",
-      date: "Jan 16, 2023, 09:15",
-      type: "Immediate",
-      qty: 200,
-      amount: "$25,000",
-      status: "Processing",
-      color: "text-[#FFA500]",
-    },
-    {
-      id: "#546876",
-      name: "Liam Smith",
-      date: "Jan 16, 2023, 10:00",
+      date: "Jan 16, 2023, 11:00",
       type: "Scheduled",
-      qty: 170,
-      amount: "$21,250",
-      status: "Completed",
-      color: "text-[#22B573]",
+      qty: 200,
+      amount: "$25000",
+      status: "Out for Delivery",
+      statusColor: "text-[#FF6D08]",
     },
     {
-      id: "#546877",
-      name: "Emma Brown",
-      date: "Jan 16, 2023, 10:45",
+      id: "#546879",
+      name: "Liam Smith",
+      date: "Jan 16, 2023, 11:15",
       type: "Immediate",
-      qty: 95,
-      amount: "$11,875",
-      status: "Cancelled",
-      color: "text-[#FF3B30]", // Red
+      qty: 150,
+      amount: "$18750",
+      status: "Delivered",
+      statusColor: "text-[#00C853]",
     },
     {
-      id: "#546878",
+      id: "#546879",
+      name: "Emma Brown",
+      date: "Jan 16, 2023, 11:30",
+      type: "Immediate",
+      qty: 100,
+      amount: "$12500",
+      status: "Ready For Pickup",
+      statusColor: "text-[#10CBFF]",
+    },
+    {
+      id: "#546879",
       name: "Noah Wilson",
-      date: "Jan 17, 2023, 08:30",
+      date: "Jan 17, 2023, 09:45",
       type: "Delayed",
-      qty: 130,
-      amount: "$16,250",
-      status: "Processing",
-      color: "text-[#FFA500]",
+      qty: 250,
+      amount: "$31250",
+      status: "Out for Delivery",
+      statusColor: "text-[#FF6D08]",
     },
     {
       id: "#546879",
       name: "Ava Martinez",
-      date: "Jan 17, 2023, 09:45",
+      date: "Jan 17, 2023, 10:00",
       type: "Immediate",
       qty: 100,
-      amount: "$12,500",
-      status: "Completed",
-      color: "text-[#22B573]",
+      amount: "$12500",
+      status: "Delivered",
+      statusColor: "text-[#00C853]",
     },
     {
-      id: "#546880",
+      id: "#546879",
       name: "Mason Davis",
       date: "Jan 18, 2023, 12:00",
       type: "Immediate",
       qty: 300,
-      amount: "$37,500",
-      status: "Cancelled",
-      color: "text-[#FF3B30]",
+      amount: "$37500",
+      status: "Out for Delivery",
+      statusColor: "text-[#FF6D08]",
     },
   ];
 
   // Filter by active status
-  const filteredOrders =
+  const filteredData =
     activeStatus === "All"
       ? orders
-      : orders.filter((order) => order.status === activeStatus);
+      : orders.filter((item) => item.status === activeStatus);
 
-  const data = filteredOrders.map((item, index) => [
+  const data = filteredData.map((item, index) => [
     <p key={index} className="text-[#181818] text-[14px] font-[400]">
       {item.id}
     </p>,
@@ -164,14 +163,14 @@ export default function OrdersData() {
     </p>,
     <p
       key={index}
-      className={`${item.color} text-[14px] font-[500] capitalize`}
+      className={`${item.statusColor} text-[14px] font-[500] capitalize`}
     >
       {item.status}
     </p>,
     <div key={index} className="flex items-center gap-3">
       <NavLink
         to={"/app/order-detail"}
-        className="text-[#03958A] border-b border-[#03958A] font-[500]"
+        className="text-[#00C49A] font-[500] border-b border-[#00C49A]"
       >
         View Details
       </NavLink>
@@ -180,7 +179,7 @@ export default function OrdersData() {
   return (
     <div>
       <div className="flex justify-between ">
-        <h3 className="font-[600] text-[32px]">Order Management</h3>
+        <h3 className="font-[600] text-[32px]">Order Tracking</h3>
         <Filter hide={true} />
       </div>
       <div className="mt-4 rounded-2xl shadow-sm border-t p-2 border-[#B9B9B9] bg-[#FFFFFF] ">

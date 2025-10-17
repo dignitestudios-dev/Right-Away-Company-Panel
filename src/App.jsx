@@ -17,6 +17,8 @@ import ProductDetail from "./components/app/Product/ProductDetail";
 import EditProduct from "./components/app/Product/EditProduct";
 import OrderManagement from "./pages/app/OrderManagement";
 import OrderDetail from "./components/app/Order/OrderDetail";
+import Chat from "./pages/app/Chat";
+import OrderTrack from "./pages/app/OrderTrack";
 
 function App() {
   return (
@@ -34,6 +36,9 @@ function App() {
         {/* Order Routes */}
         <Route path="order-management" element={<OrderManagement />} />
         <Route path="order-detail" element={<OrderDetail />} />
+        <Route path="order-track" element={<OrderTrack />} />
+        {/* Chat  Routes*/}
+        <Route path="chat" element={<Chat />} />
       </Route>
 
       <Route path="auth" element={<AuthLayout />}>

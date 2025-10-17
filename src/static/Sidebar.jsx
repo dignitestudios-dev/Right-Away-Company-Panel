@@ -23,7 +23,7 @@ export const sidebarData = [
     title: "Order Tracking",
     icon:blackOrderTrack,
     whiteIcon:greenOrderTrack,
-    link: "/app/order-tracking",
+    link: "/app/order-track",
   },
   {
     title: "Messages",

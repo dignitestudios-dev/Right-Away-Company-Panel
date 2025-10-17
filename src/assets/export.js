@@ -58,12 +58,24 @@ import DelIcon from "./del-icon.png";
 import ReplyComment from "./reply-comment.png";
 import ReviewSubmit from "./review-submit.png";
 import Person2 from "./person2.png";
+import OrderCancelConfirm from "./orderCancelConfirm.png";
+import ChatBtnIcon from "./chat-btn.png";
+import CallIcon from "./call.png";
+import MessageIcon from "./message.png";
+import SubTitleIcon from "./subtitle.png";
+import TruckIcon from "./group.png";
 
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
 export {
+  CallIcon,
+  MessageIcon,
+  TruckIcon,
+  SubTitleIcon,
+  ChatBtnIcon,
+  OrderCancelConfirm,
   Person2,
   ReviewSubmit,
   DelIcon,
