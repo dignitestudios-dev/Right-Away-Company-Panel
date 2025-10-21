@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IoSend } from "react-icons/io5";
-import ChatUser from "../../components/app/Chat/ChatUser";
+import ChatUser from "../../components/app/chat/ChatUser";
 import ChatMessage from "../../components/app/Chat/ChatMessage";
 import { Person1, Person2 } from "../../assets/export";
 import { IoIosSend } from "react-icons/io";
