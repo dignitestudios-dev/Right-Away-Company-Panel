@@ -27,20 +27,20 @@ const Login = () => {
     });
 
   return (
-    <div className={`grid grid-cols-1  h-full w-full lg:grid-cols-2`}>
-      <div className=" md:px-5 pb-5 flex flex-col justify-end">
+    <div className={`grid grid-cols-1  h-full w-full xl:grid-cols-2`}>
+      <div className="md:px-5 pb-5 flex flex-col justify-end">
         <div className="bg-[#FFFFFF] md:w-[400px] flex items-center justify-center px-5 rounded-[12px] h-[65px] backdrop-blur-3xl ">
-          <span className="gradient-text text-[32px] font-[500]">
+          <span className="gradient-text text-[26px] md:text-[32px] font-[500]">
             Simplify your workflow
           </span>
         </div>
-        <h3 className="text-[#FFFFFF] font-bold text-[55px] ">
+        <h3 className="text-[#FFFFFF] font-bold text-center md:text-start text-[30px] md:text-[55px] ">
           Accelerate your results.
         </h3>
       </div>
-      <div className="w-full md:px-20">
+      <div className="w-full lg:px-20">
         <div
-          className={`bg-white flex justify-center flex-col items-center relative h-full backdrop-blur-[34px] rounded-[28px]`}
+          className={`bg-white px-10 py-5  flex justify-center flex-col items-center relative h-full backdrop-blur-[34px] rounded-[28px]`}
         >
           {/* Bg Image */}
           <img
@@ -57,7 +57,7 @@ const Login = () => {
             </p>
           </div>
 
-          <form action="" className="w-full space-y-4 md:w-[360px] mt-4">
+          <form action="" className="w-full lg:px-[60px] space-y-4  mt-4">
             <Input
               text={"Email Address"}
               holder={"Enter email address"}

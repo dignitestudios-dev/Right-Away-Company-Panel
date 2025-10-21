@@ -37,7 +37,7 @@ const SideBar = () => {
         {/* Bg Image */}
         <img
           src={LoginBgTopShapes}
-          className="h-full absolute rounded-[12px] z-[1] right-0"
+          className="h-full absolute object-cover rounded-[12px] z-[1] right-0"
           alt="LoginBgTopShapes"
         />
 
