@@ -19,6 +19,7 @@ import OrderManagement from "./pages/app/OrderManagement";
 import OrderDetail from "./components/app/Order/OrderDetail";
 import Chat from "./pages/app/Chat";
 import OrderTrack from "./pages/app/OrderTrack";
+import OrderTrackDetail from "./components/app/OrderTrack/OrderTrackDetail";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         <Route path="order-management" element={<OrderManagement />} />
         <Route path="order-detail" element={<OrderDetail />} />
         <Route path="order-track" element={<OrderTrack />} />
+        <Route path="order-track-detail" element={<OrderTrackDetail />} />
         {/* Chat  Routes*/}
         <Route path="chat" element={<Chat />} />
       </Route>

@@ -169,7 +169,7 @@ export default function OrderTrackData() {
     </p>,
     <div key={index} className="flex items-center gap-3">
       <NavLink
-        to={"/app/order-detail"}
+        to={"/app/order-track-detail"}
         className="text-[#00C49A] font-[500] border-b border-[#00C49A]"
       >
         View Details
