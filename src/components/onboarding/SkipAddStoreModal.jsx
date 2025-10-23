@@ -2,7 +2,7 @@ import { IoCloseSharp } from "react-icons/io5";
 import Modal from "react-modal";
 import { AlertIcon } from "../../assets/export";
 
-const SkipAddStoreModal = ({ isOpen, setIsOpen }) => {
+const SkipAddStoreModal = ({ isOpen, setIsOpen,handleNext }) => {
   return (
     <Modal
       isOpen={isOpen}
@@ -15,7 +15,10 @@ const SkipAddStoreModal = ({ isOpen, setIsOpen }) => {
       <div className="bg-white rounded-[12px] p-8 shadow-lg w-[515px] h-[356px]">
         <div className="flex justify-end items-center">
           
-          <IoCloseSharp size={22} className="cursor-pointer" onClick={()=>setIsOpen(false)} />
+          <IoCloseSharp size={22} className="cursor-pointer" onClick={()=>{
+            setIsOpen(false)
+            handleNext()
+            }} />
         </div>
         <div className="flex flex-col mt-8 gap-2 text-center justify-center items-center">
           <img src={AlertIcon} className="w-[66px] h-[60px]" alt="AlertIcon" />

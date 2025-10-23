@@ -2,43 +2,64 @@ import React, { useState } from "react";
 import { UploadFiles } from "../../assets/export";
 import Button from "../global/Button";
 import RequestStatus from "./RequestStatus";
+import { ErrorToast } from "../global/Toaster";
+import { useDispatch, useSelector } from "react-redux";
+import { UploadCompanyDocuments } from "../../redux/slices/authSlice";
 
 export default function VerifyDocuments({ handleNext }) {
   const uploadFields = [
-    { label: "Business License", required: true },
-    { label: "Tax Registration", required: true },
-    { label: "Business/Ownership Certificate", required: true },
-    { label: "Proof of address", required: true },
+    { key: "businessLicense", label: "Business License", required: true },
+    { key: "taxRegistration", label: "Tax Registration", required: true },
+    {
+      key: "businessCertificate",
+      label: "Business/Ownership Certificate",
+      required: true,
+    },
+    { key: "proofAddress", label: "Proof of Address", required: true },
   ];
-
+  const { isLoading } = useSelector((state) => state?.auth);
+  const dispatch = useDispatch();
   const [files, setFiles] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
   // handle file selection
-  const handleFileChange = (index, file) => {
+  const handleFileChange = (key, file) => {
+    if (!file) return;
+
     setFiles((prev) => ({
       ...prev,
-      [index]: file,
+      [key]: {
+        file,
+        preview: URL.createObjectURL(file),
+      },
     }));
   };
 
-  // handle submit
-  const handleSubmit = () => {
-    const allUploaded = uploadFields.every((_, index) => files[index]);
+  // ✅ handle submit
+  const handleSubmit = async () => {
+    // check if all required files uploaded
+    const allUploaded = uploadFields.every((f) => files[f.key]?.file);
     if (!allUploaded) {
-      alert("Please upload all required documents before submitting.");
+      ErrorToast("Please upload all required documents before submitting.");
       return;
     }
 
-    // ✅ Simulate upload or API call here
-    console.log("Uploaded files:", files);
+    // ✅ Build FormData payload
+    const formData = new FormData();
+    uploadFields.forEach((f) => {
+      formData.append(f.key, files[f.key].file);
+    });
 
-    // Once submitted, show pending status
+    console.log("🚀 Payload ready:", Object.fromEntries(formData.entries()));
+
+    // ✅ dispatch API call (uncomment when ready)
+    await dispatch(UploadCompanyDocuments(formData)).unwrap();
+
     setSubmitted(true);
   };
 
-  if (true) {
-    return <RequestStatus status="submited" handleNext={handleNext} />;
+  if (submitted) {
+    return <RequestStatus status="submitted" handleNext={handleNext} />;
   }
 
   return (
@@ -53,41 +74,41 @@ export default function VerifyDocuments({ handleNext }) {
 
       {/* Upload Inputs */}
       <div className="grid grid-cols-1 mt-8 sm:grid-cols-2 gap-y-14 gap-6">
-        {uploadFields.map((field, index) => (
-          <div key={index} className="h-[100px]">
+        {uploadFields.map((field) => (
+          <div key={field.key} className="h-[150px] relative">
             <label className="text-sm text-gray-700 font-medium">
               {field.label}
               {field.required && <span className="text-red-500 ml-0.5">*</span>}
             </label>
 
-            <div className="relative border mt-2 border-gray-200 rounded-xl bg-white shadow-sm hover:border-gray-300 transition">
+            <div className="h-full border mt-2 border-gray-200 rounded-xl bg-white shadow-sm hover:border-gray-300 transition">
               <input
                 type="file"
-                id={`file-${index}`}
+                accept="image/*,application/pdf"
                 className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                onChange={(e) => handleFileChange(index, e.target.files[0])}
+                onChange={(e) => handleFileChange(field.key, e.target.files[0])}
               />
 
-              <div className="flex flex-col items-center justify-center py-6">
-                <img
-                  src={UploadFiles}
-                  alt="upload-img"
-                  className="w-[30px] h-[30px]"
-                />
-                <p className="text-[12px] mt-2 font-[600] text-[#181818]">
-                  {files[index] ? (
-                    <>
-                      {files[index].name.length > 20
-                        ? files[index].name.slice(0, 20) + "..."
-                        : files[index].name}
-                    </>
-                  ) : (
-                    <>
+              <div className="flex flex-col h-full relative items-center justify-center">
+                {files[field.key]?.preview ? (
+                  <img
+                    src={files[field.key].preview}
+                    alt="preview"
+                    className="w-full object-cover h-full rounded-md"
+                  />
+                ) : (
+                  <>
+                    <img
+                      src={UploadFiles}
+                      alt="upload-img"
+                      className="w-[30px] h-[30px]"
+                    />
+                    <p className="text-[12px] mt-2 font-[600] text-[#181818]">
                       choose file to{" "}
                       <span className="text-[12px] font-[400]">upload</span>
-                    </>
-                  )}
-                </p>
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -98,6 +119,7 @@ export default function VerifyDocuments({ handleNext }) {
       <Button
         text="Submit for Review"
         onClick={handleSubmit}
+        loading={isLoading}
         customClass="mt-20 w-[360px] mx-auto"
       />
     </div>

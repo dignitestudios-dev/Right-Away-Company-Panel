@@ -1,8 +1,22 @@
 import { IoCloseSharp } from "react-icons/io5";
 import Modal from "react-modal";
 import { CrossIcon } from "../../assets/export";
+import { ErrorToast } from "../global/Toaster";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteStore, getStore } from "../../redux/slices/authSlice";
 
-const DeleteStoreModal = ({ isOpen, setIsOpen }) => {
+const DeleteStoreModal = ({ isOpen, setIsOpen, isSelected }) => {
+  const { isDeleteLoading } = useSelector((state => state?.auth));
+  const dispatch = useDispatch();
+  const handleSubmit = async () => {
+    try {
+      await dispatch(deleteStore(isSelected));
+      await dispatch(getStore());
+      setIsOpen(false)
+    } catch (error) {
+      ErrorToast(error);
+    }
+  };
   return (
     <Modal
       isOpen={isOpen}
@@ -35,8 +49,11 @@ const DeleteStoreModal = ({ isOpen, setIsOpen }) => {
             >
               Don’t delete
             </button>
-            <button className="bg-[#EE3131] w-[140px] text-[white] font-[600] text-[12px] rounded-[8px] p-3">
-              Delete now
+            <button
+              onClick={handleSubmit}
+              className="bg-[#EE3131] w-[140px] text-[white] font-[600] text-[12px] rounded-[8px] p-3"
+            >
+              {isDeleteLoading ? "Deleting..." : "Delete now"}
             </button>
           </div>
         </div>

@@ -2,6 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import Button from "./Button";
 import { useNavigate } from "react-router";
 import { twoFactorValues } from "../../init/authentication/dummyLoginValues";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  SendOtpAccountVerification,
+  VerifyEmail,
+} from "../../redux/slices/authSlice";
 
 export default function OtpForm({ handleNext }) {
   const [isResendDisabled, setIsResendDisabled] = useState(true);
@@ -9,6 +14,12 @@ export default function OtpForm({ handleNext }) {
   const otpRefs = useRef([]);
   const navigate = useNavigate("");
   const [otp, setOtp] = useState(twoFactorValues.otp);
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state?.auth);
+  useEffect(() => {
+    dispatch(SendOtpAccountVerification()).unwrap();
+  }, []);
+
   useEffect(() => {
     let interval;
     if (isResendDisabled && timer > 0) {
@@ -77,8 +88,20 @@ export default function OtpForm({ handleNext }) {
       otpRefs.current[nextIndex].focus();
     }
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      otp: otp.join(""),
+    };
+    await dispatch(VerifyEmail(data)).unwrap();
+    handleNext();
+  };
+  
   return (
-    <form className="w-full space-y-4 md:w-[360px] mt-4">
+    <form
+      onSubmit={handleSubmit}
+      className="w-full space-y-4 lg:px-[60px] mt-4"
+    >
       <div className="w-full h-auto flex justify-center items-center gap-2 my-2 flex-wrap">
         {otp.map((item, index) => (
           <input
@@ -107,10 +130,8 @@ export default function OtpForm({ handleNext }) {
       </div>
       <Button
         text={"Verify"}
-        onClick={() =>
-          handleNext ? handleNext() : navigate("/auth/reset-password")
-        }
-        type="button"
+        loading={isLoading}
+        type="submit"
         customClass={"w-full"}
       />
     </form>

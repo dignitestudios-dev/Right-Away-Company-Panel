@@ -3,7 +3,7 @@ export const loginValues = {
   password: "",
 };
 export const twoFactorValues = {
-  otp: ["", "", "", "", ""], // 5-digit OTP
+  otp: ["", "", "", ""], // 5-digit OTP
 };
 
 export const forgetPasswordValues = {
@@ -31,17 +31,17 @@ export const RegisterAccount = {
 };
 export const CompleteProfileValues = {
   profilePic: null,
-  businessName: "",
-  email: "",
   description: "",
   fulfillmentMethod: "",
-  operatingHours: "",
-  operatingDays: "",
 };
 
 export const AddNewStoreValues = {
   businessName: "",
   address: "",
-  operatingHours: "",
-  operatingDays: "",
+};
+export const BankDetailsValues = {
+  bankName: "",
+  holderName: "",
+  accountNumber: "",
+  routingNumber: "",
 };

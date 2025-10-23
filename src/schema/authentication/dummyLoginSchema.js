@@ -17,7 +17,7 @@ export const signInSchema = Yup.object({
 export const twoFactorSchema = Yup.object({
   otp: Yup.array()
     .of(Yup.string().matches(/^\d$/, "Must be a digit"))
-    .min(5, "OTP must be 5 digits")
+    .min(4, "OTP must be 4 digits")
     .required("OTP is required"),
 });
 
@@ -116,14 +116,6 @@ export const CompleteProfileSchema = Yup.object({
       );
     }),
 
-  businessName: Yup.string()
-    .required("Business name is required")
-    .min(2, "Must be at least 2 characters"),
-
-  email: Yup.string()
-    .required("Email is required")
-    .email("Invalid email format"),
-
   description: Yup.string()
     .required("Description is required")
     .min(10, "Description must be at least 10 characters"),
@@ -131,10 +123,6 @@ export const CompleteProfileSchema = Yup.object({
   fulfillmentMethod: Yup.string().required(
     "Please select a fulfillment method"
   ),
-
-  operatingHours: Yup.string().required("Operating hours are required"),
-
-  operatingDays: Yup.string().required("Operating days are required"),
 });
 export const AddNewStoreSchema = Yup.object({
   businessName: Yup.string()
@@ -144,15 +132,25 @@ export const AddNewStoreSchema = Yup.object({
   address: Yup.string()
     .required("Store address is required")
     .min(5, "Please enter a valid address"),
+});
+export const BankDetailsSchema = Yup.object().shape({
+  bankName: Yup.string()
+    .required("Bank name is required")
+    .min(3, "Bank name must be at least 3 characters long"),
   
-  operatingHours: Yup.string()
-    .required("Operating hours are required")
-    .matches(
-      /^([0-9]{1,2}\s?(AM|PM|am|pm)?\s?-\s?[0-9]{1,2}\s?(AM|PM|am|pm)?)$/,
-      "Enter valid hours, e.g., 9 AM - 6 PM"
-    ),
-
-  operatingDays: Yup.string()
-    .required("Operating days are required")
-    .min(3, "Please specify at least one day"),
+  holderName: Yup.string()
+    .required("Account holder name is required")
+    .min(3, "Holder name must be at least 3 characters long"),
+  
+  accountNumber: Yup.string()
+    .required("Account number is required")
+    .matches(/^[0-9]+$/, "Account number must contain only digits")
+    .min(8, "Account number must be at least 8 digits")
+    .max(20, "Account number cannot exceed 20 digits"),
+  
+  routingNumber: Yup.string()
+    .required("Routing number is required")
+    .matches(/^[0-9]+$/, "Routing number must contain only digits")
+    .min(6, "Routing number must be at least 6 digits")
+    .max(9, "Routing number cannot exceed 9 digits"),
 });

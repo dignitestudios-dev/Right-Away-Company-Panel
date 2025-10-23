@@ -1,8 +1,10 @@
 import { IoCloseSharp } from "react-icons/io5";
 import Modal from "react-modal";
 import { SuccessIcon } from "../../assets/export";
+import { useNavigate } from "react-router";
 
 const AccountCreatedModal = ({ isOpen, setIsOpen }) => {
+  const navigate=useNavigate("");
   return (
     <Modal
       isOpen={isOpen}
@@ -17,7 +19,10 @@ const AccountCreatedModal = ({ isOpen, setIsOpen }) => {
           <IoCloseSharp
             size={22}
             className="cursor-pointer"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false)
+              navigate("/auth/login")
+            }}
           />
         </div>
         <div className="flex flex-col mt-8 gap-2 text-center justify-center items-center">

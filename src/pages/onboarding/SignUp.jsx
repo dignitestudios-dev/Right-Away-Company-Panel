@@ -14,7 +14,7 @@ import CompanyProfile from "../../components/onboarding/CompanyProfile";
 import AddStore from "../../components/onboarding/AddStore";
 import PaymentMethod from "../../components/onboarding/PaymentMethod";
 export default function SignUp() {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(4);
   const providerSteps = [
     { icon: RxFileText, title: "Business Details" },
     { icon: IoMailOutline, title: "Verify email" },
@@ -45,7 +45,7 @@ export default function SignUp() {
     <div className={`grid grid-cols-12 gap-6  h-full w-full`}>
       <OnboardingStepper steps={steps} currentStep={currentStep} />
 
-      <div className="col-span-8 px-10 h-full flex justify-center items-center">
+      <div className="col-span-12 lg:col-span-8 px-5 md:px-10 h-full flex justify-center items-center">
         <div
           className={`bg-white w-full relative flex justify-center flex-col items-center h-full backdrop-blur-[34px] rounded-[28px]`}
         >

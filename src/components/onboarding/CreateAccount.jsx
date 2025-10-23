@@ -8,10 +8,14 @@ import { RegisterSchema } from "../../schema/authentication/dummyLoginSchema";
 import { RegisterAccount } from "../../init/authentication/dummyLoginValues";
 import PrivacyPolicyModal from "../global/PrivacyPolicy";
 import { useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { Register } from "../../redux/slices/authSlice";
 export default function CreateAccount({ handleNext, setEmail }) {
   const [mapCenter, setMapCenter] = useState({ lat: 38.7946, lng: 106.5348 });
   const [isPrivacy, setIsPrivacy] = useState(false);
   const navigate = useNavigate("");
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state?.auth);
   const [termCondition, setIsTermsCondition] = useState(false);
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
@@ -20,23 +24,26 @@ export default function CreateAccount({ handleNext, setEmail }) {
       validateOnChange: true,
       validateOnBlur: true,
       onSubmit: async (values, action) => {
-        handleNext();
         setEmail(values.email);
+        await dispatch(Register(values)).unwrap();
+        handleNext();
       },
     });
   return (
-    <div className={`w-full py-10 px-28`}>
+    <div className={`w-full py-10 px-10 xl:px-28`}>
       {/* Form Content */}
       <div className="flex flex-col items-center gap-4">
-        <h3 className="font-[600] text-[36px]">Create Your Company Account</h3>
-        <p className="text-[#838383] text-[16px] font-[400] ">
+        <h3 className="font-[600] text-[20px] md:text-[36px]">
+          Create Your Company Account
+        </h3>
+        <p className="text-[#838383]  text-[12px] md:text-[16px] font-[400] ">
           Register your business to start selling construction materials online.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="w-full space-y-4  mt-4">
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-6">
+        <div className="grid  lg:grid-cols-12 gap-4">
+          <div className="xl:col-span-6 col-span-12">
             <Input
               text={"Business Name"}
               holder={"Enter business name"}
@@ -48,7 +55,7 @@ export default function CreateAccount({ handleNext, setEmail }) {
               handleBlur={handleBlur}
             />
           </div>
-          <div className="col-span-6">
+          <div className="xl:col-span-6 col-span-12">
             <Input
               text={"Business Email Address"}
               holder={"Enter Business Email Address"}
@@ -60,7 +67,7 @@ export default function CreateAccount({ handleNext, setEmail }) {
               handleBlur={handleBlur}
             />
           </div>
-          <div className="col-span-6">
+          <div className="xl:col-span-6 col-span-12">
             <Input
               text={"Business Phone Number"}
               holder={"Enter Business Phone Number"}
@@ -72,7 +79,7 @@ export default function CreateAccount({ handleNext, setEmail }) {
               handleBlur={handleBlur}
             />
           </div>
-          <div className="col-span-6">
+          <div className="xl:col-span-6 col-span-12">
             <Input
               text={"Company Registration Number"}
               holder={"Enter Company Registration Number"}
@@ -109,7 +116,7 @@ export default function CreateAccount({ handleNext, setEmail }) {
               <Marker position={mapCenter} />
             </GoogleMap>
           </div>
-          <div className="col-span-6">
+          <div className="xl:col-span-6 col-span-12">
             <Input
               text={"Password"}
               holder={"Enter password here"}
@@ -122,7 +129,7 @@ export default function CreateAccount({ handleNext, setEmail }) {
               handleBlur={handleBlur}
             />
           </div>
-          <div className="col-span-6">
+          <div className="xl:col-span-6 col-span-12">
             <Input
               text={"Confirm Password"}
               holder={"Re-enter password here"}
@@ -139,7 +146,8 @@ export default function CreateAccount({ handleNext, setEmail }) {
         <Button
           text={"Sign Up"}
           type="submit"
-          customClass={"w-[360px] mx-auto"}
+          loading={isLoading}
+          customClass={"w-full md:w-[360px] mx-auto"}
         />
       </form>
       <div className="space-y-2 mt-2   ">
@@ -175,7 +183,7 @@ export default function CreateAccount({ handleNext, setEmail }) {
           </span>
           <div className="flex-1 border-b border-gray-350 " />
         </div>
-        <div className="w-full grid grid-cols-2 items-center gap-4">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 items-center gap-4">
           <button className="bg-shadow flex items-center p-2 bg-[#FFFFFF]  rounded-full w-full h-12">
             <img src={GoogleImage} alt="" className="w-8" />
             <span className="mx-auto text-[14px] font-[500] text-[#181818]">

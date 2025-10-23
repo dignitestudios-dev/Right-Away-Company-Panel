@@ -7,9 +7,13 @@ import { forgetPasswordValues } from "../../init/authentication/dummyLoginValues
 import { LoginBgTopShapes } from "../../assets/export";
 import Button from "../../components/global/Button";
 import { FaArrowLeft } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
+import { forgetPassword } from "../../redux/slices/authSlice";
 
 export default function ForgotPassword() {
   const navigate = useNavigate("");
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.auth);
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
       initialValues: forgetPasswordValues,
@@ -17,18 +21,20 @@ export default function ForgotPassword() {
       validateOnChange: true,
       validateOnBlur: true,
       onSubmit: async (values, action) => {
-        navigate("/auth/otp-verification");
-        // Use the loading state to show loading spinner
-        // Use the response if you want to perform any specific functionality
-        // Otherwise you can just pass a callback that will process everything
+        const data = {
+          email: values?.email,
+          role: "company",
+        };
+        await dispatch(forgetPassword(data)).unwrap();
+        navigate("/auth/otp-verification",{state:{email:values?.email}});        
       },
     });
   return (
-    <div className={`grid grid-cols-1  h-full w-full lg:grid-cols-2`}>
+    <div className={`grid grid-cols-1  h-full w-full xl:grid-cols-2`}>
       <div className=" md:px-5 pb-5 flex flex-col justify-end"></div>
-      <div className="w-full md:px-20">
+      <div className="w-full px-10 lg:px-20">
         <div
-          className={`bg-white relative flex justify-center flex-col items-center h-full backdrop-blur-[34px] rounded-[28px]`}
+          className={`bg-white px-10 py-5  relative  flex justify-center flex-col items-center h-full backdrop-blur-[34px] rounded-[28px]`}
         >
           <button
             className="absolute top-8 left-8"
@@ -50,7 +56,7 @@ export default function ForgotPassword() {
             </p>
           </div>
 
-          <form action="" className="w-full space-y-4 md:w-[360px] mt-4">
+          <form onSubmit={handleSubmit} className="w-full lg:px-[60px] space-y-4 mt-4">
             <Input
               text={"Email Address"}
               holder={"Enter email address"}
@@ -63,8 +69,8 @@ export default function ForgotPassword() {
             />
             <Button
               text={"Send Otp"}
-              onClick={handleSubmit}
               type="submit"
+              loading={isLoading}
               customClass={"w-full"}
             />
           </form>

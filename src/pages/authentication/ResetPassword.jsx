@@ -24,11 +24,11 @@ export default function ResetPassword() {
       },
     });
   return (
-    <div className={`grid grid-cols-1  h-full w-full lg:grid-cols-2`}>
+    <div className={`grid grid-cols-1  h-full w-full xl:grid-cols-2`}>
       <div className=" md:px-5 pb-5 flex flex-col justify-end"></div>
-      <div className="w-full md:px-20">
+      <div className="w-full px-10 lg:px-20">
         <div
-          className={`bg-white relative flex justify-center flex-col items-center h-full backdrop-blur-[34px] rounded-[28px]`}
+          className={`bg-white px-10 py-5  relative flex justify-center flex-col items-center h-full backdrop-blur-[34px] rounded-[28px]`}
         >
           <button
             className="absolute top-8 left-8"
@@ -50,7 +50,7 @@ export default function ResetPassword() {
             </p>
           </div>
 
-          <form action="" className="w-full space-y-4 md:w-[360px] mt-4">
+          <form action="" className="w-full space-y-4 lg:px-[60px] mt-4">
             <Input
               text={"Password"}
               holder={"Enter Password"}

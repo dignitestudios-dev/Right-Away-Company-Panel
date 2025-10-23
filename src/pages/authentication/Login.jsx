@@ -1,13 +1,22 @@
 import { useFormik } from "formik";
 import { loginValues } from "../../init/authentication/dummyLoginValues";
-import { AppleImage, GoogleImage, LoginBgTopShapes, Logo } from "../../assets/export";
+import {
+  AppleImage,
+  GoogleImage,
+  LoginBgTopShapes,
+  Logo,
+} from "../../assets/export";
 import Input from "../../components/global/Input";
 import Button from "../../components/global/Button";
 import { useNavigate } from "react-router";
 import { signInSchema } from "../../schema/authentication/dummyLoginSchema";
+import { useDispatch, useSelector } from "react-redux";
+import { CompanyLogin } from "../../redux/slices/authSlice";
 
 const Login = () => {
-   const navigate=useNavigate("");
+  const navigate = useNavigate("");
+  const dispatch = useDispatch();
+  const {isLoading}=useSelector(state=>state?.auth)
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
       initialValues: loginValues,
@@ -18,11 +27,11 @@ const Login = () => {
         const data = {
           email: values?.email,
           password: values?.password,
+          role:"company"
         };
-         navigate("/auth/two-factor-verfication")
-        // Use the loading state to show loading spinner
-        // Use the response if you want to perform any specific functionality
-        // Otherwise you can just pass a callback that will process everything
+        await dispatch(CompanyLogin(data)).unwrap();
+        navigate("/auth/two-factor-verfication");
+      
       },
     });
 
@@ -38,7 +47,7 @@ const Login = () => {
           Accelerate your results.
         </h3>
       </div>
-      <div className="w-full lg:px-20">
+      <div className="w-full px-10 lg:px-20">
         <div
           className={`bg-white px-10 py-5  flex justify-center flex-col items-center relative h-full backdrop-blur-[34px] rounded-[28px]`}
         >
@@ -57,7 +66,7 @@ const Login = () => {
             </p>
           </div>
 
-          <form action="" className="w-full lg:px-[60px] space-y-4  mt-4">
+          <form onSubmit={handleSubmit} className="w-full lg:px-[60px] space-y-4  mt-4">
             <Input
               text={"Email Address"}
               holder={"Enter email address"}
@@ -80,7 +89,7 @@ const Login = () => {
             />
             <Button
               text={"Log In"}
-              onClick={handleSubmit}
+              loading={isLoading}
               type="submit"
               customClass={"w-full"}
             />
@@ -88,7 +97,10 @@ const Login = () => {
           <div className="space-y-2 mt-2  lg:w-[360px] ">
             <p className="text-[#484848] text-center text-[12px] font-[400] ">
               Don’t have an account?{" "}
-              <span onClick={()=>navigate("/auth/signup")} className="cursor-pointer gradient-text font-[600] text-[12px]">
+              <span
+                onClick={() => navigate("/auth/signup")}
+                className="cursor-pointer gradient-text font-[600] text-[12px]"
+              >
                 Sign Up{" "}
               </span>
             </p>

@@ -2,13 +2,29 @@ import React, { useState } from "react";
 import Button from "../global/Button";
 import Input from "../global/Input";
 import { useFormik } from "formik";
-import { FiPlus } from "react-icons/fi";
+import { FiPlus, FiTrash2 } from "react-icons/fi";
 import { CompleteProfileValues } from "../../init/authentication/dummyLoginValues";
 import { CompleteProfileSchema } from "../../schema/authentication/dummyLoginSchema";
+import { FaPlus } from "react-icons/fa";
+import AddAvailabilityModal from "./AddAvaliablityModal";
+import { useDispatch, useSelector } from "react-redux";
+import { CompleteCompanyProfile } from "../../redux/slices/authSlice";
 
 export default function CompanyProfile({ handleNext }) {
   const [preview, setPreview] = useState(null); // ✅ local preview image
-
+  const [showModal, setShowModal] = useState(false);
+  const [availability, setAvailability] = useState(null);
+  const { company,isLoading } = useSelector((state) => state?.auth);
+  const dispatch = useDispatch();
+  const dayAbbreviations = {
+    monday: "MON",
+    tuesday: "TUE",
+    wednesday: "WED",
+    thursday: "THU",
+    friday: "FRI",
+    saturday: "SAT",
+    sunday: "SUN",
+  };
   const {
     values,
     handleBlur,
@@ -23,7 +39,36 @@ export default function CompanyProfile({ handleNext }) {
     validateOnChange: true,
     validateOnBlur: true,
     onSubmit: async (values, action) => {
-      handleNext();
+      try {
+        const formData = new FormData();
+        // Basic info
+        formData.append("description", values.description);
+        formData.append("coordinates[0]", -122.4194);
+        formData.append("coordinates[1]", 37.7749);
+        formData.append("type", "Point");
+        formData.append("store", values?.fulfillmentMethod);
+        // Avatar
+        if (values.profilePic) {
+          formData.append("profilePicture", values.profilePic);
+        }
+
+        // Availability
+        if (availability) {
+          formData.append("openingTime", availability.start_time);
+          formData.append("closingTime", availability.end_time);
+
+          if (Array.isArray(availability.days)) {
+            availability.days.forEach((day, i) => {
+              formData.append(`operatingTime[${i}]`, day);
+            });
+          }
+        }
+        await dispatch(CompleteCompanyProfile(formData)).unwrap();
+        handleNext();
+        action.resetForm();
+      } catch (err) {
+        console.error("Profile submission failed:", err);
+      }
     },
   });
 
@@ -35,6 +80,7 @@ export default function CompanyProfile({ handleNext }) {
       setPreview(URL.createObjectURL(file)); // create preview URL
     }
   };
+  console.log(errors,"erross")
 
   return (
     <div className="w-full py-10 px-28">
@@ -92,12 +138,13 @@ export default function CompanyProfile({ handleNext }) {
               text="Business Name"
               holder="Enter business name"
               type="text"
+              disabled={true}
               touched={touched.businessName}
               handleChange={handleChange}
               name="businessName"
               error={errors.businessName}
               handleBlur={handleBlur}
-              value={values.businessName}
+              value={company?.name}
             />
           </div>
 
@@ -107,12 +154,13 @@ export default function CompanyProfile({ handleNext }) {
               text="Business Email Address"
               holder="Enter Business Email Address"
               type="email"
+              disabled={true}
               touched={touched.email}
               handleChange={handleChange}
               name="email"
               error={errors.email}
               handleBlur={handleBlur}
-              value={values.email}
+              value={company?.email}
             />
           </div>
 
@@ -148,8 +196,37 @@ export default function CompanyProfile({ handleNext }) {
             />
           </div>
 
+          <div className="col-span-12 ">
+            <label className="font-[700] text-[12px]">Set Availability</label>
+            <div className="h-[49px] flex items-center justify-between bg-[#FFFFFF] w-full border border-[#D9D9D9] rounded-[8px]">
+              {availability && (
+                <div className="bg-[#F1F1F1D1] flex gap-2 items-center p-2 h-[38px] rounded-[8px] ml-1">
+                  <p className="text-[14px]">
+                    {availability.start_time} - {availability.end_time} (
+                    {availability.days
+                      .map((day) => dayAbbreviations[day] || day)
+                      .join(", ")}
+                  </p>
+                  <FiTrash2
+                    color={"#F01A1A"}
+                    size={14}
+                    className="cursor-pointer"
+                    onClick={() => setAvailability(null)}
+                  />
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => setShowModal(true)}
+                className="w-[13%] bg-gradient ml-auto rounded-[8px] h-[38px] mr-2 flex items-center justify-center"
+              >
+                <FaPlus color="white" />
+              </button>
+            </div>
+          </div>
+
           {/* Operating Hours */}
-          <div className="col-span-6">
+          {/* <div className="col-span-6">
             <Input
               text="Operating Hours"
               holder="e.g., 9 AM - 6 PM"
@@ -161,10 +238,10 @@ export default function CompanyProfile({ handleNext }) {
               handleBlur={handleBlur}
               value={values.operatingHours}
             />
-          </div>
+          </div> */}
 
           {/* Operating Days */}
-          <div className="col-span-6">
+          {/* <div className="col-span-6">
             <Input
               text="Operating Days"
               holder="e.g., Monday to Saturday"
@@ -176,11 +253,20 @@ export default function CompanyProfile({ handleNext }) {
               handleBlur={handleBlur}
               value={values.operatingDays}
             />
-          </div>
+          </div> */}
         </div>
 
-        <Button text="Sign Up" type="submit" customClass="w-[360px] mx-auto" />
+        <Button loading={isLoading} text="Sign Up" type="submit" customClass="w-[360px] mx-auto" />
       </form>
+      {showModal && (
+        <AddAvailabilityModal
+          onClose={() => setShowModal(false)}
+          onSave={(data) => {
+            setAvailability(data);
+            setShowModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }

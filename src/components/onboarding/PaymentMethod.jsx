@@ -6,15 +6,25 @@ import {
   PaypalIcon,
   VisaIcon,
 } from "../../assets/export";
-import { CompleteProfileValues } from "../../init/authentication/dummyLoginValues";
-import { CompleteProfileSchema } from "../../schema/authentication/dummyLoginSchema";
+import {
+  BankDetailsValues,
+  CompleteProfileValues,
+} from "../../init/authentication/dummyLoginValues";
+import {
+  BankDetailsSchema,
+  CompleteProfileSchema,
+} from "../../schema/authentication/dummyLoginSchema";
 import { useFormik } from "formik";
 import Input from "../global/Input";
 import Button from "../global/Button";
 import AccountCreatedModal from "./AccountCreated";
+import { useDispatch, useSelector } from "react-redux";
+import { CreateBank } from "../../redux/slices/authSlice";
 
 export default function PaymentMethod({ handleNext }) {
   const [isSuccess, setIsSuccess] = useState(false);
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state?.auth);
   const {
     values,
     handleBlur,
@@ -24,19 +34,27 @@ export default function PaymentMethod({ handleNext }) {
     touched,
     setFieldValue,
   } = useFormik({
-    initialValues: CompleteProfileValues,
-    validationSchema: CompleteProfileSchema,
+    initialValues: BankDetailsValues,
+    validationSchema: BankDetailsSchema,
     validateOnChange: true,
     validateOnBlur: true,
     onSubmit: async (values, action) => {
+      console.log(values, "valuess");
+      const data = {
+        accountHolderName: values?.holderName,
+        routingNumber: values?.routingNumber,
+        accountNumber: values?.accountNumber,
+        bankName: values?.bankName,
+      };
+      dispatch(CreateBank(data));
       setIsSuccess(true);
     },
   });
 
   return (
-    <div className="w-full py-10 px-28">
+    <div className="w-full py-10 px-10 md:px-28">
       <div className="flex  mb-3 text-center flex-col items-center gap-2">
-        <h3 className="font-[600] text-[32px] text-nowrap">
+        <h3 className="font-[600]  text-[20px] md:text-[32px] lg:text-nowrap">
           Secure Your Payments & Withdraw Earnings Easily!
         </h3>
         <p className="text-[#838383] text-[16px] font-[400]">
@@ -121,6 +139,7 @@ export default function PaymentMethod({ handleNext }) {
           <Button
             text={"Save and Continue"}
             customClass={"w-[360px] mx-auto"}
+            loading={isLoading}
           />
           <button
             onClick={() => setIsSuccess(true)}
