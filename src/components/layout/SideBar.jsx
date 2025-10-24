@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router";
+import { NavLink, useLocation, useNavigate } from "react-router";
 import { sidebarData } from "../../static/Sidebar";
 import {
   LocationIcon,
@@ -13,11 +13,14 @@ import {
 import { useState } from "react";
 import Notifications from "../global/NotificationDropdown";
 import LogOutModal from "../global/LogOutModal";
+import { useSelector } from "react-redux";
 
 const SideBar = () => {
   const [isNotification, setIsNotification] = useState(false);
   const [isLogout, setIsLogout] = useState(false);
-  const location=useLocation("") 
+  const { company } = useSelector((state) => state?.auth);
+  const navigate = useNavigate("");
+  const location = useLocation("");
   return (
     <div className="w-full h-full overflow-y-auto px-5 py-8 flex flex-col gap-3 justify-start items-start">
       <div className="flex justify-between items-end w-full">
@@ -33,7 +36,7 @@ const SideBar = () => {
         </div>
       </div>
 
-      <div className="rounded-[12px] h-full relative">
+      <div className="rounded-[12px] w-full h-full relative">
         {/* Bg Image */}
         <img
           src={LoginBgTopShapes}
@@ -42,7 +45,10 @@ const SideBar = () => {
         />
 
         {/* User Info */}
-        <div className="bg-[#FFFFFF]  py-4 px-2 rounded-[18px] ">
+        <div
+          onClick={() => navigate("/app/profile")}
+          className="bg-[#FFFFFF] cursor-pointer  py-4 px-2 rounded-[18px] "
+        >
           <div className="w-[63px] relative z-10 h-[63px] p-[2px] border-2 border-[#22B573] border-dashed rounded-full">
             <img src={Person1} alt="Person1" className="w-full h-full" />
             <div className="bg-white  shadow-sm w-[45px] absolute -bottom-3 gap-1 left-2 flex items-center rounded-[8px] justify-center h-[20px] ">
@@ -55,7 +61,7 @@ const SideBar = () => {
             </div>
           </div>
           <h3 className="font-[600] relative z-10 text-[18px] mt-4 ">
-            Store Name
+            {company?.name}
           </h3>
           <p className="flex relative z-10 items-baseline mt-2 text-[13px] font-[400] gap-1">
             {" "}
@@ -64,7 +70,7 @@ const SideBar = () => {
               alt="LocationIcon"
               className="w-[9px] h-[11px]"
             />{" "}
-            123 Bay Street, Downtown Toronto, ON M5J 2X8, Canada
+            {company?.businessAddress}
           </p>
         </div>
 
@@ -108,7 +114,7 @@ const SideBar = () => {
             Settings
           </NavLink>
           <NavLink
-          onClick={()=>setIsLogout(true)}
+            onClick={() => setIsLogout(true)}
             className={`text-white flex items-center gap-2 text-[12px] font-[400] `}
           >
             <img src={LogOutIcon} className="w-4" alt="logout-icon" /> Log out

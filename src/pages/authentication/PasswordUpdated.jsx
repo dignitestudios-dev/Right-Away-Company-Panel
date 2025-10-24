@@ -1,11 +1,14 @@
+import { useNavigate } from "react-router";
 import { LoginBgTopShapes, SuccessIcon } from "../../assets/export";
 
 export default function PasswordUpdated() {
+  const navigate=useNavigate("")
   return (
     <div className={`grid grid-cols-1  h-full w-full xl:grid-cols-2`}>
       <div className=" md:px-5 pb-5 flex flex-col justify-end"></div>
       <div className="w-full px-10 lg:px-20">
         <div
+        onClick={()=>navigate("/auth/login")}
           className={`bg-white px-10 py-5  relative flex justify-center flex-col items-center h-full backdrop-blur-[34px] rounded-[28px]`}
         >
           {/* Bg Image */}

@@ -80,10 +80,9 @@ export default function CompanyProfile({ handleNext }) {
       setPreview(URL.createObjectURL(file)); // create preview URL
     }
   };
-  console.log(errors,"erross")
 
   return (
-    <div className="w-full py-10 px-28">
+    <div className="w-full py-10 px-10 lg:px-28">
       {/* Header */}
       <div className="flex flex-col items-center gap-4">
         <h3 className="font-[600] text-[36px]">Company Profile Setup</h3>
@@ -96,7 +95,7 @@ export default function CompanyProfile({ handleNext }) {
       <form onSubmit={handleSubmit} className="w-full space-y-4 mt-4">
         <div className="grid grid-cols-12 gap-4">
           {/* Profile Picture Upload */}
-          <div className="col-span-7">
+          <div className="col-span-12 lg:col-span-7">
             <label
               htmlFor="profilePic"
               className="flex cursor-pointer items-center gap-4"
@@ -133,7 +132,7 @@ export default function CompanyProfile({ handleNext }) {
           </div>
 
           {/* Business Name */}
-          <div className="col-span-6">
+          <div className="col-span-12 lg:col-span-6">
             <Input
               text="Business Name"
               holder="Enter business name"
@@ -149,7 +148,7 @@ export default function CompanyProfile({ handleNext }) {
           </div>
 
           {/* Business Email */}
-          <div className="col-span-6">
+          <div className="col-span-12 lg:col-span-6">
             <Input
               text="Business Email Address"
               holder="Enter Business Email Address"
@@ -165,7 +164,7 @@ export default function CompanyProfile({ handleNext }) {
           </div>
 
           {/* Description */}
-          <div className="col-span-6">
+          <div className="col-span-12 lg:col-span-6">
             <Input
               text="Business Description"
               holder="Enter Business Description"
@@ -180,7 +179,7 @@ export default function CompanyProfile({ handleNext }) {
           </div>
 
           {/* Fulfillment Method */}
-          <div className="col-span-6">
+          <div className="col-span-12 lg:col-span-6">
             <Input
               text="Delivery Fulfillment Method"
               type="radio"
@@ -196,7 +195,7 @@ export default function CompanyProfile({ handleNext }) {
             />
           </div>
 
-          <div className="col-span-12 ">
+          <div className="col-span-12 lg:col-span-12 ">
             <label className="font-[700] text-[12px]">Set Availability</label>
             <div className="h-[49px] flex items-center justify-between bg-[#FFFFFF] w-full border border-[#D9D9D9] rounded-[8px]">
               {availability && (
@@ -256,7 +255,7 @@ export default function CompanyProfile({ handleNext }) {
           </div> */}
         </div>
 
-        <Button loading={isLoading} text="Sign Up" type="submit" customClass="w-[360px] mx-auto" />
+        <Button loading={isLoading} text="Sign Up" type="submit" customClass="w-full lg:w-[360px] mx-auto" />
       </form>
       {showModal && (
         <AddAvailabilityModal

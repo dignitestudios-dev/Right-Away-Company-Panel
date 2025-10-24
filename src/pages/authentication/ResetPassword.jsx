@@ -7,9 +7,13 @@ import { resetPasswordValues } from "../../init/authentication/dummyLoginValues"
 import { resetPasswordSchema } from "../../schema/authentication/dummyLoginSchema";
 import { useNavigate } from "react-router";
 import { LoginBgTopShapes } from "../../assets/export";
+import { updateForgotPassword } from "../../redux/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function ResetPassword() {
   const navigate = useNavigate("");
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state?.auth);
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
       initialValues: resetPasswordValues,
@@ -17,10 +21,11 @@ export default function ResetPassword() {
       validateOnChange: true,
       validateOnBlur: true,
       onSubmit: async (values, action) => {
+        const data = {
+          password: values?.password,
+        };
+        await dispatch(updateForgotPassword(data)).unwrap();
         navigate("/auth/password-updated");
-        // Use the loading state to show loading spinner
-        // Use the response if you want to perform any specific functionality
-        // Otherwise you can just pass a callback that will process everything
       },
     });
   return (
@@ -46,11 +51,14 @@ export default function ResetPassword() {
           <div className="flex flex-col items-center gap-2">
             <h3 className="font-[600] text-[36px]">Set New Password</h3>
             <p className="text-[#838383] text-[16px] font-[400] ">
-             Enter new password to reset.
+              Enter new password to reset.
             </p>
           </div>
 
-          <form action="" className="w-full space-y-4 lg:px-[60px] mt-4">
+          <form
+            onSubmit={handleSubmit}
+            className="w-full space-y-4 lg:px-[60px] mt-4"
+          >
             <Input
               text={"Password"}
               holder={"Enter Password"}
@@ -75,8 +83,8 @@ export default function ResetPassword() {
             />
             <Button
               text={"Update"}
-              onClick={handleSubmit}
               type="submit"
+              loading={isLoading}
               customClass={"w-full"}
             />
           </form>

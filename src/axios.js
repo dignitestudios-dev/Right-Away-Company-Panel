@@ -55,8 +55,8 @@ instance.interceptors.response.use(
       // Unauthorized error
       Cookies.remove("token");
       Cookies.remove("user");
-      ErrorToast("Session expired. Please relogin");
-      window.location.href = "/";
+      // ErrorToast("Session expired. Please relogin");
+      // window.location.href = "/";
     }
 
     return Promise.reject(error);

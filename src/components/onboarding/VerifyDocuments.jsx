@@ -63,7 +63,7 @@ export default function VerifyDocuments({ handleNext }) {
   }
 
   return (
-    <div className="w-full py-10 px-28">
+    <div className="w-full py-10 px-10 lg:px-28">
       {/* Header */}
       <div className="flex flex-col items-center">
         <h3 className="font-[600] text-[36px]">Verification Documents</h3>

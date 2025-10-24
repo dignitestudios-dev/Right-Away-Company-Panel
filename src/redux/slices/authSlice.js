@@ -9,10 +9,10 @@ const initialState = {
   token: null,
   refreshToken: null,
   company: null,
-  isAuthenticated: false,  
-  stores:null,
-  Banks:null,
-  isDeleteLoading:false
+  isAuthenticated: false,
+  stores: null,
+  Banks: null,
+  isDeleteLoading: false,
 };
 
 export const Register = createAsyncThunk(
@@ -64,7 +64,6 @@ export const CompanyLogin = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await axios.post("/auth/signIn", payload);
-      Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       SuccessToast(response?.data?.message || "CompanyLogin successful!");
       return response?.data;
     } catch (error) {
@@ -76,6 +75,40 @@ export const CompanyLogin = createAsyncThunk(
     }
   }
 );
+export const SendOtpFa = createAsyncThunk(
+  "/auth/resendLoginOTP",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.post("/auth/resendLoginOTP", payload);
+      SuccessToast(response?.data?.message);
+      return response?.data;
+    } catch (error) {
+      console.error("Registration error:", error);
+      const message =
+        error.response?.data?.message || error.message || "Registration failed";
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const VerifyLoginOtp = createAsyncThunk(
+  "/auth/login-verifyOTP",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.post("/auth/verifyOTP", payload);
+      SuccessToast(response?.data?.message);
+      Cookies.set("token", response?.data?.data?.token, { expires: 7 });
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const forgetPassword = createAsyncThunk(
   "/auth/resendLoginOTP",
   async (payload, thunkAPI) => {
@@ -88,7 +121,9 @@ export const forgetPassword = createAsyncThunk(
     } catch (error) {
       console.error("Forget password error:", error);
       const message =
-        error.response?.data?.message || error.message || "Forget password failed";
+        error.response?.data?.message ||
+        error.message ||
+        "Forget password failed";
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
@@ -128,6 +163,39 @@ export const VerifyEmail = createAsyncThunk(
     }
   }
 );
+
+export const VerifyForgotPassword = createAsyncThunk(
+  "/auth/verifyOTP",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.post("/auth/verifyOTP", payload);
+      Cookies.set("token", response?.data?.data?.token, { expires: 7 });
+      SuccessToast(response?.data?.message);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const updateForgotPassword = createAsyncThunk(
+  "/auth/updatePassword",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.post("/auth/updatePassword", payload);
+      SuccessToast(response?.data?.message);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const UploadCompanyDocuments = createAsyncThunk(
   "/company/documents",
   async (payload, thunkAPI) => {
@@ -177,9 +245,12 @@ export const EditStore = createAsyncThunk(
   "edit/company/store",
   async (payload, thunkAPI) => {
     try {
-      console.log(payload,"payload")
+      console.log(payload, "payload");
       // 4️⃣ Send request to backend
-      const response = await axios.put(`/company/store/${payload?.id}`, payload?.data);
+      const response = await axios.put(
+        `/company/store/${payload?.id}`,
+        payload?.data
+      );
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -283,6 +354,30 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload.message;
       })
+      .addCase(VerifyForgotPassword.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(VerifyForgotPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.company = action.payload?.data?.company;
+        state.token = action.payload?.data?.token;
+        state.isAuthenticated = true;
+      })
+
+      .addCase(VerifyForgotPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(updateForgotPassword.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(updateForgotPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(updateForgotPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
       .addCase(UploadCompanyDocuments.pending, (state, action) => {
         state.isLoading = true;
       })
@@ -318,7 +413,7 @@ const authSlice = createSlice({
       })
       .addCase(getStore.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.stores=action.payload.data
+        state.stores = action.payload.data;
       })
       .addCase(getStore.rejected, (state, action) => {
         state.isLoading = false;
@@ -339,36 +434,46 @@ const authSlice = createSlice({
       })
       .addCase(CreateBank.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.Banks=action.payload.data
+        state.Banks = action.payload.data;
       })
       .addCase(CreateBank.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
       })
       // CompanyLogin
-       .addCase(CompanyLogin.pending, (state, action) => {
+      .addCase(CompanyLogin.pending, (state, action) => {
         state.isLoading = true;
       })
       .addCase(CompanyLogin.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.company = action.payload?.data?.company;
-        state.token = action.payload?.data?.token;
-        state.isAuthenticated = true;
       })
       .addCase(CompanyLogin.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
       })
-       .addCase(forgetPassword.pending, (state, action) => {
+      .addCase(VerifyLoginOtp.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(VerifyLoginOtp.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.company = action.payload?.data?.company;
+        state.token = action.payload?.data?.token;
+        state.isAuthenticated = true;
+      })
+      .addCase(VerifyLoginOtp.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(forgetPassword.pending, (state, action) => {
         state.isLoading = true;
       })
       .addCase(forgetPassword.fulfilled, (state, action) => {
-        state.isLoading = false;       
+        state.isLoading = false;
       })
       .addCase(forgetPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
-      })
+      });
   },
 });
 

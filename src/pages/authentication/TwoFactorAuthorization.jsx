@@ -3,13 +3,18 @@ import { LoginBgTopShapes } from "../../assets/export";
 import Button from "../../components/global/Button";
 import { useEffect, useRef, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { VerifyLoginOtp } from "../../redux/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const TwoFactorAuthentication = () => {
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [timer, setTimer] = useState(60);
   const otpRefs = useRef([]);
   const navigate = useNavigate("");
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state?.auth);
   const [otp, setOtp] = useState(twoFactorValues.otp);
   useEffect(() => {
     let interval;
@@ -79,7 +84,16 @@ const TwoFactorAuthentication = () => {
       otpRefs.current[nextIndex].focus();
     }
   };
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      email: location?.state?.email,
+      role: "company",
+      otp: otp.join(""),
+    };
+    await dispatch(VerifyLoginOtp(data)).unwrap();
+    navigate("/app/dashboard");
+  };
   return (
     <div className={`grid grid-cols-1  h-full w-full xl:grid-cols-2`}>
       <div className=" md:px-5 pb-5 flex flex-col justify-end"></div>
@@ -101,15 +115,18 @@ const TwoFactorAuthentication = () => {
           />
           {/* Form Content */}
           <div className="flex flex-col items-center gap-2">
-            <h3 className="font-[600] text-[36px]">
+            <h3 className="font-[600] text-[22px] lg:text-[36px]">
               Two Factor Authentication
             </h3>
-            <p className="text-[#838383] text-[16px] font-[400] ">
-              Please enter OTP code sent to designer@dignitestudios.com
+            <p className="text-[#838383] text-center text-[16px] font-[400] ">
+              Please enter OTP code sent to {location?.state?.email}
             </p>
           </div>
 
-          <form className="w-full space-y-4 lg:px-[60px] mt-4">
+          <form
+            onSubmit={handleSubmit}
+            className="w-full space-y-4 lg:px-[60px] mt-4"
+          >
             <div className="w-full h-auto flex justify-center items-center gap-2 my-2 flex-wrap">
               {otp.map((item, index) => (
                 <input
@@ -138,8 +155,8 @@ const TwoFactorAuthentication = () => {
             </div>
             <Button
               text={"Verify"}
-              onClick={() => navigate("/app/dashboard")}
-              type="button"
+              loading={isLoading}
+              type="submit"
               customClass={"w-full"}
             />
           </form>

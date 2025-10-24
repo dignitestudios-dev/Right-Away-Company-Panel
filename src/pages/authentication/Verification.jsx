@@ -3,15 +3,20 @@ import { LoginBgTopShapes } from "../../assets/export";
 import Button from "../../components/global/Button";
 import { useEffect, useRef, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import OtpForm from "../../components/global/OtpForm";
+import { useDispatch, useSelector } from "react-redux";
+import { VerifyForgotPassword } from "../../redux/slices/authSlice";
 
 const OtpVerification = () => {
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [timer, setTimer] = useState(60);
   const otpRefs = useRef([]);
   const navigate = useNavigate("");
+  const { isLoading } = useSelector((state) => state?.auth);
   const [otp, setOtp] = useState(twoFactorValues.otp);
+  const dispatch = useDispatch();
+  const location=useLocation("");
   useEffect(() => {
     let interval;
     if (isResendDisabled && timer > 0) {
@@ -24,7 +29,7 @@ const OtpVerification = () => {
     }
     return () => clearInterval(interval);
   }, [isResendDisabled, timer]);
-
+const email=location?.state?.email
   //   const handleResendClick = async () => {
   //     const data = { email: email };
   //     try {
@@ -80,6 +85,16 @@ const OtpVerification = () => {
       otpRefs.current[nextIndex].focus();
     }
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      email:email,
+      role:"company",
+      otp: otp.join(""),
+    };
+    await dispatch(VerifyForgotPassword(data)).unwrap();
+    navigate("/auth/reset-password")
+  };
 
   return (
     <div className={`grid grid-cols-1  h-full w-full xl:grid-cols-2`}>
@@ -107,7 +122,43 @@ const OtpVerification = () => {
               Please enter OTP code sent to designer@dignitestudios.com
             </p>
           </div>
-          <OtpForm />
+          <form
+            onSubmit={handleSubmit}
+            className="w-full space-y-4 lg:px-[60px] mt-4"
+          >
+            <div className="w-full h-auto flex justify-center items-center gap-2 my-2 flex-wrap">
+              {otp.map((item, index) => (
+                <input
+                  key={index}
+                  value={item}
+                  onChange={(e) => handleChange(e, index)}
+                  name="otp"
+                  className="flex-1 min-w-[40px] max-w-[80px] h-[70px] rounded-[16px] bg-transparent outline-none text-center border border-[#c2c6cb] text-3xl focus:bg-[#D0FCB333] focus-within:border-[#3C043A]"
+                  maxLength={1}
+                  onPaste={handlePaste}
+                  ref={(el) => (otpRefs.current[index] = el)} // Set ref for each input
+                />
+              ))}
+            </div>
+            <div className="w-full  flex gap-1 justify-center items-center">
+              <span className="text-[14px] font-medium text-[#565656]">
+                Didn't receive a code?
+              </span>
+              <button
+                type="button"
+                className="outline-none text-[14px] flex items-center gap-2 border-none gradient-text font-[600]"
+              >
+                {isResendDisabled ? `Resend in ${timer}s` : "Resend now"}{" "}
+                {/* {isResendLoading && <FaSpinner className="animate-spin" />} */}
+              </button>
+            </div>
+            <Button
+              text={"Verify"}
+              loading={isLoading}
+              type="submit"
+              customClass={"w-full"}
+            />
+          </form>
         </div>
       </div>
     </div>

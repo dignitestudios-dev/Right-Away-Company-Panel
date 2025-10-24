@@ -11,7 +11,7 @@ import Button from "../../components/global/Button";
 import { useNavigate } from "react-router";
 import { signInSchema } from "../../schema/authentication/dummyLoginSchema";
 import { useDispatch, useSelector } from "react-redux";
-import { CompanyLogin } from "../../redux/slices/authSlice";
+import { CompanyLogin, SendOtpFa } from "../../redux/slices/authSlice";
 
 const Login = () => {
   const navigate = useNavigate("");
@@ -30,7 +30,8 @@ const Login = () => {
           role:"company"
         };
         await dispatch(CompanyLogin(data)).unwrap();
-        navigate("/auth/two-factor-verfication");
+        await dispatch(SendOtpFa({email:values?.email,role:"company"})).unwrap();
+        navigate("/auth/two-factor-verfication",{state:{email:values?.email}});
       
       },
     });

@@ -11,7 +11,7 @@ import { FaPlus } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
 import AddAvailabilityModal from "./AddAvaliablityModal";
 import { useDispatch, useSelector } from "react-redux";
-import { CreateStore } from "../../redux/slices/authSlice";
+import { CreateStore, getStore } from "../../redux/slices/authSlice";
 
 const AddNewStoreModal = ({ isOpen, setIsOpen }) => {
   const [mapCenter, setMapCenter] = useState({ lat: 38.7946, lng: 106.5348 });
@@ -57,6 +57,7 @@ const AddNewStoreModal = ({ isOpen, setIsOpen }) => {
           }
 
           await dispatch(CreateStore(payload)).unwrap();
+          await dispatch(getStore()).unwrap()
           setIsOpen(!isOpen);
           action.resetForm();
         } catch (err) {

@@ -20,6 +20,7 @@ import OrderDetail from "./components/app/Order/OrderDetail";
 import Chat from "./pages/app/Chat";
 import OrderTrack from "./pages/app/OrderTrack";
 import OrderTrackDetail from "./components/app/OrderTrack/OrderTrackDetail";
+import Profile from "./pages/app/Profile";
 
 function App() {
   return (
@@ -28,6 +29,9 @@ function App() {
 
       <Route path="app" element={<DashboardLayout />}>
         <Route path="dashboard" element={<Dashboard />} />
+        {/* Profile */}
+        <Route path="profile" element={<Profile />} />
+
         {/* Product Routes */}
         <Route path="product-management" element={<ProductManagment />} />
         <Route path="add-product" element={<AddNewProduct />} />
