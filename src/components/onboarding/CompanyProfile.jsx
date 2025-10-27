@@ -47,21 +47,10 @@ export default function CompanyProfile({ handleNext }) {
         formData.append("coordinates[1]", 37.7749);
         formData.append("type", "Point");
         formData.append("store", values?.fulfillmentMethod);
+        formData.append("address", values?.address);
         // Avatar
         if (values.profilePic) {
           formData.append("profilePicture", values.profilePic);
-        }
-
-        // Availability
-        if (availability) {
-          formData.append("openingTime", availability.start_time);
-          formData.append("closingTime", availability.end_time);
-
-          if (Array.isArray(availability.days)) {
-            availability.days.forEach((day, i) => {
-              formData.append(`operatingTime[${i}]`, day);
-            });
-          }
         }
         await dispatch(CompleteCompanyProfile(formData)).unwrap();
         handleNext();
@@ -194,78 +183,10 @@ export default function CompanyProfile({ handleNext }) {
               touched={touched.fulfillmentMethod}
             />
           </div>
-
-          <div className="col-span-12 lg:col-span-12 ">
-            <label className="font-[700] text-[12px]">Set Availability</label>
-            <div className="h-[49px] flex items-center justify-between bg-[#FFFFFF] w-full border border-[#D9D9D9] rounded-[8px]">
-              {availability && (
-                <div className="bg-[#F1F1F1D1] flex gap-2 items-center p-2 h-[38px] rounded-[8px] ml-1">
-                  <p className="text-[14px]">
-                    {availability.start_time} - {availability.end_time} (
-                    {availability.days
-                      .map((day) => dayAbbreviations[day] || day)
-                      .join(", ")}
-                  </p>
-                  <FiTrash2
-                    color={"#F01A1A"}
-                    size={14}
-                    className="cursor-pointer"
-                    onClick={() => setAvailability(null)}
-                  />
-                </div>
-              )}
-              <button
-                type="button"
-                onClick={() => setShowModal(true)}
-                className="w-[13%] bg-gradient ml-auto rounded-[8px] h-[38px] mr-2 flex items-center justify-center"
-              >
-                <FaPlus color="white" />
-              </button>
-            </div>
-          </div>
-
-          {/* Operating Hours */}
-          {/* <div className="col-span-6">
-            <Input
-              text="Operating Hours"
-              holder="e.g., 9 AM - 6 PM"
-              type="text"
-              touched={touched.operatingHours}
-              handleChange={handleChange}
-              name="operatingHours"
-              error={errors.operatingHours}
-              handleBlur={handleBlur}
-              value={values.operatingHours}
-            />
-          </div> */}
-
-          {/* Operating Days */}
-          {/* <div className="col-span-6">
-            <Input
-              text="Operating Days"
-              holder="e.g., Monday to Saturday"
-              type="text"
-              touched={touched.operatingDays}
-              handleChange={handleChange}
-              name="operatingDays"
-              error={errors.operatingDays}
-              handleBlur={handleBlur}
-              value={values.operatingDays}
-            />
-          </div> */}
         </div>
 
         <Button loading={isLoading} text="Sign Up" type="submit" customClass="w-full lg:w-[360px] mx-auto" />
-      </form>
-      {showModal && (
-        <AddAvailabilityModal
-          onClose={() => setShowModal(false)}
-          onSave={(data) => {
-            setAvailability(data);
-            setShowModal(false);
-          }}
-        />
-      )}
+      </form>      
     </div>
   );
 }

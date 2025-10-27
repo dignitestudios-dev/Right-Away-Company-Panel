@@ -19,37 +19,41 @@ import Input from "../global/Input";
 import Button from "../global/Button";
 import AccountCreatedModal from "./AccountCreated";
 import { useDispatch, useSelector } from "react-redux";
-import { CreateBank } from "../../redux/slices/authSlice";
+import { ConectStripeAccount, CreateBank } from "../../redux/slices/authSlice";
 
 export default function PaymentMethod({ handleNext }) {
   const [isSuccess, setIsSuccess] = useState(false);
   const dispatch = useDispatch();
   const { isLoading } = useSelector((state) => state?.auth);
-  const {
-    values,
-    handleBlur,
-    handleChange,
-    handleSubmit,
-    errors,
-    touched,
-    setFieldValue,
-  } = useFormik({
-    initialValues: BankDetailsValues,
-    validationSchema: BankDetailsSchema,
-    validateOnChange: true,
-    validateOnBlur: true,
-    onSubmit: async (values, action) => {
-      console.log(values, "valuess");
-      const data = {
-        accountHolderName: values?.holderName,
-        routingNumber: values?.routingNumber,
-        accountNumber: values?.accountNumber,
-        bankName: values?.bankName,
-      };
-      dispatch(CreateBank(data));
-      setIsSuccess(true);
-    },
-  });
+  // const {
+  //   values,
+  //   handleBlur,
+  //   handleChange,
+  //   handleSubmit,
+  //   errors,
+  //   touched,
+  //   setFieldValue,
+  // } = useFormik({
+  //   initialValues: BankDetailsValues,
+  //   validationSchema: BankDetailsSchema,
+  //   validateOnChange: true,
+  //   validateOnBlur: true,
+  //   onSubmit: async (values, action) => {
+  //     console.log(values, "valuess");
+  //     const data = {
+  //       accountHolderName: values?.holderName,
+  //       routingNumber: values?.routingNumber,
+  //       accountNumber: values?.accountNumber,
+  //       bankName: values?.bankName,
+  //     };
+  //     dispatch(CreateBank(data));
+  //     setIsSuccess(true);
+  //   },
+  // });
+
+  const handleSubmit = () => {
+    dispatch(ConectStripeAccount());
+  };
 
   return (
     <div className="w-full py-10 px-10 md:px-28">
@@ -62,8 +66,14 @@ export default function PaymentMethod({ handleNext }) {
           earnings effortlessly.
         </p>
       </div>
-      <div className="flex justify-between items-end">
-        <h3 className="text-[16px] font-[500] text-[#181818]">Bank Name</h3>
+      <div className="flex justify-center items-end mt-10">
+        <Button
+          text={"Connect Account"}
+          loading={isLoading}
+          onClick={handleSubmit}
+          customClass={"w-[325px]"}
+        />
+        {/* <h3 className="text-[16px] font-[500] text-[#181818]"></h3>
         <div className="flex gap-3 mt-4 text-[28px] text-gray-500">
           <img src={VisaIcon} className="w-[40px] h-[27px]" alt={"visaIcon"} />
           <img
@@ -77,9 +87,9 @@ export default function PaymentMethod({ handleNext }) {
             className="w-[40px] h-[27px]"
             alt={"DiscoverIcon"}
           />
-        </div>
+        </div> */}
       </div>
-      <form onSubmit={handleSubmit} className="w-full space-y-4">
+      {/* <form onSubmit={handleSubmit} className="w-full space-y-4">
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-12">
             <Input
@@ -149,7 +159,7 @@ export default function PaymentMethod({ handleNext }) {
             Skip
           </button>
         </div>
-      </form>
+      </form> */}
       <AccountCreatedModal isOpen={isSuccess} setIsOpen={setIsSuccess} />
     </div>
   );

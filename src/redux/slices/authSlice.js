@@ -211,8 +211,24 @@ export const UploadCompanyDocuments = createAsyncThunk(
     }
   }
 );
+
 export const CompleteCompanyProfile = createAsyncThunk(
   "/company/profile/complete",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.post("/company/profile/complete", payload);
+      SuccessToast(response?.data?.message);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const UpdateCompanyProfile = createAsyncThunk(
+  "/company/profile/update",
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
@@ -298,6 +314,22 @@ export const CreateBank = createAsyncThunk(
       // 4️⃣ Send request to backend
       const response = await axios.post("/company/bank", payload);
       SuccessToast(response?.data?.message);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const ConectStripeAccount = createAsyncThunk(
+  "/company/account/link",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.get("/company/account/link", payload);
+      SuccessToast(response?.data?.message);
+      window.location.href = response?.data?.data.url;
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -398,6 +430,18 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload.message;
       })
+      .addCase(UpdateCompanyProfile.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(UpdateCompanyProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.company = action.payload?.data;
+        state.isAuthenticated = true;
+      })
+      .addCase(UpdateCompanyProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
       .addCase(CreateStore.pending, (state, action) => {
         state.isLoading = true;
       })
@@ -437,6 +481,17 @@ const authSlice = createSlice({
         state.Banks = action.payload.data;
       })
       .addCase(CreateBank.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(ConectStripeAccount.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(ConectStripeAccount.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.Banks = action.payload.data;
+      })
+      .addCase(ConectStripeAccount.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
       })

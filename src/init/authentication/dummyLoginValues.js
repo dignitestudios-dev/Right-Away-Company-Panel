@@ -32,7 +32,7 @@ export const RegisterAccount = {
 export const CompleteProfileValues = {
   profilePic: null,
   description: "",
-  fulfillmentMethod: "",
+  fulfillmentMethod: ""
 };
 
 export const AddNewStoreValues = {

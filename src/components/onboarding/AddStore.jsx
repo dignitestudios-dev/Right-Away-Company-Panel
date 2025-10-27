@@ -109,6 +109,7 @@ export default function AddStore({ handleNext }) {
         handleNext={handleNext}
         setIsOpen={setIsSkipStoreModal}
       />
+      
     </div>
   );
 }

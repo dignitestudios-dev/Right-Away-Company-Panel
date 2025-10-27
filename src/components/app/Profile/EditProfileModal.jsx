@@ -5,27 +5,18 @@ import AddAvailabilityModal from "../../onboarding/AddAvaliablityModal";
 import { FaPlus } from "react-icons/fa";
 import { FiPlus, FiTrash2 } from "react-icons/fi";
 import Input from "../../global/Input";
-import { CompleteCompanyProfile } from "../../../redux/slices/authSlice";
+import { CompleteCompanyProfile, UpdateCompanyProfile } from "../../../redux/slices/authSlice";
 import { CompleteProfileValues } from "../../../init/authentication/dummyLoginValues";
 import { CompleteProfileSchema } from "../../../schema/authentication/dummyLoginSchema";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { GoogleMap, Marker } from "@react-google-maps/api";
 export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
   const [preview, setPreview] = useState(null); // ✅ local preview image
-  const [showModal, setShowModal] = useState(false);
-  const [availability, setAvailability] = useState(null);
+  const [mapCenter, setMapCenter] = useState({ lat: 38.7946, lng: 106.5348 });
   const { company, isLoading } = useSelector((state) => state?.auth);
   const dispatch = useDispatch();
-  const dayAbbreviations = {
-    monday: "MON",
-    tuesday: "TUE",
-    wednesday: "WED",
-    thursday: "THU",
-    friday: "FRI",
-    saturday: "SAT",
-    sunday: "SUN",
-  };
   const {
     values,
     handleBlur,
@@ -52,25 +43,19 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
         if (values.profilePic) {
           formData.append("profilePicture", values.profilePic);
         }
-
-        // Availability
-        if (availability) {
-          formData.append("openingTime", availability.start_time);
-          formData.append("closingTime", availability.end_time);
-
-          if (Array.isArray(availability.days)) {
-            availability.days.forEach((day, i) => {
-              formData.append(`operatingTime[${i}]`, day);
-            });
-          }
-        }
-        await dispatch(CompleteCompanyProfile(formData)).unwrap();
+        await dispatch(UpdateCompanyProfile(formData)).unwrap();
+        setIsOpen(false)
         action.resetForm();
       } catch (err) {
         console.error("Profile submission failed:", err);
       }
     },
   });
+  useEffect(()=>{
+    setFieldValue("description",company?.description)
+    setFieldValue("fulfillmentMethod",company?.deliveryMethod)
+    setFieldValue("address",company?.businessAddress)
+  },[])
 
   // ✅ Handle image upload and preview
   const handleFileChange = (e) => {
@@ -89,7 +74,7 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
       className="flex items-center justify-center border-none outline-none z-[1000] "
       overlayClassName="fixed inset-0 bg-[#C6C6C6] bg-opacity-50 backdrop-blur-sm z-[1000]  flex justify-center items-center"
     >
-      <div className="bg-white rounded-[12px] p-8 shadow-lg w-[525px] h-[604px]">
+      <div className="bg-white rounded-[12px] p-8 shadow-lg overflow-scroll h-[600px] lg:h-auto w-[625px] lg:w-[825px] py-10">
         <div className="flex justify-between items-center">
           <h3 className="text-[28px] font-[700] text-[#181818]">Edit Store</h3>
           <IoCloseSharp
@@ -144,7 +129,7 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
                 text="Business Name"
                 holder="Enter business name"
                 type="text"
-                disabled={true}
+                disabled={false}
                 touched={touched.businessName}
                 handleChange={handleChange}
                 name="businessName"
@@ -201,53 +186,41 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
                 touched={touched.fulfillmentMethod}
               />
             </div>
-
-            <div className="col-span-12 lg:col-span-12 ">
-              <label className="font-[700] text-[12px]">Set Availability</label>
-              <div className="h-[49px] flex items-center justify-between bg-[#FFFFFF] w-full border border-[#D9D9D9] rounded-[8px]">
-                {availability && (
-                  <div className="bg-[#F1F1F1D1] flex gap-2 items-center p-2 h-[38px] rounded-[8px] ml-1">
-                    <p className="text-[14px]">
-                      {availability.start_time} - {availability.end_time} (
-                      {availability.days
-                        .map((day) => dayAbbreviations[day] || day)
-                        .join(", ")}
-                    </p>
-                    <FiTrash2
-                      color={"#F01A1A"}
-                      size={14}
-                      className="cursor-pointer"
-                      onClick={() => setAvailability(null)}
-                    />
-                  </div>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setShowModal(true)}
-                  className="w-[13%] bg-gradient ml-auto rounded-[8px] h-[38px] mr-2 flex items-center justify-center"
-                >
-                  <FaPlus color="white" />
-                </button>
-              </div>
+            <div className="col-span-12">
+              <Input
+                text={"Store Location"}
+                holder={"Enter address here"}
+                type={"text"}
+                touched={touched.address}
+                handleChange={handleChange}
+                name={"address"}
+                value={values?.address}
+                error={errors.address}
+                handleBlur={handleBlur}
+              />
+            </div>
+            <div className="col-span-12 h-[87px]">
+              <GoogleMap
+                center={mapCenter}
+                zoom={10}
+                mapContainerStyle={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "7px",
+                }}
+              >
+                <Marker position={mapCenter} />
+              </GoogleMap>
             </div>
           </div>
 
           <Button
             loading={isLoading}
-            text="Sign Up"
+            text="Update"
             type="submit"
             customClass="w-full lg:w-[360px] mx-auto"
           />
         </form>
-        {showModal && (
-          <AddAvailabilityModal
-            onClose={() => setShowModal(false)}
-            onSave={(data) => {
-              setAvailability(data);
-              setShowModal(false);
-            }}
-          />
-        )}
       </div>
     </Modal>
   );
