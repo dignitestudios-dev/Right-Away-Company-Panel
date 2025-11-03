@@ -1,17 +1,22 @@
 import { NavLink } from "react-router";
-import {
-  DeleteImg,
-  EditImg,
-  MilkPackImg,
-  Person2,
-} from "../../../assets/export";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+import { getOrders } from "../../../redux/slices/AppSlice";
+import { formatDate } from "../../../lib/helpers";
 import Filter from "../../global/Filter";
 import Pagination from "../../global/Pagination";
 import GlobalTable from "../../global/Table";
-import { useState } from "react";
+import { Person2 } from "../../../assets/export";
 
 export default function OrdersData() {
   const [activeStatus, setActiveStatus] = useState("All");
+  const dispatch = useDispatch();
+  const { orders, isLoading } = useSelector((state) => state.app);
+
+  useEffect(() => {
+    dispatch(getOrders());
+  }, [dispatch]);
 
   const statuses = ["All", "Incoming", "Processing", "Completed", "Cancelled"];
 
@@ -20,170 +25,87 @@ export default function OrdersData() {
     "Customer Name",
     "Booking",
     "Delivery Type",
-    "Qty",
     "Amount",
     "Status",
     "Action",
   ];
 
-  // Example data with different statuses
-  const orders = [
-    {
-      id: "#546871",
-      name: "Christine Easom",
-      date: "Jan 15, 2023, 10:21",
-      type: "Immediate",
-      qty: 100,
-      amount: "$12,500",
-      status: "Incoming",
-      color: "text-[#7D72F1]", // Purple
-    },
-    {
-      id: "#546872",
-      name: "John Alex",
-      date: "Jan 15, 2023, 10:30",
-      type: "Immediate",
-      qty: 80,
-      amount: "$10,000",
-      status: "Processing",
-      color: "text-[#FFA500]", // Orange
-    },
-    {
-      id: "#546873",
-      name: "James Bond",
-      date: "Jan 15, 2023, 11:10",
-      type: "Scheduled",
-      qty: 150,
-      amount: "$18,750",
-      status: "Completed",
-      color: "text-[#22B573]", // Green
-    },
-    {
-      id: "#546874",
-      name: "Olivia James",
-      date: "Jan 15, 2023, 11:25",
-      type: "Immediate",
-      qty: 120,
-      amount: "$15,000",
-      status: "Incoming",
-      color: "text-[#7D72F1]",
-    },
-    {
-      id: "#546875",
-      name: "Sophia Turner",
-      date: "Jan 16, 2023, 09:15",
-      type: "Immediate",
-      qty: 200,
-      amount: "$25,000",
-      status: "Processing",
-      color: "text-[#FFA500]",
-    },
-    {
-      id: "#546876",
-      name: "Liam Smith",
-      date: "Jan 16, 2023, 10:00",
-      type: "Scheduled",
-      qty: 170,
-      amount: "$21,250",
-      status: "Completed",
-      color: "text-[#22B573]",
-    },
-    {
-      id: "#546877",
-      name: "Emma Brown",
-      date: "Jan 16, 2023, 10:45",
-      type: "Immediate",
-      qty: 95,
-      amount: "$11,875",
-      status: "Cancelled",
-      color: "text-[#FF3B30]", // Red
-    },
-    {
-      id: "#546878",
-      name: "Noah Wilson",
-      date: "Jan 17, 2023, 08:30",
-      type: "Delayed",
-      qty: 130,
-      amount: "$16,250",
-      status: "Processing",
-      color: "text-[#FFA500]",
-    },
-    {
-      id: "#546879",
-      name: "Ava Martinez",
-      date: "Jan 17, 2023, 09:45",
-      type: "Immediate",
-      qty: 100,
-      amount: "$12,500",
-      status: "Completed",
-      color: "text-[#22B573]",
-    },
-    {
-      id: "#546880",
-      name: "Mason Davis",
-      date: "Jan 18, 2023, 12:00",
-      type: "Immediate",
-      qty: 300,
-      amount: "$37,500",
-      status: "Cancelled",
-      color: "text-[#FF3B30]",
-    },
-  ];
-
-  // Filter by active status
+  // ✅ Filter orders based on selected status
   const filteredOrders =
     activeStatus === "All"
       ? orders
-      : orders.filter((order) => order.status === activeStatus);
+      : orders?.filter(
+          (order) =>
+            order?.status?.toLowerCase() === activeStatus.toLowerCase()
+        );
 
-  const data = filteredOrders.map((item, index) => [
-    <p key={index} className="text-[#181818] text-[14px] font-[400]">
-      {item.id}
-    </p>,
-    <div key={index} className="flex items-center gap-3">
-      <img
-        src={Person2}
-        alt="Person"
-        className="w-10 h-10 rounded-full border border-[#00C49A] object-cover"
-      />
-      <div>
-        <p className="font-medium text-[14px]">{item.name}</p>
-      </div>
-    </div>,
-    <p key={index} className="text-[#181818] text-[14px] font-[400]">
-      {item.date}
-    </p>,
-    <p key={index} className="text-[#181818] text-[14px] font-[400]">
-      {item.type}
-    </p>,
-    <p key={index} className="text-[#181818] text-[14px] font-[400]">
-      {item.qty}
-    </p>,
-    <p key={index} className="text-[#181818] text-[14px] font-[400]">
-      {item.amount}
-    </p>,
-    <p
-      key={index}
-      className={`${item.color} text-[14px] font-[500] capitalize`}
-    >
-      {item.status}
-    </p>,
-    <div key={index} className="flex items-center gap-3">
-      <NavLink
-        to={"/app/order-detail"}
-        className="text-[#03958A] border-b border-[#03958A] font-[500]"
+  // ✅ Properly structure data for GlobalTable
+  const data = filteredOrders?.map((item, index) => ({
+    _id: item._id,
+    cells: [
+      <p key={`order-${index}-id`} className="text-[#181818] text-[14px] font-[400]">
+        {item.orderId}
+      </p>,
+
+      <div key={`order-${index}-user`} className="flex items-center gap-3">
+        <img
+          src={item?.user?.profilePicture || Person2}
+          alt="User"
+          className="w-10 h-10 rounded-full border border-[#00C49A] object-cover"
+        />
+        <div>
+          <p className="font-medium text-[14px]">{item?.user?.name}</p>
+        </div>
+      </div>,
+
+      <p key={`order-${index}-date`} className="text-[#181818] text-[14px] font-[400]">
+        {formatDate(item.createdAt)}
+      </p>,
+
+      <p key={`order-${index}-type`} className="text-[#181818] text-[14px] font-[400]">
+        {item.type}
+      </p>,
+
+      <p key={`order-${index}-amount`} className="text-[#181818] text-[14px] font-[400]">
+        ${parseFloat(item.total || 0).toFixed(2)}
+      </p>,
+
+      <p
+        key={`order-${index}-status`}
+        className={`text-[14px] font-[500] capitalize ${
+          item.status === "Completed"
+            ? "text-[#00C853]"
+            : item.status === "Cancelled"
+            ? "text-[#FF3B30]"
+            : item.status === "Processing"
+            ? "text-[#FF9800]"
+            : "text-[#03958A]"
+        }`}
       >
-        View Details
-      </NavLink>
-    </div>,
-  ]);
+        {item.status}
+      </p>,
+
+      <div key={`order-${index}-action`} className="flex items-center gap-3">
+        <NavLink
+          to="/app/order-detail"
+          state={{ id: item?._id }}
+          className="text-[#03958A] border-b border-[#03958A] font-[500]"
+        >
+          View Details
+        </NavLink>
+      </div>,
+    ],
+  }));
+
   return (
     <div>
-      <div className="flex justify-between ">
+      <div className="flex justify-between">
         <h3 className="font-[600] text-[32px]">Order Management</h3>
         <Filter hide={true} />
       </div>
-      <div className="mt-4 rounded-2xl shadow-sm border-t p-2 border-[#B9B9B9] bg-[#FFFFFF] ">
+
+      <div className="mt-4 rounded-2xl shadow-sm border-t p-2 border-[#B9B9B9] bg-[#FFFFFF]">
+        {/* ✅ Status Tabs */}
         <div className="flex items-center gap-8 p-2">
           {statuses.map((status) => (
             <button
@@ -202,8 +124,11 @@ export default function OrdersData() {
             </button>
           ))}
         </div>
+
+        {/* ✅ Global Table */}
         <GlobalTable data={data} columns={columns} />
       </div>
+
       <Pagination />
     </div>
   );

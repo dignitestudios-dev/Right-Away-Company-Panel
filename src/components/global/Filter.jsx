@@ -4,19 +4,21 @@ import Button from "./Button";
 import { FaPlus } from "react-icons/fa";
 import { TbFilter } from "react-icons/tb";
 import { useNavigate } from "react-router";
-export default function Filter({ hide }) {
+export default function Filter({ hide, searchBarHide, dateHide }) {
   const [isFilter, setIsFilter] = useState(false);
   const navigate = useNavigate("");
   return (
     <div className="flex gap-3 ml-auto mt-2 relative">
-      <div className="relative">
-        <CiSearch color="#959393" className="absolute top-[15px] left-1" />
-        <input
-          type="text"
-          className="border border-[#D9D9D9] focus:outline-none h-[44px] text-[16px] text-[#959393] rounded-[15px] px-6 "
-          placeholder="Search"
-        />
-      </div>
+      {!searchBarHide && (
+        <div className="relative">
+          <CiSearch color="#959393" className="absolute top-[15px] left-1" />
+          <input
+            type="text"
+            className="border border-[#D9D9D9] focus:outline-none h-[44px] text-[16px] text-[#959393] rounded-[15px] px-6 "
+            placeholder="Search"
+          />
+        </div>
+      )}
       {!hide && (
         <div>
           <Button
@@ -32,13 +34,16 @@ export default function Filter({ hide }) {
         </div>
       )}
 
-      <div>
-        <Button
-          onClick={() => setIsFilter(!isFilter)}
-          text={<TbFilter size={24} />}
-          customClass={"w-[44px] h-[44px]"}
-        />
-      </div>
+      {!dateHide && (
+        <div>
+          <Button
+            onClick={() => setIsFilter(!isFilter)}
+            text={<TbFilter size={24} />}
+            customClass={"w-[44px] h-[44px]"}
+          />
+        </div>
+      )}
+
       {isFilter && (
         <div className="w-[330px] px-5 py-4 absolute z-40 top-14 shadow-md right-0 h-[316px] bg-[#FFFFFF] rounded-[14px]  ">
           <h1 className="font-[600] text-[18px] text-[#000000] border-b border-[#0000001A] py-2 ">

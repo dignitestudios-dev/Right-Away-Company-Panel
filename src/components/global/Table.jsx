@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router";
 
-export default function GlobalTable({ columns = [], data = [] }) {
+export default function GlobalTable({ columns = [], data = [], onRowClick }) {
+  const navigate = useNavigate();
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left border-collapse">
@@ -21,9 +24,10 @@ export default function GlobalTable({ columns = [], data = [] }) {
           {data.map((row, i) => (
             <tr
               key={i}
+              onClick={() => onRowClick && onRowClick(row?._id)}
               className="border-t cursor-pointer border-gray-100 hover:bg-gray-50 transition"
             >
-              {row.map((cell, j) => (
+              {row?.cells?.map((cell, j) => (
                 <td
                   key={j}
                   className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap"

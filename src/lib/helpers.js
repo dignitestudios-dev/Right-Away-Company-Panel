@@ -75,4 +75,23 @@ const formatOperatingDays = (days = []) => {
     .join(", ");
 };
 
-export {formatDays,formatTime,formatOperatingDays}
+// src/utils/formatDate.js
+function formatDate(dateString) {
+  if (!dateString) return "";
+
+  const date = new Date(dateString);
+
+  // Options for date and time
+  const options = {
+    month: "short", // Jan, Feb, Mar...
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false, // 24-hour format, set true for 12-hour (AM/PM)
+  };
+
+  return date.toLocaleString("en-US", options).replace(",", ",");
+}
+
+export { formatDays, formatTime, formatOperatingDays, formatDate };

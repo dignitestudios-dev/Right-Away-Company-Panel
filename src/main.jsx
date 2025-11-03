@@ -11,13 +11,13 @@ import { PersistGate } from "redux-persist/integration/react";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
+      <ToasterContainer />
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <LoadScript
             googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API}
             libraries={["places"]}
           >
-            <ToasterContainer />
             <App />
           </LoadScript>
         </PersistGate>

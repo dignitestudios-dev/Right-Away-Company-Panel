@@ -356,7 +356,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.token = null;
       state.refreshToken = null;
-      state.user = null;
+      state.company = null;
       state.isAuthenticated = false;
     },
   },

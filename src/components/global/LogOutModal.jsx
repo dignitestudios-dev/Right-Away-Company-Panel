@@ -1,11 +1,14 @@
 import { IoCloseSharp } from "react-icons/io5";
 import Modal from "react-modal";
-import {LogOutIcon, LogOutImg } from "../../assets/export";
+import { LogOutImg } from "../../assets/export";
 import Button from "./Button";
 import { useNavigate } from "react-router";
-
+import { useDispatch } from "react-redux";
+import { logout } from "../../redux/slices/authSlice";
+import Cookies from "js-cookie"
 const LogOutModal = ({ isOpen, setIsOpen }) => {
-  const navigate=useNavigate("");
+  const navigate = useNavigate("");
+  const dispatch = useDispatch();
   return (
     <Modal
       isOpen={isOpen}
@@ -38,7 +41,15 @@ const LogOutModal = ({ isOpen, setIsOpen }) => {
             >
               No
             </button>
-            <Button onClick={()=>navigate("/auth/login")} text={"Yes"} customClass={"w-[140px]"}  />   
+            <Button
+              onClick={async() => {
+                await dispatch(logout());
+                Cookies.remove("token");
+                navigate("/auth/login")
+              }}
+              text={"Yes"}
+              customClass={"w-[140px]"}
+            />
           </div>
         </div>
       </div>

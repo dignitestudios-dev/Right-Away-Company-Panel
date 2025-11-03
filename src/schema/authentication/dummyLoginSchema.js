@@ -109,11 +109,18 @@ export const RegisterSchema = Yup.object({
 export const CompleteProfileSchema = Yup.object({
   profilePic: Yup.mixed()
     .required("Profile picture is required")
-    .test("fileType", "Only image files are allowed", (value) => {
-      return (
-        !value ||
-        (value && ["image/jpeg", "image/png", "image/jpg"].includes(value.type))
-      );
+    .test("fileType", "Only image files or valid URLs are allowed", (value) => {
+      // Accept if it's an existing URL string
+      if (typeof value === "string") {
+        return /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(value);
+      }
+
+      // Accept if it's a File object with valid image type
+      if (value && value.type) {
+        return ["image/jpeg", "image/png", "image/jpg"].includes(value.type);
+      }
+
+      return false;
     }),
 
   description: Yup.string()
@@ -128,7 +135,7 @@ export const AddNewStoreSchema = Yup.object({
   businessName: Yup.string()
     .required("Store name is required")
     .min(2, "Store name must be at least 2 characters"),
-  
+
   address: Yup.string()
     .required("Store address is required")
     .min(5, "Please enter a valid address"),
@@ -137,17 +144,17 @@ export const BankDetailsSchema = Yup.object().shape({
   bankName: Yup.string()
     .required("Bank name is required")
     .min(3, "Bank name must be at least 3 characters long"),
-  
+
   holderName: Yup.string()
     .required("Account holder name is required")
     .min(3, "Holder name must be at least 3 characters long"),
-  
+
   accountNumber: Yup.string()
     .required("Account number is required")
     .matches(/^[0-9]+$/, "Account number must contain only digits")
     .min(8, "Account number must be at least 8 digits")
     .max(20, "Account number cannot exceed 20 digits"),
-  
+
   routingNumber: Yup.string()
     .required("Routing number is required")
     .matches(/^[0-9]+$/, "Routing number must contain only digits")

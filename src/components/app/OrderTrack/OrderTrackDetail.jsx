@@ -209,7 +209,7 @@ export default function OrderTrackDetail() {
           </div>
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">User Name</p>
-            <p className="text-[#000000] flex items-center gap-3 font-[400] text-[16px]">
+            <p onClick={()=>navigate("/app/customer-detail")} className="cursor-pointer text-[#000000] flex items-center gap-3 font-[400] text-[16px]">
               <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
                 <img src={Person1} alt="person" />
               </div>
@@ -233,9 +233,37 @@ export default function OrderTrackDetail() {
             </p>
           </div>
         </div>
-        <div className="col-span-4 ">         
-        
-          {(orderStatus === "Out for Delivery" || orderStatus === "Ready For Pickup") && (
+        <div className="col-span-4 ">
+          {orderStatus === "Delivered" && (
+            <div className="bg-[#FFFFFF] p-4  drop-shadow-sm rounded-[14px]">
+              <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
+                Successfully Delivered
+              </h3>
+
+              <div className="col-span-6">
+                {/* Contact Number */}
+                <div className="py-1 flex items-center justify-between">
+                  <p className="text-[#7C7C7C] flex items-center gap-2 font-[400] text-[16px]">
+                    Delivery Date
+                  </p>
+                  <p className="text-[#000000] font-[400] text-[16px]">
+                    15 Jan, 2023
+                  </p>
+                </div>
+                <div className="py-1 flex items-center justify-between">
+                  <p className="text-[#7C7C7C] flex items-center gap-2 font-[400] text-[16px]">
+                    Delivery Time
+                  </p>
+                  <p className="text-[#000000] font-[400] text-[16px]">
+                    09:30 PM
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          {(orderStatus === "Out for Delivery" ||
+            orderStatus === "Ready For Pickup" ||
+            orderStatus === "Delivered") && (
             <div className="bg-[#FFFFFF] p-4 mt-4 drop-shadow-sm rounded-[14px]">
               <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
                 Rider Information
@@ -320,7 +348,7 @@ export default function OrderTrackDetail() {
             </div>
           )}
 
-          <ShippingActivity/>
+          <ShippingActivity orderStatus={orderStatus} setOrderStatus={setOrderStatus} />
 
           {orderStatus == "Completed" && <CustomerReviewCard />}
           {orderStatus == "Processing" && (

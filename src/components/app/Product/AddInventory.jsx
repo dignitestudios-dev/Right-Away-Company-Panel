@@ -7,16 +7,20 @@ import { useState } from "react";
 import Input from "../../global/Input";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import Button from "../../global/Button";
+import { AddInventoryValues } from "../../../init/app/AppValues";
+import { AddInventorySchema } from "../../../schema/app/AppSchema";
+import { useSelector } from "react-redux";
 
-const AddInventory = ({ isOpen, setIsOpen }) => {
-  const [mapCenter, setMapCenter] = useState({ lat: 38.7946, lng: 106.5348 });
+const AddInventory = ({ isOpen, setIsOpen, setInventories }) => {
+  const { stores } = useSelector((state) => state?.auth);
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
-      initialValues: AddNewStoreValues,
-      validationSchema: AddNewStoreSchema,
+      initialValues: AddInventoryValues,
+      validationSchema: AddInventorySchema,
       validateOnChange: true,
       validateOnBlur: true,
       onSubmit: async (values, action) => {
+        setInventories((prev) => [...prev, values]);
         setIsOpen(!isOpen);
       },
     });
@@ -29,7 +33,7 @@ const AddInventory = ({ isOpen, setIsOpen }) => {
       className="flex items-center justify-center border-none outline-none z-[1000] "
       overlayClassName="fixed inset-0 bg-[#C6C6C6] bg-opacity-50 backdrop-blur-sm z-[1000]  flex justify-center items-center"
     >
-      <div className="bg-white rounded-[12px] p-6 shadow-lg w-[525px] h-[440px]">
+      <div className="bg-white rounded-[12px] p-6 shadow-lg w-[525px] py-10">
         <div className="flex justify-between items-center">
           <h3 className="text-[28px] font-[700] text-[#181818]">
             Add Inventory Details
@@ -49,55 +53,55 @@ const AddInventory = ({ isOpen, setIsOpen }) => {
                 type="select"
                 name="storeName"
                 value={values.storeName}
-                touched={touched.storeName}
                 error={errors.storeName}
                 handleChange={handleChange}
+                touched={touched.storeName}
                 handleBlur={handleBlur}
-                selectOptions={[
-                  { value: "abc", label: "Abc Store" },
-                  { value: "main", label: "Main Warehouse" },
-                ]}
+                selectOptions={stores.map((item) => ({
+                  value: item._id,
+                  label: item.name,
+                }))}
               />
             </div>
             <div className="col-span-12">
               <Input
                 text={"Total Stock"}
                 holder={"Enter Store Address"}
-                type={"text"}
-                touched={touched.address}
+                type={"number"}
+                touched={touched.stock}
                 handleChange={handleChange}
-                name={"address"}
-                error={errors.address}
+                name={"stock"}
+                error={errors.stock}
                 handleBlur={handleBlur}
               />
-            </div>          
-            {/* Operating Hours */}
+            </div>
+            {/* Min Quantity */}
             <div className="col-span-6">
               <Input
                 text="Minimum Order Quantity"
                 holder="Type here"
-                type="text"
-                touched={touched.MinOrderQty}
+                type="number"
+                touched={touched.minOrder}
                 handleChange={handleChange}
-                name="MinOrderQty"
-                error={errors.MinOrderQty}
+                name="minOrder"
+                error={errors.minOrder}
                 handleBlur={handleBlur}
-                value={values.MinOrderQty}
+                value={values.minOrder}
               />
             </div>
 
-            {/* Operating Days */}
+            {/* Maximum Quantity */}
             <div className="col-span-6">
               <Input
                 text="Maximum Order Quanntity"
                 holder="Type here"
-                type="text"
-                touched={touched.maxOrderQty}
+                type="number"
+                touched={touched.maxOrder}
                 handleChange={handleChange}
-                name="maxOrderQty"
-                error={errors.maxOrderQty}
+                name="maxOrder"
+                error={errors.maxOrder}
                 handleBlur={handleBlur}
-                value={values.maxOrderQty}
+                value={values.maxOrder}
               />
             </div>
           </div>

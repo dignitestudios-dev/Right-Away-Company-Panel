@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import RiderArivedModal from "./RiderArrivedModal";
+import OrderSuccessfullyDelivered from "./OrderSuccessfullyDelivered";
 
-const ShippingActivity = () => {
+const ShippingActivity = ({ setOrderStatus, orderStatus }) => {
   const [steps, setSteps] = useState([
     {
       label: "Order Placed - Thursday, January (Pending)",
@@ -15,7 +16,24 @@ const ShippingActivity = () => {
   ]);
 
   const [openModal, setOpenModal] = useState(false);
+  const [openDeliveredModal, setOpenDeliveredModal] = useState(false);
+  useEffect(() => {
+    if (!orderStatus) return;
 
+    const statusIndex = steps.findIndex((s) =>
+      s.label.toLowerCase().includes(orderStatus?.toLowerCase())
+    );
+
+    if (statusIndex !== -1) {
+      const updated = steps.map((step, i) => ({
+        ...step,
+        completed: i <= statusIndex, // mark up to current status
+      }));
+      setSteps(updated);
+    }
+  }, [orderStatus]);
+
+  
   const handlePickedClick = (index) => {
     // complete all steps up to "On The Way"
     const updated = steps.map((step, i) =>
@@ -23,6 +41,15 @@ const ShippingActivity = () => {
     );
     setSteps(updated);
     setOpenModal(true); // show modal
+  };
+  const handleDeliveredClick = (index) => {
+    // complete all steps up to "On The Way"
+    const updated = steps.map((step, i) =>
+      i <= index + 1 ? { ...step, completed: true } : step
+    );
+    console.log(updated, "update--");
+    setSteps(updated);
+    setOpenDeliveredModal(true); // show modal
   };
 
   return (
@@ -33,11 +60,12 @@ const ShippingActivity = () => {
         {steps.map((step, index) => (
           <div
             key={index}
-            className={`mb-6 flex items-start relative ${
-              step.label === "Picked by the Rider" ? "cursor-pointer" : ""
-            }`}
+            className={`mb-6 flex items-start relative cursor-pointer`}
             onClick={() =>
-              step.label === "Picked by the Rider" && handlePickedClick(index)
+              !step.completed &&
+              ((step.label === "Picked by the Rider" &&
+                handlePickedClick(index)) ||
+                (step.label === "Delivered" && handleDeliveredClick(index)))
             }
           >
             {/* Timeline Dot / Check */}
@@ -64,7 +92,16 @@ const ShippingActivity = () => {
       </div>
 
       {/* Modal */}
-       <RiderArivedModal isOpen={openModal} setIsOpen={setOpenModal} />
+      <RiderArivedModal
+        setOrderStatus={setOrderStatus}
+        isOpen={openModal}
+        setIsOpen={setOpenModal}
+      />
+      <OrderSuccessfullyDelivered
+        setOrderStatus={setOrderStatus}
+        isOpen={openDeliveredModal}
+        setIsOpen={setOpenDeliveredModal}
+      />
     </div>
   );
 };

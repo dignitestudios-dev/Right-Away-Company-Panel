@@ -5,7 +5,10 @@ import AddAvailabilityModal from "../../onboarding/AddAvaliablityModal";
 import { FaPlus } from "react-icons/fa";
 import { FiPlus, FiTrash2 } from "react-icons/fi";
 import Input from "../../global/Input";
-import { CompleteCompanyProfile, UpdateCompanyProfile } from "../../../redux/slices/authSlice";
+import {
+  CompleteCompanyProfile,
+  UpdateCompanyProfile,
+} from "../../../redux/slices/authSlice";
 import { CompleteProfileValues } from "../../../init/authentication/dummyLoginValues";
 import { CompleteProfileSchema } from "../../../schema/authentication/dummyLoginSchema";
 import { useFormik } from "formik";
@@ -40,23 +43,25 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
         formData.append("type", "Point");
         formData.append("store", values?.fulfillmentMethod);
         // Avatar
-        if (values.profilePic) {
+        if (values.profilePic && typeof values.profilePic !== "string") {
+          // Only append if it's a File (not a URL)
           formData.append("profilePicture", values.profilePic);
         }
+
         await dispatch(UpdateCompanyProfile(formData)).unwrap();
-        setIsOpen(false)
-        action.resetForm();
+        setIsOpen(false);
       } catch (err) {
         console.error("Profile submission failed:", err);
       }
     },
   });
-  useEffect(()=>{
-    setFieldValue("description",company?.description)
-    setFieldValue("fulfillmentMethod",company?.deliveryMethod)
-    setFieldValue("address",company?.businessAddress)
-  },[])
-
+  useEffect(() => {
+    setFieldValue("description", company?.description);
+    setFieldValue("fulfillmentMethod", company?.deliveryMethod);
+    setFieldValue("address", company?.businessAddress);
+    setFieldValue("profilePic", company?.profilePicture);
+  }, []);
+  console.log(values, company, "testValues---->");
   // ✅ Handle image upload and preview
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -76,7 +81,9 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
     >
       <div className="bg-white rounded-[12px] p-8 shadow-lg overflow-scroll h-[600px] lg:h-auto w-[625px] lg:w-[825px] py-10">
         <div className="flex justify-between items-center">
-          <h3 className="text-[28px] font-[700] text-[#181818]">Edit Store</h3>
+          <h3 className="text-[28px] font-[700] text-[#181818]">
+            Edit Profile
+          </h3>
           <IoCloseSharp
             size={22}
             className="cursor-pointer"
@@ -93,15 +100,11 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
                 className="flex cursor-pointer items-center gap-4"
               >
                 <div className="border border-dashed flex justify-center items-center border-[#181818] bg-[#1818180A] w-[80px] h-[80px] rounded-full overflow-hidden">
-                  {preview ? (
-                    <img
-                      src={preview}
-                      alt="Profile Preview"
-                      className="object-cover w-full h-full"
-                    />
-                  ) : (
-                    <FiPlus size={25} className="text-[#181818]" />
-                  )}
+                  <img
+                    src={preview ? preview : company?.profilePicture}
+                    alt="Profile Preview"
+                    className="object-cover w-full h-full"
+                  />
                 </div>
                 <input
                   className="hidden"
@@ -129,7 +132,7 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
                 text="Business Name"
                 holder="Enter business name"
                 type="text"
-                disabled={false}
+                disabled={true}
                 touched={touched.businessName}
                 handleChange={handleChange}
                 name="businessName"

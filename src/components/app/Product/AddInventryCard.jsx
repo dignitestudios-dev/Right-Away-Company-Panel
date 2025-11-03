@@ -1,6 +1,8 @@
 import { FaRegEdit, FaTrashAlt } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
-const StoreCard = ({ setActionType, setIsOpen }) => {
+const StoreCard = ({ setActionType, setIsOpen, item, setEditIndex, index }) => {
+  const { stores } = useSelector((state) => state?.auth);
   return (
     <div className="flex col-span-12 justify-between items-center bg-[#F9F9F9] rounded-2xl p-6 shadow-sm w-full ">
       {/* Left Section */}
@@ -8,13 +10,16 @@ const StoreCard = ({ setActionType, setIsOpen }) => {
         {/* Store Name */}
         <div className="flex flex-col">
           <p className="text-[16px] font-[400] text-[#181818]">Store Name</p>
-          <p className="text-[#959393] text-[16px]">Location number 1</p>
+          <p className="text-[#959393] text-[16px]">
+            {stores?.find((el) => el._id == item?.storeName || item?._id)
+              ?.name || "Unknown Store"}
+          </p>
         </div>
 
         {/* Total Stock */}
         <div className="flex flex-col">
           <p className="text-[16px] font-[400] text-[#181818]">Total Stock</p>
-          <p className="text-[#959393] text-[16px]">300 units</p>
+          <p className="text-[#959393] text-[16px]">{item?.stock} units</p>
         </div>
 
         {/* Minimum Order Quantity */}
@@ -22,7 +27,7 @@ const StoreCard = ({ setActionType, setIsOpen }) => {
           <p className="text-[16px] font-[400] text-[#181818]">
             Minimum Order Quantity
           </p>
-          <p className="text-[#959393] text-[16px]">300 units</p>
+          <p className="text-[#959393] text-[16px]">{item?.minOrder} units</p>
         </div>
 
         {/* Maximum Order Quantity */}
@@ -30,7 +35,7 @@ const StoreCard = ({ setActionType, setIsOpen }) => {
           <p className="text-[16px] font-[400] text-[#181818]">
             Maximum Order Quantity
           </p>
-          <p className="text-[#959393] text-[16px]">300 units</p>
+          <p className="text-[#959393] text-[16px]">{item?.maxOrder} units</p>
         </div>
       </div>
 
@@ -38,6 +43,7 @@ const StoreCard = ({ setActionType, setIsOpen }) => {
       <div className="flex flex-col justify-center items-center gap-3">
         <FaRegEdit
           onClick={() => {
+            setEditIndex(index);
             setActionType("edit");
             setIsOpen(true);
           }}
@@ -45,7 +51,7 @@ const StoreCard = ({ setActionType, setIsOpen }) => {
         />
         <FaTrashAlt
           onClick={() => {
-            alert("hi")
+            setEditIndex(index);
             setActionType("dell");
             setIsOpen(true);
           }}

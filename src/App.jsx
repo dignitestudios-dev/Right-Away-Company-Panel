@@ -21,15 +21,27 @@ import Chat from "./pages/app/Chat";
 import OrderTrack from "./pages/app/OrderTrack";
 import OrderTrackDetail from "./components/app/OrderTrack/OrderTrackDetail";
 import Profile from "./pages/app/Profile";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import CustomerDetail from "./pages/app/CustomerDetail";
+import Wallet from "./pages/app/Wallet";
+import ProductReviews from "./pages/app/ProductReviews";
+import Customers from "./pages/app/Customers";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to={"/auth/login"} />} />
+      <Route path="/" element={<Navigate to="/auth/login" />} />
 
-      <Route path="app" element={<DashboardLayout />}>
+      {/* 🔒 Protected App Routes */}
+      <Route
+        path="app"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="dashboard" element={<Dashboard />} />
-        {/* Profile */}
         <Route path="profile" element={<Profile />} />
 
         {/* Product Routes */}
@@ -38,15 +50,25 @@ function App() {
         <Route path="edit-product" element={<EditProduct />} />
         <Route path="product-review" element={<ProductReview />} />
         <Route path="product-detail" element={<ProductDetail />} />
+
         {/* Order Routes */}
         <Route path="order-management" element={<OrderManagement />} />
         <Route path="order-detail" element={<OrderDetail />} />
         <Route path="order-track" element={<OrderTrack />} />
         <Route path="order-track-detail" element={<OrderTrackDetail />} />
-        {/* Chat  Routes*/}
+
+        {/* Chat */}
         <Route path="chat" element={<Chat />} />
+        {/* Wallet */}
+        <Route path="wallet" element={<Wallet />} />
+        {/* reviews*/}
+        <Route path="reviews" element={<ProductReviews />} />
+        {/* customer*/}
+        <Route path="customer" element={<Customers />} />
+        <Route path="customer-detail" element={<CustomerDetail />} />
       </Route>
 
+      {/* Public Auth Routes */}
       <Route path="auth" element={<AuthLayout />}>
         <Route path="signup" element={<SignUp />} />
         <Route path="login" element={<Login />} />
@@ -60,6 +82,7 @@ function App() {
         <Route path="password-updated" element={<PasswordUpdated />} />
       </Route>
 
+      {/* 404 Fallback */}
       <Route
         path="*"
         element={<div className="text-7xl">Page Not Found</div>}

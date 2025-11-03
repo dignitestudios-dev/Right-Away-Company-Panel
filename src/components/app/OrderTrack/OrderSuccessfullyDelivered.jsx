@@ -3,7 +3,7 @@ import Modal from "react-modal";
 import Button from "../../global/Button";
 import { SuccessIcon } from "../../../assets/export";
 
-const RiderArivedModal = ({ isOpen, setIsOpen, setOrderStatus }) => {
+const OrderSuccessfullyDelivered = ({ isOpen, setIsOpen,setOrderStatus }) => {
   return (
     <Modal
       isOpen={isOpen}
@@ -28,19 +28,19 @@ const RiderArivedModal = ({ isOpen, setIsOpen, setOrderStatus }) => {
             alt="AlertIcon"
           />
           <h3 className="font-[600] mt-2 text-[32px] text-[#181818] ">
-            Rider Has Arrived for Pickup!
+            Order Successfully Delivered!
           </h3>
           <p className="text-[#838383] text-[16px] font-[400]">
-            [Rider Name] has reached your store to collect the order. Please
-            ensure the package is ready for handover.
+            Your order has been successfully delivered! The payment of $[Amount]
+            has been transferred to your wallet.
           </p>
           <Button
-            text={"Acknowledge & Confirm Pickup"}
+            text={"Acknowledge & Close"}
+            customClass={"w-[428px] mt-4"}
             onClick={() => {
-              setOrderStatus("Out for Delivery");
+              setOrderStatus("Delivered");
               setIsOpen(false);
             }}
-            customClass={"w-[428px] mt-4"}
           />
         </div>
       </div>
@@ -48,4 +48,4 @@ const RiderArivedModal = ({ isOpen, setIsOpen, setOrderStatus }) => {
   );
 };
 
-export default RiderArivedModal;
+export default OrderSuccessfullyDelivered;

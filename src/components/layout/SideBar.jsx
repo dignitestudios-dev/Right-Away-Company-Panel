@@ -50,7 +50,7 @@ const SideBar = () => {
           className="bg-[#FFFFFF] cursor-pointer  py-4 px-2 rounded-[18px] "
         >
           <div className="w-[63px] relative z-10 h-[63px] p-[2px] border-2 border-[#22B573] border-dashed rounded-full">
-            <img src={Person1} alt="Person1" className="w-full h-full" />
+            <img src={company?.profilePicture} alt="Person1" className="rounded-full w-full h-full" />
             <div className="bg-white  shadow-sm w-[45px] absolute -bottom-3 gap-1 left-2 flex items-center rounded-[8px] justify-center h-[20px] ">
               <img
                 src={RatingIcon}

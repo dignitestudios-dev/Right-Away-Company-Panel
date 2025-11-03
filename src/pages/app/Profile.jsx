@@ -35,7 +35,7 @@ const Profile = () => {
           {/* Profile Info */}
           <div className="flex items-center gap-4">
             <div className=" rounded-full w-20 h-20 p-1 border border-dashed border-[#22B573]">
-              <img src={Person1} alt="Profile" className=" object-cover" />
+              <img src={company?.profilePicture} alt="Profile" className="w-full h-full rounded-full object-cover" />
             </div>
             <div>
               <h3 className="text-lg font-semibold">{company?.name}</h3>

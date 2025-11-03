@@ -1,22 +1,161 @@
-import React, { useState } from "react";
-import { FaPlus } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
 import { MdOutlineCloudUpload } from "react-icons/md";
-import Button from "../../global/Button";
 import { GoArrowLeft } from "react-icons/go";
-import { AddBtnImg, CameraImg } from "../../../assets/export";
+import { useFormik } from "formik";
+
+import Button from "../../global/Button";
 import Input from "../../global/Input";
-import AddInventory from "./AddInventory";
-import { useNavigate } from "react-router";
 import StoreCard from "./AddInventryCard";
+import AddInventory from "./AddInventory";
 import EditInventory from "./EditInventory";
 import DeleteInventoryModal from "./DeleteInventory";
+
+import { AddBtnImg, CameraImg } from "../../../assets/export";
+import { ProductSchema } from "../../../schema/app/AppSchema";
+import { ProductValues } from "../../../init/app/AppValues";
+import { useLocation, useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { getProductsById, updateProduct } from "../../../redux/slices/AppSlice";
+
 export default function EditProduct() {
   const [isOpen, setIsOpen] = useState(false);
   const [actionType, setActionType] = useState("");
-  const navigate = useNavigate("");
+  const [editIndex, setEditIndex] = useState(null);
+  const [oldImages, setOldImages] = useState([]); // existing image URLs from product
+  const [newImages, setNewImages] = useState([]); // new uploads
+  const [oldDocs, setOldDocs] = useState([]); // existing doc URLs
+  const [newDocs, setNewDocs] = useState([]); // new uploads
+  const [inventories, setInventories] = useState([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { singleProduct, isLoading } = useSelector((state) => state?.app);
+  const loc = useLocation();
+  const product = loc?.state?.product;
+  const getProductDetail = async () => {
+    dispatch(getProductsById(product?._id));
+  };
+    useEffect(() => {
+    const fetchProduct = async () => {
+      await getProductDetail();
+    };
+
+    fetchProduct();
+  }, [product?._id]);
+  // 🔸 Append product fields
+  const allowedFields = [
+    "name",
+    "description",
+    "category",
+    "itemHeight",
+    "itemWidth",
+    "itemLength",
+    "itemWeight",
+    "packageHeight",
+    "packageWidth",
+    "packageLength",
+    "packageWeight",
+    "unitPrice",
+    "unitMessurement",
+    "delivery",
+    "instructions",
+  ];
+  // 🧩 Load product data
+
+
+  useEffect(() => {
+    if (singleProduct) {
+      setOldImages(singleProduct?.images || []);
+      setOldDocs(singleProduct?.productDoc || []);
+      setInventories(singleProduct?.inventories || []);
+      setValues({ ...ProductValues, ...singleProduct });
+    }
+  }, [singleProduct]);
+
+  console.log(product, "products");
+  // 🧩 Formik Setup
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setValues,
+    resetForm,
+  } = useFormik({
+    initialValues: {
+      ...ProductValues,
+      ...product,
+    },
+    validationSchema: ProductSchema,
+    onSubmit: async (values) => {
+      console.log(values, "formData---->");
+      const form = new FormData();
+      // 🔸 Append images
+      oldImages.forEach((file) => form.append("images[]", file));
+      newImages.forEach((file) => form.append("updateImages", file));
+
+      // 🔸 Append documents
+      oldDocs.forEach((file) => form.append("productDoc[]", file));
+      newDocs.forEach((file) => form.append("updateProductDoc[]", file));
+
+      // ✅ Add only allowed fields from values
+      Object.entries(values).forEach(([key, value]) => {
+        if (allowedFields.includes(key)) {
+          form.append(key, value);
+        }
+      });
+      // 🔸 Append inventory list
+      inventories.forEach((inv, i) => {
+        form.append(`inventories[${i}][storeRecord]`, inv.storeName || inv._id);
+        form.append(`inventories[${i}][stock]`, inv.stock);
+        form.append(`inventories[${i}][minOrder]`, inv.minOrder);
+        form.append(`inventories[${i}][maxOrder]`, inv.maxOrder);
+      });
+
+      try {
+        await dispatch(updateProduct({ id: product?._id, form })).unwrap();
+        resetForm();
+        navigate("/app/product-management");
+      } catch (error) {
+        console.error("❌ Error adding product:", error);
+      }
+    },
+  });
+
+  // 🖼️ Handle new image uploads
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    setNewImages((prev) => [...prev, ...files]);
+  };
+
+  // 📄 Handle new document uploads
+  const handleDocChange = (e) => {
+    const files = Array.from(e.target.files);
+    setNewDocs((prev) => [...prev, ...files]);
+  };
+
+  // ❌ Remove image (handles both old and new)
+  const removeImage = (idx, type) => {
+    if (type === "old") {
+      setOldImages((prev) => prev.filter((_, i) => i !== idx));
+    } else {
+      setNewImages((prev) => prev.filter((_, i) => i !== idx));
+    }
+  };
+
+  // ❌ Remove document
+  const removeDoc = (idx, type) => {
+    if (type === "old") {
+      setOldDocs((prev) => prev.filter((_, i) => i !== idx));
+    } else {
+      setNewDocs((prev) => prev.filter((_, i) => i !== idx));
+    }
+  };
+
   return (
-    <div className=" min-h-screen p-2">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen p-2">
+      <form onSubmit={handleSubmit} className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-[32px] font-[600] flex items-center gap-2 text-[#202224]">
@@ -29,186 +168,305 @@ export default function EditProduct() {
             Edit Product
           </h1>
           <Button
+            loading={isLoading}
             text={"Update Product"}
-            onClick={() => navigate("/app/product-review")}
+            type={"submit"}
             customClass="px-5 py-3"
           />
         </div>
 
         {/* Product Form */}
-        <div className="grid  grid-cols-12 gap-6">
-          {/* Left Side */}
-
+        <div className="grid grid-cols-12 gap-6">
           {/* Basic Product Details */}
           <div className="bg-white col-span-12 lg:col-span-8 space-y-6 p-6 rounded-2xl shadow-sm">
             <h2 className="font-semibold text-lg text-gray-800 mb-4">
               Basic Product Details
             </h2>
-            <label htmlFor="" className="font-[500] text-[14px]">
+
+            <Input
+              text="Product Name"
+              holder="Enter product name"
+              name="name"
+              type="text"
+              bg
+              value={values.name}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              error={errors.name}
+              touched={touched.name}
+            />
+
+            <label className="font-[500] text-[14px]">
               Product Description
             </label>
             <textarea
               placeholder="Enter Product Description"
               rows={8}
-              className="w-full  border bg-[#F8F8F8] border-[#F8F8F8] rounded-[15px] p-3 text-sm text-[#959393] outline-none resize-none"
-            ></textarea>
+              name="description"
+              value={values.description}
+              onChange={handleChange}
+              className="w-full border bg-[#F8F8F8] border-[#F8F8F8] rounded-[15px] p-3 text-sm text-[#959393] outline-none resize-none"
+            />
+            {errors.description && touched.description && (
+              <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+            )}
 
-            <div className="grid grid-cols-2 gap-4 ">
-              <div className="w-full">
-                <label htmlFor="" className="font-[500] text-[14px]">
-                  Category
-                </label>
-                <br />
-                <select className="border w-full bg-[#F8F8F8]  border-gray-200 rounded-xl p-3 text-sm text-[#B7B7B7] outline-none">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="font-[500] text-[14px]">Category</label>
+                <select
+                  name="category"
+                  value={values.category}
+                  onChange={handleChange}
+                  className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-[#B7B7B7] outline-none"
+                >
                   <option>Select Category</option>
-                </select>
-              </div>
-              <div className="w-full">
-                <label htmlFor="" className="font-[500] text-[14px]">
-                  Sub Category
-                </label>
-                <br />
-                <select className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-[#B7B7B7] outline-none">
-                  <option>Select Sub Category</option>
+                  <option value="food">Food</option>
+                  <option value="Furniture">Furniture</option>
                 </select>
               </div>
             </div>
           </div>
-          {/* Right Side — Product Images */}
 
-          <div className="bg-white col-span-12 h-full lg:col-span-4 p-6 rounded-2xl shadow-sm">
+          {/* Product Images */}
+          <div className="bg-white col-span-12 lg:col-span-4 p-6 rounded-2xl shadow-sm">
             <h2 className="font-semibold text-lg text-gray-800 mb-4">
               Product Images
             </h2>
-            <div className="border-2 border-dashed bg-[#FBFBFB] border-gray-300 rounded-xl h-[320px] flex flex-col justify-center items-center cursor-pointer hover:bg-gray-50">
-              <img
-                src={CameraImg}
-                alt="CameraImg"
-                className="w-[30px] h-[30px]"
-              />
+
+            <label
+              htmlFor="productImages"
+              className="border-2 border-dashed bg-[#FBFBFB] border-gray-300 rounded-xl min-h-[320px] flex flex-col justify-center items-center cursor-pointer hover:bg-gray-50"
+            >
+              <img src={CameraImg} alt="Camera" className="w-[30px] h-[30px]" />
               <p className="text-[16px] mt-2 font-[500] text-[#181818]">
                 Click To Upload{" "}
                 <span className="text-[#959393] text-[13px] font-[500]">
-                  {" "}
-                  or Drag & Drop{" "}
+                  or Drag & Drop
                 </span>
               </p>
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                id="productImages"
+                onChange={handleImageChange}
+              />
+            </label>
+
+            {/* 🖼️ Old Image Previews */}
+            <div className="grid grid-cols-3 gap-2 mt-3">
+              {oldImages.map((url, idx) => (
+                <div
+                  key={`old-${idx}`}
+                  className="relative w-full h-[100px] rounded-lg overflow-hidden"
+                >
+                  <img
+                    src={url}
+                    alt={`old-${idx}`}
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(idx, "old")}
+                    className="absolute top-1 right-1 bg-white rounded-full text-red-500 font-bold px-[6px]"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              {/* 🆕 New Image Previews */}
+              {newImages.map((file, idx) => (
+                <div
+                  key={`new-${idx}`}
+                  className="relative w-full h-[100px] rounded-lg overflow-hidden"
+                >
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={`new-${idx}`}
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(idx, "new")}
+                    className="absolute top-1 right-1 bg-white rounded-full text-red-500 font-bold px-[6px]"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Item Dimensions & Weight */}
+          {/* Dimensions & Weight */}
           <div className="bg-white col-span-12 lg:col-span-6 p-6 rounded-2xl shadow-sm">
-            <h2 className="text-[22px] font-[500] text-[#000000] mb-5">
+            <h2 className="text-[22px] font-[500] mb-5">
               Item Dimensions & Weight
             </h2>
             <div className="grid grid-cols-2 gap-4">
               <Input
-                text={"Height"}
-                holder={"ft"}
-                name={"height"}
-                type={"text"}
-                bg={true}
+                text="Height"
+                holder="ft"
+                name="itemHeight"
+                type="number"
+                bg
+                value={values.itemHeight}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+                error={errors.itemHeight}
+                touched={touched.itemHeight}
               />
               <Input
-                text={"Width"}
-                holder={"ft"}
-                name={"width"}
-                type={"text"}
-                bg={true}
+                text="Width"
+                holder="ft"
+                name="itemWidth"
+                type="number"
+                bg
+                value={values.itemWidth}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+                error={errors.itemWidth}
+                touched={touched.itemWidth}
               />
               <Input
-                text={"Length"}
-                holder={"ft"}
-                name={"length"}
-                type={"text"}
-                bg={true}
+                text="Length"
+                holder="ft"
+                name="itemLength"
+                type="number"
+                bg
+                value={values.itemLength}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+                error={errors.itemLength}
+                touched={touched.itemLength}
               />
               <Input
-                text={"Weight"}
-                holder={"lbs"}
-                name={"weight"}
-                type={"text"}
-                bg={true}
+                text="Weight"
+                holder="lbs"
+                name="itemWeight"
+                type="number"
+                bg
+                value={values.itemWeight}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+                error={errors.itemWeight}
+                touched={touched.itemWeight}
               />
             </div>
           </div>
 
+          {/* Package Details */}
           <div className="bg-white col-span-12 lg:col-span-6 p-6 rounded-2xl shadow-sm">
-            <h2 className="text-[22px] font-[500] text-[#000000] mb-5">
-              Package Details
-            </h2>
+            <h2 className="text-[22px] font-[500] mb-5">Package Details</h2>
             <div className="grid grid-cols-2 gap-4">
               <Input
-                text={"Height"}
-                holder={"ft"}
-                name={"height"}
-                type={"text"}
-                bg={true}
+                text="Height"
+                holder="ft"
+                name="packageHeight"
+                type="number"
+                bg
+                value={values.packageHeight}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+                error={errors.packageHeight}
+                touched={touched.packageHeight}
               />
               <Input
-                text={"Width"}
-                holder={"ft"}
-                name={"width"}
-                type={"text"}
-                bg={true}
+                text="Width"
+                holder="ft"
+                name="packageWidth"
+                type="number"
+                bg
+                value={values.packageWidth}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+                error={errors.packageWidth}
+                touched={touched.packageWidth}
               />
               <Input
-                text={"Length"}
-                holder={"ft"}
-                name={"length"}
-                type={"text"}
-                bg={true}
+                text="Length"
+                holder="ft"
+                name="packageLength"
+                type="number"
+                bg
+                value={values.packageLength}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+                error={errors.packageLength}
+                touched={touched.packageLength}
               />
               <Input
-                text={"Weight"}
-                holder={"lbs"}
-                name={"weight"}
-                type={"text"}
-                bg={true}
+                text="Weight"
+                holder="lbs"
+                name="packageWeight"
+                type="number"
+                bg
+                value={values.packageWeight}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+                error={errors.packageWeight}
+                touched={touched.packageWeight}
               />
             </div>
           </div>
 
           {/* Pricing & Inventory */}
-          <div className="bg-white p-6  col-span-12 rounded-2xl shadow-sm">
-            <h2 className="text-[22px] font-[500] text-[#000000] mb-5">
-              Pricing & Inventory
-            </h2>
+          <div className="bg-white p-6 col-span-12 rounded-2xl shadow-sm">
+            <h2 className="text-[22px] font-[500] mb-5">Pricing & Inventory</h2>
             <div className="grid grid-cols-2 gap-4">
               <Input
-                text={"Price Per Unit"}
-                holder={"Fixed Price"}
-                name={"price"}
-                type={"text"}
-                bg={true}
+                text="Price Per Unit"
+                holder="Fixed Price"
+                name="unitPrice"
+                type="number"
+                value={values.unitPrice}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+                error={errors.unitPrice}
+                touched={touched.unitPrice}
               />
               <Input
-                text={"Unit of Measurement"}
-                holder={"lbs"}
-                name={"unit"}
-                type={"text"}
-                bg={true}
+                text="Unit of Measurement"
+                holder="lbs"
+                name="unitMessurement"
+                type="number"
+                value={values.unitMessurement}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+                error={errors.unitMessurement}
+                touched={touched.unitMessurement}
               />
             </div>
-            <div className="mt-2 gap-2 grid grid-cols-12">
-              <label htmlFor="" className="font-[500] col-span-12 text-[14px]">
+
+            <div className="mt-4">
+              <label className="font-[500] text-[14px] block mb-2">
                 Inventory Details
               </label>
-              <StoreCard setActionType={setActionType} setIsOpen={setIsOpen} />
-              <div className="col-span-6 mt-2 flex justify-between items-center px-2 h-[50px] rounded-[10px] bg-[#F8F8F899] border-none ">
-                <p className="text-[#959393] font-[400] text-[16px]">
-                  Add Inventory Details
-                </p>
+
+              {inventories.map((item, i) => (
+                <StoreCard
+                  key={i}
+                  item={item}
+                  index={i}
+                  setActionType={setActionType}
+                  setIsOpen={setIsOpen}
+                  setEditIndex={setEditIndex}
+                />
+              ))}
+
+              <div className="mt-3 flex justify-between items-center px-3 py-2 rounded-[10px] bg-[#F8F8F899]">
+                <p className="text-[#959393] text-[16px]">Add Inventory</p>
                 <button
+                  type="button"
                   onClick={() => {
                     setActionType("add");
-                    setIsOpen(!isOpen);
+                    setIsOpen(true);
                   }}
                 >
                   <img
                     src={AddBtnImg}
+                    alt="Add"
                     className="w-[25px] h-[25px]"
-                    alt="AddBtnImg"
                   />
                 </button>
               </div>
@@ -221,39 +479,125 @@ export default function EditProduct() {
               Delivery and Shipping Details
             </h2>
             <Input
-              text={"Special Handling Instructions"}
-              holder={"Details Here"}
-              name={"special"}
-              type={"text"}
-              bg={true}
+              text="Special Handling Instructions"
+              holder="Details Here"
+              type="text"
+              bg
+              name="instructions"
+              value={values.instructions}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              error={errors.instructions}
+              touched={touched.instructions}
             />
           </div>
 
+          {/* Product Documents */}
           <div className="bg-white col-span-12 lg:col-span-6 p-6 rounded-2xl shadow-sm">
             <h2 className="font-semibold text-lg text-gray-800 mb-2">
               Product Documents
             </h2>
             <p className="text-sm text-gray-500 mb-3">
-              Upload Product Specification PDF (Optional): Datasheet, Material
-              Safety Sheet
+              Upload Product Specification PDF (Optional)
             </p>
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col justify-center items-center cursor-pointer hover:bg-gray-50">
+
+            <label
+              htmlFor="productDocs"
+              className="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col justify-center items-center cursor-pointer hover:bg-gray-50"
+            >
               <MdOutlineCloudUpload className="text-gray-400 text-2xl mb-2" />
-              <p className="text-sm text-gray-600">Upload “document name”</p>
-              <p className="text-xs text-gray-400">Up to 20MBs, JPG, PNG</p>
-            </div>
+              <p className="text-sm text-gray-600">Upload document</p>
+              <p className="text-xs text-gray-400">
+                Up to 20MBs, JPG, PNG, PDF
+              </p>
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                id="productDocs"
+                onChange={handleDocChange}
+              />
+            </label>
+
+            {/* 🧾 Old Docs */}
+            {oldDocs.length > 0 && (
+              <div className="mt-3 space-y-2">
+                {oldDocs.map((url, idx) => (
+                  <div
+                    key={`old-doc-${idx}`}
+                    className="flex justify-between items-center bg-gray-100 p-2 rounded-md"
+                  >
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-sm text-blue-500 truncate w-[200px]"
+                    >
+                      {url.split("/").pop()}
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => removeDoc(idx, "old")}
+                      className="text-red-500 text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* 🆕 New Docs */}
+            {newDocs.length > 0 && (
+              <div className="mt-3 space-y-2">
+                {newDocs.map((file, idx) => (
+                  <div
+                    key={`new-doc-${idx}`}
+                    className="flex justify-between items-center bg-gray-100 p-2 rounded-md"
+                  >
+                    <p className="text-sm text-gray-700 truncate w-[200px]">
+                      {file.name}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => removeDoc(idx, "new")}
+                      className="text-red-500 text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      </form>
 
+      {/* Inventory Modals */}
       {actionType == "edit" && (
-        <EditInventory isOpen={isOpen} setIsOpen={setIsOpen} />
+        <EditInventory
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          editIndex={editIndex}
+          inventories={inventories}
+          setInventories={setInventories}
+        />
       )}
       {actionType == "add" && (
-        <AddInventory isOpen={isOpen} setIsOpen={setIsOpen} />
+        <AddInventory
+          setInventories={setInventories}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+        />
       )}
       {actionType == "dell" && (
-        <DeleteInventoryModal isOpen={isOpen} setIsOpen={setIsOpen} />
+        <DeleteInventoryModal
+          inventories={inventories}
+          setInventories={setInventories}
+          deleteIndex={editIndex}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+        />
       )}
     </div>
   );

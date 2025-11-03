@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GoArrowLeft } from "react-icons/go";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import {
   CallIcon,
   ChatBtnIcon,
@@ -15,6 +15,9 @@ import Button from "../../global/Button";
 import OrderCancelConfirmModal from "./CancelOrderConfirmModal";
 
 import { FaStar, FaRegStar } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { cancelOrder, getOrderById } from "../../../redux/slices/AppSlice";
+import { formatDate } from "../../../lib/helpers";
 
 const CustomerReviewCard = () => {
   return (
@@ -91,29 +94,50 @@ const CustomerReviewCard = () => {
 export default function OrderDetail() {
   const navigate = useNavigate("");
   const [isOpen, setIsOpen] = useState(false);
-  const [orderStatus, setOrderStatus] = useState("Incomming");
+  const [orderStatus, setOrderStatus] = useState();
+  const dispatch = useDispatch();
+  const { singleOrder, isLoading } = useSelector((state) => state?.app);
+  const loc = useLocation();
+  const orderId = loc?.state?.id;
+  const gerOrderDetail = async () => {
+    dispatch(getOrderById(orderId));
+  };
+  useEffect(() => {
+    const fetchProductId = async () => {
+      await gerOrderDetail();
+    };
 
+    fetchProductId();
+  }, [orderId]);
+  useEffect(() => {
+    setOrderStatus(singleOrder?.status);
+  }, [singleOrder]);
   const statusStyles = {
-    Incomming: {
-      bg: "bg-[#7D72F126]", // light blue background
-      text: "text-[#7D72F1]", // blue text
+    incoming: {
+      bg: "bg-[#7D72F126]",
+      text: "text-[#7D72F1]",
     },
-    Processing: {
-      bg: "bg-[#FF6D0826]", // light orange
-      text: "text-[#FF6D08]", // amber text
+    processing: {
+      bg: "bg-[#FF6D0826]",
+      text: "text-[#FF6D08]",
     },
-    Completed: {
-      bg: "bg-[#20BD4A26]", // light green
-      text: "text-[#20BD4A]", // green text
+    completed: {
+      bg: "bg-[#20BD4A26]",
+      text: "text-[#20BD4A]",
     },
-    Cancelled: {
-      bg: "bg-[#DC1D0026]", // light red
-      text: "text-[#DC1D00]", // red text
+    cancelled: {
+      bg: "bg-[#DC1D0026]",
+      text: "text-[#DC1D00]",
     },
   };
-
-  // Fallback style if status not found
-  const currentStyle = statusStyles[orderStatus];
+  const handleCancelOrder = async () => {
+    await dispatch(cancelOrder(singleOrder?._id)).unwrap();
+    await dispatch(getOrderById(singleOrder?._id)).unwrap();
+    
+  };
+  // ✅ Always safely select a style (fallback = 'incoming')
+  const currentStyle =
+    statusStyles[orderStatus?.toLowerCase?.()] || statusStyles["incoming"];
 
   return (
     <div>
@@ -128,7 +152,7 @@ export default function OrderDetail() {
           Order Details
         </h3>
         <div className="flex items-center gap-4">
-          {orderStatus == "Incomming" && (
+          {orderStatus == "incoming" && (
             <>
               <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -155,41 +179,56 @@ export default function OrderDetail() {
         </div>
       </div>
       <div className="grid lg:grid-cols-12 gap-4  mt-4">
-        <div className="border col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
-          <div className="flex mb-5 justify-between">
-            <div className="flex gap-4 items-center">
-              <div className="w-[84px] flex items-center justify-center h-[84px] bg-[#F2FBF7] rounded-[15px]">
-                <img src={MilkPackImg} className="" alt="" />
-              </div>
-              <div>
-                <h3 className="text-[20px] text-[#000000] font-[600] ">
-                  Product Name
-                </h3>
-                <p className="text-[16px] font-[400] text-[#000000]">
-                  <span className="text-[#959393]  ">Category:</span> Building
-                  Material
-                </p>
-                <p className="text-[16px] font-[400] text-[#000000]">
-                  <span className="text-[#959393]  ">Sub Category:</span>{" "}
-                  Concrete Blocks
-                </p>
-              </div>
-            </div>
-            <div
-              className={`${currentStyle.bg} ${currentStyle.text}  text-[14px] p-3 font-[500]  w-[110x] h-[37px] rounded-full flex justify-center items-center`}
-            >
-              {orderStatus}
-            </div>
+        <div className="border col-span-12 lg:col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
+          <div
+            className={`${currentStyle.bg} ${currentStyle.text} mb-4 capitalize text-[14px] ml-auto p-3 font-[500]  w-[110px] h-[37px] rounded-full flex justify-center items-center`}
+          >
+            {orderStatus}
           </div>
+          {singleOrder?.item?.map((item, i) => (
+            <div
+              key={i}
+              className="flex bg-white border rounded-lg shadow-sm py-2 mb-2 justify-between"
+            >
+              <div className="flex gap-4 items-center">
+                <div className="w-[84px] flex items-center justify-center h-[84px] bg-[#F2FBF7] rounded-[15px]">
+                  <img
+                    src={item?.products?.images[0]}
+                    className="w-[70px] rounded-md h-[70px]"
+                    alt=""
+                  />
+                </div>
+                <div>
+                  <h3 className="text-[20px] text-[#000000] font-[600] ">
+                    {item?.products?.name}
+                  </h3>
+                  <p className="text-[16px] font-[400] text-[#000000]">
+                    <span className="text-[#959393]  ">Category:</span>{" "}
+                    {item?.products?.category}
+                  </p>
+                  <p className="text-[16px] font-[400] text-[#000000]">
+                    <span className="text-[#959393]  ">Sub Category:</span>{" "}
+                    {item?.products?.subCategory}
+                  </p>
+                  <p className="text-[16px] font-[400] text-[#000000]">
+                    <span className="text-[#959393]  ">Qty:</span>{" "}
+                    {item?.quantity}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
           {/* Order Details */}
           <div className="border-b border-t py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">Order ID</p>
-            <p className="text-[#000000]  font-[400] text-[16px]">#6979</p>
+            <p className="text-[#000000]  font-[400] text-[16px]">
+              #{singleOrder?.orderId}
+            </p>
           </div>
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">Order Date</p>
             <p className="text-[#000000]  font-[400] text-[16px]">
-              Jan 15, 2023, 10:21
+              {formatDate(singleOrder?.createdAt)}
             </p>
           </div>
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
@@ -197,35 +236,37 @@ export default function OrderDetail() {
               Delivery Address
             </p>
             <p className="text-[#000000]  font-[400] text-[16px]">
-              Lorem ipsum dolor sit amet, consectetur
+              {singleOrder?.address?.address}
             </p>
           </div>
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">
               Delivery Type
             </p>
-            <p className="text-[#000000]  font-[400] text-[16px]">Immediater</p>
+            <p className="text-[#000000]  font-[400] text-[16px]">
+              {" "}
+              {singleOrder?.type}
+            </p>
           </div>
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">
               Special Instructions
             </p>
             <p className="text-[#000000]  font-[400] text-[16px]">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incidid.
+              {singleOrder?.instruction}
             </p>
           </div>
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-            <p className="text-[#7C7C7C]  font-[400] text-[16px]">Qty</p>
-            <p className="text-[#000000]  font-[400] text-[16px]">100</p>
-          </div>
-          <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">User Name</p>
-            <p className="text-[#000000] flex items-center gap-3 font-[400] text-[16px]">
+            <p onClick={()=>navigate("/app/customer-detail",{state:{customer:singleOrder?.user}})} className="text-[#000000] flex items-center gap-3 font-[400] text-[16px]">
               <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
-                <img src={Person1} alt="person" />
+                <img
+                  src={singleOrder?.user?.profilePicture}
+                  alt="person"
+                  className="w-full h-full rounded-full"
+                />
               </div>
-              Christine Easom
+              {singleOrder?.user?.name}
             </p>
           </div>
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
@@ -233,7 +274,7 @@ export default function OrderDetail() {
               Email Address
             </p>
             <p className="text-[#000000]  font-[400] text-[16px]">
-              ceasomw@theguardian.com
+              {singleOrder?.user?.email}
             </p>
           </div>
           <div className=" py-4 flex items-center justify-between border-[#D4D4D4]">
@@ -241,35 +282,39 @@ export default function OrderDetail() {
               Contact Number
             </p>
             <p className="text-[#000000]  font-[400] text-[16px]">
-              +1 000 000 000
+              {singleOrder?.user?.phone}
             </p>
           </div>
         </div>
-        <div className="col-span-4 ">
+        <div className="col-span-12 lg:col-span-4 ">
           <div className="bg-[#FFFFFF] p-4  h-[267px] drop-shadow-sm rounded-[14px]">
             <h3 className="text-[20px] font-[600] mb-4 text-[#000000] ">
               Payment Details
             </h3>
             <div className="border-b border-t py-5 flex items-center justify-between border-[#D4D4D4]">
               <p className="text-[#7C7C7C]  font-[400] text-[16px]">subtotal</p>
-              <p className="text-[#000000]  font-[400] text-[16px]">$125.00</p>
+              <p className="text-[#000000] font-[400] text-[16px]">
+                ${Number(singleOrder?.subTotal || 0).toFixed(2)}
+              </p>
             </div>
             <div className="border-b  py-5 flex items-center justify-between border-[#D4D4D4]">
               <p className="text-[#7C7C7C]  font-[400] text-[16px]">
                 Total Items
               </p>
-              <p className="text-[#000000]  font-[400] text-[16px]">100</p>
+              <p className="text-[#000000]  font-[400] text-[16px]">
+                {singleOrder?.item?.length}
+              </p>
             </div>
             <div className=" py-5 flex items-center justify-between border-[#D4D4D4]">
               <p className="text-[#202224]  font-[600] text-[16px]">
                 Total Amount
               </p>
               <p className="gradient-text  font-[700] text-[16px]">
-                $12500.00{" "}
+                ${Number(singleOrder?.total || 0).toFixed(2)}
               </p>
             </div>
           </div>
-          {orderStatus == "Incomming" && (
+          {orderStatus == "incoming" && (
             <div className="bg-[#FFFFFF] p-4 mt-4 h-[205px] drop-shadow-sm rounded-[14px]">
               <h3 className="text-[20px] font-[600] mb-4 text-[#000000] ">
                 Delivery Options

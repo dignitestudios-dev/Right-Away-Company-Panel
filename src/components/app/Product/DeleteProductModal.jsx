@@ -1,7 +1,15 @@
 import { IoCloseSharp } from "react-icons/io5";
 import Modal from "react-modal";
 import { CrossIcon } from "../../../assets/export";
-const DeleteProductModal = ({ isOpen, setIsOpen }) => {
+import { useDispatch } from "react-redux";
+import { deleteProducts, getProducts } from "../../../redux/slices/AppSlice";
+const DeleteProductModal = ({ isOpen, setIsOpen, selected, loading }) => {
+  const dispatch = useDispatch();
+  const handleSubmit = async () => {
+    await dispatch(deleteProducts(selected));
+    await dispatch(getProducts());
+    setIsOpen(false);
+  };
   return (
     <Modal
       isOpen={isOpen}
@@ -34,8 +42,11 @@ const DeleteProductModal = ({ isOpen, setIsOpen }) => {
             >
               Don’t delete
             </button>
-            <button className="bg-[#EE3131] w-[140px] text-[white] font-[600] text-[12px] rounded-[8px] p-3">
-              Delete now
+            <button
+              onClick={handleSubmit}
+              className="bg-[#EE3131] w-[140px] text-[white] font-[600] text-[12px] rounded-[8px] p-3"
+            >
+              {loading ? "Deleting..." : " Delete now"}
             </button>
           </div>
         </div>

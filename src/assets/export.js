@@ -64,12 +64,16 @@ import CallIcon from "./call.png";
 import MessageIcon from "./message.png";
 import SubTitleIcon from "./subtitle.png";
 import TruckIcon from "./group.png";
+import BorderSuccessIcon from "./borderSuccess.png";
+import RedAlertIcon from "./red-alert.png";
 
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
 export {
+  RedAlertIcon,
+  BorderSuccessIcon,
   CallIcon,
   MessageIcon,
   TruckIcon,

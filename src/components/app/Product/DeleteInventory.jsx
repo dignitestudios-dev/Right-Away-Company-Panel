@@ -1,7 +1,13 @@
 import { IoCloseSharp } from "react-icons/io5";
 import Modal from "react-modal";
 import { CrossIcon } from "../../../assets/export";
-const DeleteInventoryModal = ({ isOpen, setIsOpen }) => {
+const DeleteInventoryModal = ({
+  isOpen,
+  setIsOpen,
+  inventories,
+  setInventories,
+  deleteIndex,
+}) => {
   return (
     <Modal
       isOpen={isOpen}
@@ -34,7 +40,15 @@ const DeleteInventoryModal = ({ isOpen, setIsOpen }) => {
             >
               Don’t delete
             </button>
-            <button className="bg-[#EE3131] w-[140px] text-[white] font-[600] text-[12px] rounded-[8px] p-3">
+            <button
+              onClick={() => {
+                setInventories(
+                  inventories?.filter((_, i) => i !== deleteIndex)
+                );
+                setIsOpen(!isOpen);
+              }}
+              className="bg-[#EE3131] w-[140px] text-[white] font-[600] text-[12px] rounded-[8px] p-3"
+            >
               Delete now
             </button>
           </div>

@@ -51,7 +51,7 @@ export default function PaymentMethod({ handleNext }) {
   //   },
   // });
 
-  const handleSubmit = () => {
+  const handleSubmit = () => { 
     dispatch(ConectStripeAccount());
   };
 

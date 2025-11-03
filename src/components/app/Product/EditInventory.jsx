@@ -1,33 +1,53 @@
 import { useFormik } from "formik";
 import { IoCloseSharp } from "react-icons/io5";
 import Modal from "react-modal";
-import { AddNewStoreValues } from "../../../init/authentication/dummyLoginValues";
-import { AddNewStoreSchema } from "../../../schema/authentication/dummyLoginSchema";
-import { useState } from "react";
+import { useSelector } from "react-redux";
 import Input from "../../global/Input";
 import Button from "../../global/Button";
+import { AddInventorySchema } from "../../../schema/app/AppSchema";
 
-const EditInventory = ({ isOpen, setIsOpen }) => {
+const EditInventory = ({
+  isOpen,
+  setIsOpen,
+  editIndex,
+  inventories,
+  setInventories,
+}) => {
+  const { stores } = useSelector((state) => state?.auth);
+  
+  const inventoryToEdit = inventories[editIndex] || {
+    storeName: "",
+    stock: "",
+    minOrder: "",
+    maxOrder: "",
+  };
+
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
-      initialValues: AddNewStoreValues,
-      validationSchema: AddNewStoreSchema,
+      initialValues: inventoryToEdit,
+      enableReinitialize: true, // allows values to update when modal opens
+      validationSchema: AddInventorySchema,
       validateOnChange: true,
       validateOnBlur: true,
-      onSubmit: async (values, action) => {
-        setIsOpen(!isOpen);
+      onSubmit: async (values) => {
+        const updatedInventories = inventories.map((inv, idx) =>
+          idx === editIndex ? values : inv
+        );
+        setInventories(updatedInventories);
+        setIsOpen(false);
       },
     });
+
   return (
     <Modal
       isOpen={isOpen}
-      contentLabel="Page Not Found"
-      shouldCloseOnOverlayClick={false} // Prevent closing by clicking outside
+      contentLabel="Edit Inventory"
+      shouldCloseOnOverlayClick={false}
       shouldCloseOnEsc={false}
-      className="flex items-center justify-center border-none outline-none z-[1000] "
-      overlayClassName="fixed inset-0 bg-[#C6C6C6] bg-opacity-50 backdrop-blur-sm z-[1000]  flex justify-center items-center"
+      className="flex items-center justify-center border-none outline-none z-[1000]"
+      overlayClassName="fixed inset-0 bg-[#C6C6C6] bg-opacity-50 backdrop-blur-sm z-[1000] flex justify-center items-center"
     >
-      <div className="bg-white rounded-[12px] p-6 shadow-lg w-[525px] h-[440px]">
+      <div className="bg-white rounded-[12px] p-6 shadow-lg w-[525px] py-10">
         <div className="flex justify-between items-center">
           <h3 className="text-[28px] font-[700] text-[#181818]">
             Edit Inventory Details
@@ -38,8 +58,10 @@ const EditInventory = ({ isOpen, setIsOpen }) => {
             onClick={() => setIsOpen(false)}
           />
         </div>
-        <form onSubmit={handleSubmit} className="w-full   mt-4">
+
+        <form onSubmit={handleSubmit} className="w-full mt-4">
           <div className="grid grid-cols-12 gap-3">
+            {/* Store Name */}
             <div className="col-span-12">
               <Input
                 text="Store Name"
@@ -51,58 +73,63 @@ const EditInventory = ({ isOpen, setIsOpen }) => {
                 error={errors.storeName}
                 handleChange={handleChange}
                 handleBlur={handleBlur}
-                selectOptions={[
-                  { value: "abc", label: "Abc Store" },
-                  { value: "main", label: "Main Warehouse" },
-                ]}
+                selectOptions={stores.map((item) => ({
+                  value: item._id,
+                  label: item.name,
+                }))}
               />
             </div>
+
+            {/* Total Stock */}
             <div className="col-span-12">
               <Input
-                text={"Total Stock"}
-                holder={"Enter Store Address"}
-                type={"text"}
-                touched={touched.address}
+                text="Total Stock"
+                holder="Enter stock quantity"
+                type="number"
+                touched={touched.stock}
                 handleChange={handleChange}
-                name={"address"}
-                error={errors.address}
+                name="stock"
+                error={errors.stock}
                 handleBlur={handleBlur}
+                value={values.stock}
               />
-            </div>          
-            {/* Operating Hours */}
+            </div>
+
+            {/* Minimum Order */}
             <div className="col-span-6">
               <Input
                 text="Minimum Order Quantity"
                 holder="Type here"
-                type="text"
-                touched={touched.MinOrderQty}
+                type="number"
+                touched={touched.minOrder}
                 handleChange={handleChange}
-                name="MinOrderQty"
-                error={errors.MinOrderQty}
+                name="minOrder"
+                error={errors.minOrder}
                 handleBlur={handleBlur}
-                value={values.MinOrderQty}
+                value={values.minOrder}
               />
             </div>
 
-            {/* Operating Days */}
+            {/* Maximum Order */}
             <div className="col-span-6">
               <Input
-                text="Maximum Order Quanntity"
+                text="Maximum Order Quantity"
                 holder="Type here"
-                type="text"
-                touched={touched.maxOrderQty}
+                type="number"
+                touched={touched.maxOrder}
                 handleChange={handleChange}
-                name="maxOrderQty"
-                error={errors.maxOrderQty}
+                name="maxOrder"
+                error={errors.maxOrder}
                 handleBlur={handleBlur}
-                value={values.maxOrderQty}
+                value={values.maxOrder}
               />
             </div>
           </div>
+
           <Button
-            text={"Submit"}
+            text="Save Changes"
             type="submit"
-            customClass={"w-[360px] mx-auto mt-5"}
+            customClass="w-[360px] mx-auto mt-5"
           />
         </form>
       </div>

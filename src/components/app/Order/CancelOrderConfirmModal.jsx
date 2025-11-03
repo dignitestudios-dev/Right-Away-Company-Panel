@@ -8,7 +8,7 @@ import {
 import Button from "../../global/Button";
 import { useState } from "react";
 import Input from "../../global/Input";
-const OrderCancelConfirmModal = ({ isOpen, setIsOpen,setOrderStatus }) => {
+const OrderCancelConfirmModal = ({ isOpen, setIsOpen, setOrderStatus }) => {
   const [step, setStep] = useState(1);
   return (
     <Modal
@@ -26,7 +26,10 @@ const OrderCancelConfirmModal = ({ isOpen, setIsOpen,setOrderStatus }) => {
               <IoCloseSharp
                 size={22}
                 className="cursor-pointer"
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setStep(1);
+                  setIsOpen(false);
+                }}
               />
             </div>
             <div className="flex mt-5 flex-col gap-2 text-center justify-center items-center">
@@ -58,7 +61,10 @@ const OrderCancelConfirmModal = ({ isOpen, setIsOpen,setOrderStatus }) => {
               <IoCloseSharp
                 size={22}
                 className="cursor-pointer"
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setStep(1);
+                  setIsOpen(false);
+                }}
               />
             </div>
             <div className="flex mt-5 flex-col gap-2 text-center justify-center items-center">
@@ -111,7 +117,10 @@ const OrderCancelConfirmModal = ({ isOpen, setIsOpen,setOrderStatus }) => {
               <IoCloseSharp
                 size={22}
                 className="cursor-pointer"
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setStep(1);
+                  setIsOpen(false);
+                }}
               />
             </div>
             <div className="flex mt-5 flex-col gap-2 text-center justify-center items-center">
@@ -131,7 +140,7 @@ const OrderCancelConfirmModal = ({ isOpen, setIsOpen,setOrderStatus }) => {
                   onClick={() => {
                     setIsOpen(false);
                     setStep(1);
-                    setOrderStatus("Cancelled")
+                    setOrderStatus("Cancelled");
                   }}
                 />
               </div>
