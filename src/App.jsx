@@ -26,6 +26,7 @@ import CustomerDetail from "./pages/app/CustomerDetail";
 import Wallet from "./pages/app/Wallet";
 import ProductReviews from "./pages/app/ProductReviews";
 import Customers from "./pages/app/Customers";
+import Settings from "./pages/app/Settings";
 
 function App() {
   return (
@@ -67,7 +68,7 @@ function App() {
         <Route path="customer" element={<Customers />} />
         <Route path="customer-detail" element={<CustomerDetail />} />
         {/* Settings */}
-        <Route path="setting" element={<CustomerDetail />} />
+        <Route path="setting" element={<Settings />} />
       </Route>
 
       {/* Public Auth Routes */}

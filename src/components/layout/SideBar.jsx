@@ -107,6 +107,7 @@ const SideBar = () => {
         </div>
         <div className="bg-img flex px-4 justify-center gap-6 flex-col  mt-5 py-4 relative z-0 rounded-[18px] ">
           <NavLink
+          to={"/app/setting"}
             className={`text-white flex items-center gap-2 text-[12px] font-[400] `}
           >
             {" "}
