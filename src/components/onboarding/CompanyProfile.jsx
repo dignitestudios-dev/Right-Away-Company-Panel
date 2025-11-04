@@ -47,7 +47,7 @@ export default function CompanyProfile({ handleNext }) {
         formData.append("coordinates[1]", 37.7749);
         formData.append("type", "Point");
         formData.append("store", values?.fulfillmentMethod);
-        formData.append("address", values?.address);
+        // formData.append("address", values?.address);
         // Avatar
         if (values.profilePic) {
           formData.append("profilePicture", values.profilePic);
