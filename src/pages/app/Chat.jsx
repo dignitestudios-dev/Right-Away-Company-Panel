@@ -5,10 +5,12 @@ import { Person1, Person2 } from "../../assets/export";
 import { IoIosSend } from "react-icons/io";
 import { GoArrowLeft } from "react-icons/go";
 import { useNavigate } from "react-router";
+import ReportModal from "../../components/app/Customer/ReportReasonModal";
 // import { RiArrowGoBackFill } from "react-icons/ri";
 const Chat = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeChat, setActiveChat] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate("");
   return (
     <div className="h-[calc(100%-4.5rem)]">
@@ -39,7 +41,7 @@ const Chat = () => {
           {activeChat ? (
             <>
               {/* Chat Header */}
-              <div className="p-4 bg-gradient rounded-[24px] backdrop-blur-[50px] ">
+              <div className="p-4 flex justify-between items-center bg-gradient rounded-[24px] backdrop-blur-[50px] ">
                 <div className="flex items-center">
                   <div className="h-12 w-12">
                     <img src={Person1} alt={Person1} className="rounded-full" />
@@ -47,6 +49,11 @@ const Chat = () => {
                   <div className="ml-4">
                     <h3 className="font-medium text-lg text-white">John Doe</h3>
                   </div>
+                </div>
+                <div>
+                  <button onClick={()=>setIsOpen(true)} className="bg-[#F6FCFA] w-[120px] h-[40px] rounded-[15px] text-[14px] text-[#000000] font-[400] ">
+                    Report User
+                  </button>
                 </div>
               </div>
               <div className="flex items-center my-4 mx-auto justify-center h-[22px] w-[50px] rounded-[4px] bg-[#1818182B] text-[12px] font-[400] text-[#181818]">
@@ -85,12 +92,13 @@ const Chat = () => {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-white">
+            <div className="flex-1 flex items-center justify-center text-[#181818]">
               Select a chat to start messaging
             </div>
           )}
         </div>
       </div>
+      <ReportModal isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );
 };

@@ -75,6 +75,25 @@ export const CompanyLogin = createAsyncThunk(
     }
   }
 );
+export const SocialLogin = createAsyncThunk(
+  "/auth/socialRegister",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.post("/auth/socialRegister", payload);
+      Cookies.set("token", response?.data?.data?.token, { expires: 7 });
+      SuccessToast(response?.data?.message || "Company Login successful!");
+      return response?.data;
+    } catch (error) {
+      console.error("CompanyLogin error:", error);
+      const message =
+        error.response?.data?.message || error.message || "CompanyLogin failed";
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const SendOtpFa = createAsyncThunk(
   "/auth/resendLoginOTP",
   async (payload, thunkAPI) => {
@@ -503,6 +522,19 @@ const authSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(CompanyLogin.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(SocialLogin.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(SocialLogin.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.company = action.payload?.data?.company;
+        state.token = action.payload?.data?.token;
+        state.isAuthenticated = true;
+      })
+      .addCase(SocialLogin.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
       })

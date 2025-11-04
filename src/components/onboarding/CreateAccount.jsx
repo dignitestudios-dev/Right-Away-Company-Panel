@@ -9,7 +9,10 @@ import { RegisterAccount } from "../../init/authentication/dummyLoginValues";
 import PrivacyPolicyModal from "../global/PrivacyPolicy";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { Register } from "../../redux/slices/authSlice";
+import { Register, SocialLogin } from "../../redux/slices/authSlice";
+import { signInWithPopup } from "firebase/auth";
+import { appleProvider, auth, googleProvider } from "../../firebase/firebase";
+import getFCMToken from "../../firebase/getFcmToken";
 export default function CreateAccount({ handleNext, setEmail }) {
   const [mapCenter, setMapCenter] = useState({ lat: 38.7946, lng: 106.5348 });
   const [isPrivacy, setIsPrivacy] = useState(false);
@@ -29,6 +32,49 @@ export default function CreateAccount({ handleNext, setEmail }) {
         handleNext();
       },
     });
+  const handleGoogleLogin = async () => {
+    try {
+      // Sign in with Google popup
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+      const fcmToken = await getFCMToken();
+
+      // Prepare payload
+      const payload = {
+        idToken,
+        role: "company",
+        fcmToken: fcmToken,
+      };
+      console.log(payload, "payload,");
+
+      await dispatch(SocialLogin(payload)).unwrap();
+      // Navigate after successful login
+      navigate("/app/dashboard");
+    } catch (error) {
+      console.error("Google login error:", error);
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, appleProvider);
+      const idToken = await result.user.getIdToken();
+      const fcmToken = await getFCMToken();
+      // Prepare payload
+      const payload = {
+        idToken,
+        role: "company",
+        fcmToken: fcmToken,
+      };
+      console.log(payload, "payload,");
+
+      await dispatch(SocialLogin(payload)).unwrap();
+      // Navigate after successful login
+      navigate("/app/dashboard");
+    } catch (error) {
+      console.error("Apple login error:", error);
+    }
+  };
   return (
     <div className={`w-full py-10 px-10 xl:px-28`}>
       {/* Form Content */}
@@ -184,13 +230,13 @@ export default function CreateAccount({ handleNext, setEmail }) {
           <div className="flex-1 border-b border-gray-350 " />
         </div>
         <div className="w-full grid grid-cols-1 md:grid-cols-2 items-center gap-4">
-          <button className="bg-shadow flex items-center p-2 bg-[#FFFFFF]  rounded-full w-full h-12">
+          <button onClick={handleGoogleLogin} className="bg-shadow flex items-center p-2 bg-[#FFFFFF]  rounded-full w-full h-12">
             <img src={GoogleImage} alt="" className="w-8" />
             <span className="mx-auto text-[14px] font-[500] text-[#181818]">
               Continue With Google
             </span>
           </button>
-          <button className="bg-shadow flex items-center p-2 bg-[#FFFFFF]  rounded-full w-full h-12">
+          <button onClick={handleAppleLogin} className="bg-shadow flex items-center p-2 bg-[#FFFFFF]  rounded-full w-full h-12">
             <img src={AppleImage} alt="" className="w-8" />
             <span className="mx-auto text-[14px] font-[500] text-[#181818]">
               Continue With Apple

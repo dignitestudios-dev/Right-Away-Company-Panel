@@ -66,6 +66,7 @@ import SubTitleIcon from "./subtitle.png";
 import TruckIcon from "./group.png";
 import BorderSuccessIcon from "./borderSuccess.png";
 import RedAlertIcon from "./red-alert.png";
+import BankFlagIcon from "./bank-flag.png";
 
 // export {
 //     FILENAME(PASCALCASE)
@@ -76,6 +77,7 @@ export {
   BorderSuccessIcon,
   CallIcon,
   MessageIcon,
+  BankFlagIcon,
   TruckIcon,
   SubTitleIcon,
   ChatBtnIcon,

@@ -27,6 +27,9 @@ import Wallet from "./pages/app/Wallet";
 import ProductReviews from "./pages/app/ProductReviews";
 import Customers from "./pages/app/Customers";
 import Settings from "./pages/app/Settings";
+import BankDetail from "./components/app/Setting/BankDetail";
+import AddCard from "./components/app/Setting/AddCard";
+import EditCard from "./components/app/Setting/EditCard";
 
 function App() {
   return (
@@ -69,6 +72,9 @@ function App() {
         <Route path="customer-detail" element={<CustomerDetail />} />
         {/* Settings */}
         <Route path="setting" element={<Settings />} />
+        <Route path="payment-methods" element={<BankDetail />} />
+        <Route path="add-card" element={<AddCard />} />
+        <Route path="edit-card" element={<EditCard />} />
       </Route>
 
       {/* Public Auth Routes */}

@@ -19,7 +19,7 @@ const DashboardLayout = () => {
   const toggleSidebar = () => setIsOpen((prev) => !prev);
 
   return (
-    <div className="w-screen h-screen flex justify-start bg-[#F4F4F4] overflow-hidden">
+    <div className="w-screen h-screen flex justify-start overflow-hidden">
       {/* ===== Gradient/Background Layer (Optional aesthetic like your first project) ===== */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-[#2fb4f71b] via-transparent to-[#2fb4f74e] opacity-20" />
@@ -51,7 +51,7 @@ const DashboardLayout = () => {
         </div>
 
         {/* ===== CONTENT BODY ===== */}
-        <div className="relative flex-1 overflow-y-auto p-4">
+        <div className="relative bg-[#F4F4F4] rounded-[20px] flex-1 overflow-y-auto m-4 p-4">
           <img src={NoInternetImage} alt="" className="hidden" />
           <NoInternetModal isOpen={openNoInternet} />
           <Outlet />

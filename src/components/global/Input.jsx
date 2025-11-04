@@ -171,7 +171,7 @@ export default function Input({
         )}
       </div>
       {error && touched && (
-        <p className="text-red-700 text-sm font-medium">{error}</p>
+        <p className="text-red-700 text-sm text-start font-medium">{error}</p>
       )}
     </div>
   );

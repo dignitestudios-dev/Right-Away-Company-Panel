@@ -11,12 +11,19 @@ import Button from "../../components/global/Button";
 import { useNavigate } from "react-router";
 import { signInSchema } from "../../schema/authentication/dummyLoginSchema";
 import { useDispatch, useSelector } from "react-redux";
-import { CompanyLogin, SendOtpFa } from "../../redux/slices/authSlice";
+import {
+  CompanyLogin,
+  SendOtpFa,
+  SocialLogin,
+} from "../../redux/slices/authSlice";
+import { signInWithPopup } from "firebase/auth";
+import { appleProvider, auth, googleProvider } from "../../firebase/firebase";
+import getFCMToken from "../../firebase/getFcmToken";
 
 const Login = () => {
   const navigate = useNavigate("");
   const dispatch = useDispatch();
-  const {isLoading}=useSelector(state=>state?.auth)
+  const { isLoading } = useSelector((state) => state?.auth);
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
       initialValues: loginValues,
@@ -27,14 +34,60 @@ const Login = () => {
         const data = {
           email: values?.email,
           password: values?.password,
-          role:"company"
+          role: "company",
         };
         await dispatch(CompanyLogin(data)).unwrap();
-        await dispatch(SendOtpFa({email:values?.email,role:"company"})).unwrap();
-        navigate("/auth/two-factor-verfication",{state:{email:values?.email}});
-      
+        await dispatch(
+          SendOtpFa({ email: values?.email, role: "company" })
+        ).unwrap();
+        navigate("/auth/two-factor-verfication", {
+          state: { email: values?.email },
+        });
       },
     });
+  const handleGoogleLogin = async () => {
+    try {
+      // Sign in with Google popup
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+      const fcmToken = await getFCMToken();
+
+      // Prepare payload
+      const payload = {
+        idToken,
+        role: "company",
+        fcmToken: fcmToken,
+      };
+      console.log(payload, "payload,");
+
+      await dispatch(SocialLogin(payload)).unwrap();
+      // Navigate after successful login
+      navigate("/app/dashboard");
+    } catch (error) {
+      console.error("Google login error:", error);
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, appleProvider);
+      const idToken = await result.user.getIdToken();
+      const fcmToken = await getFCMToken();
+      // Prepare payload
+      const payload = {
+        idToken,
+        role: "company",
+        fcmToken: fcmToken,
+      };
+      console.log(payload, "payload,");
+
+      await dispatch(SocialLogin(payload)).unwrap();
+      // Navigate after successful login
+      navigate("/app/dashboard");
+    } catch (error) {
+      console.error("Apple login error:", error);
+    }
+  };
 
   return (
     <div className={`grid grid-cols-1  h-full w-full xl:grid-cols-2`}>
@@ -67,7 +120,10 @@ const Login = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="w-full lg:px-[60px] space-y-4  mt-4">
+          <form
+            onSubmit={handleSubmit}
+            className="w-full lg:px-[60px] space-y-4  mt-4"
+          >
             <Input
               text={"Email Address"}
               holder={"Enter email address"}
@@ -95,7 +151,7 @@ const Login = () => {
               customClass={"w-full"}
             />
           </form>
-          <div className="space-y-2 mt-2  lg:w-[360px] ">
+          <div className="space-y-2 mt-2 w-full lg:w-[360px] ">
             <p className="text-[#484848] text-center text-[12px] font-[400] ">
               Don’t have an account?{" "}
               <span
@@ -113,13 +169,19 @@ const Login = () => {
               <div className="flex-1 border-b border-gray-350 " />
             </div>
             <div className="w-full">
-              <button className="bg-shadow flex items-center p-2 bg-[#FFFFFF]  rounded-full w-full h-12">
+              <button
+                onClick={handleGoogleLogin}
+                className="bg-shadow flex items-center p-2 bg-[#FFFFFF]  rounded-full w-full h-12"
+              >
                 <img src={GoogleImage} alt="" className="w-8" />
                 <span className="mx-auto text-[14px] font-[500] text-[#181818]">
                   Continue With Google
                 </span>
               </button>
-              <button className="bg-shadow flex items-center mt-4 p-2 bg-[#FFFFFF]  rounded-full w-full h-12">
+              <button
+                onClick={handleAppleLogin}
+                className="bg-shadow flex items-center mt-4 p-2 bg-[#FFFFFF]  rounded-full w-full h-12"
+              >
                 <img src={AppleImage} alt="" className="w-8" />
                 <span className="mx-auto text-[14px] font-[500] text-[#181818]">
                   Continue With Apple
