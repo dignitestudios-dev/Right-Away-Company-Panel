@@ -110,7 +110,7 @@ export default function RequestStatus({ handleNext }) {
             </ul>
           </div>
           <button
-            onClick={() => setStatus("submited")}
+            onClick={() => setStatus("congratulation")}
             className="bg-[#0AA48B] mt-3 text-white px-8 py-2 rounded-full text-sm font-medium hover:bg-[#099179] transition"
           >
             Resubmit

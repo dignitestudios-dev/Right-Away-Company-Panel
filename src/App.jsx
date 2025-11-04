@@ -66,6 +66,8 @@ function App() {
         {/* customer*/}
         <Route path="customer" element={<Customers />} />
         <Route path="customer-detail" element={<CustomerDetail />} />
+        {/* Settings */}
+        <Route path="setting" element={<CustomerDetail />} />
       </Route>
 
       {/* Public Auth Routes */}
