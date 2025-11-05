@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { MdOutlineCloudUpload } from "react-icons/md";
 import Button from "../../global/Button";
@@ -16,6 +16,7 @@ import { ProductSchema } from "../../../schema/app/AppSchema";
 import { useDispatch, useSelector } from "react-redux";
 import { CreateProduct } from "../../../redux/slices/AppSlice";
 import ProductReview from "./ProductReview";
+import { getStore } from "../../../redux/slices/authSlice";
 export default function AddNewProduct() {
   const [isOpen, setIsOpen] = useState(false);
   const [actionType, setActionType] = useState("");
@@ -110,6 +111,9 @@ export default function AddNewProduct() {
     },
   });
 
+  useEffect(() => {
+    dispatch(getStore()).unwrap();
+  }, []);
   return (
     <div className=" min-h-screen p-2">
       {productReview ? (

@@ -1,9 +1,6 @@
 import { useFormik } from "formik";
 import { IoCloseSharp } from "react-icons/io5";
 import Modal from "react-modal";
-import { AddNewStoreValues } from "../../../init/authentication/dummyLoginValues";
-import { AddNewStoreSchema } from "../../../schema/authentication/dummyLoginSchema";
-import { useState } from "react";
 import Input from "../../global/Input";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import Button from "../../global/Button";
@@ -13,6 +10,8 @@ import { useSelector } from "react-redux";
 
 const AddInventory = ({ isOpen, setIsOpen, setInventories }) => {
   const { stores } = useSelector((state) => state?.auth);
+
+
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
       initialValues: AddInventoryValues,
