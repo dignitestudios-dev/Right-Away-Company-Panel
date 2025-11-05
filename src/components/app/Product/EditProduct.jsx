@@ -34,7 +34,7 @@ export default function EditProduct() {
   const getProductDetail = async () => {
     dispatch(getProductsById(product?._id));
   };
-    useEffect(() => {
+  useEffect(() => {
     const fetchProduct = async () => {
       await getProductDetail();
     };
@@ -60,7 +60,6 @@ export default function EditProduct() {
     "instructions",
   ];
   // 🧩 Load product data
-
 
   useEffect(() => {
     if (singleProduct) {
@@ -122,7 +121,7 @@ export default function EditProduct() {
       }
     },
   });
-console.log(errors,values,"errors")
+  console.log(errors, values, "errors");
   // 🖼️ Handle new image uploads
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -311,7 +310,12 @@ console.log(errors,values,"errors")
                 type="number"
                 bg
                 value={values.itemHeight}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 handleBlur={handleBlur}
                 error={errors.itemHeight}
                 touched={touched.itemHeight}
@@ -323,7 +327,12 @@ console.log(errors,values,"errors")
                 type="number"
                 bg
                 value={values.itemWidth}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 handleBlur={handleBlur}
                 error={errors.itemWidth}
                 touched={touched.itemWidth}
@@ -335,7 +344,12 @@ console.log(errors,values,"errors")
                 type="number"
                 bg
                 value={values.itemLength}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 handleBlur={handleBlur}
                 error={errors.itemLength}
                 touched={touched.itemLength}
@@ -347,7 +361,12 @@ console.log(errors,values,"errors")
                 type="number"
                 bg
                 value={values.itemWeight}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 handleBlur={handleBlur}
                 error={errors.itemWeight}
                 touched={touched.itemWeight}
@@ -366,7 +385,12 @@ console.log(errors,values,"errors")
                 type="number"
                 bg
                 value={values.packageHeight}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 handleBlur={handleBlur}
                 error={errors.packageHeight}
                 touched={touched.packageHeight}
@@ -378,7 +402,12 @@ console.log(errors,values,"errors")
                 type="number"
                 bg
                 value={values.packageWidth}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 handleBlur={handleBlur}
                 error={errors.packageWidth}
                 touched={touched.packageWidth}
@@ -390,7 +419,12 @@ console.log(errors,values,"errors")
                 type="number"
                 bg
                 value={values.packageLength}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 handleBlur={handleBlur}
                 error={errors.packageLength}
                 touched={touched.packageLength}
@@ -402,7 +436,12 @@ console.log(errors,values,"errors")
                 type="number"
                 bg
                 value={values.packageWeight}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 handleBlur={handleBlur}
                 error={errors.packageWeight}
                 touched={touched.packageWeight}
@@ -420,7 +459,12 @@ console.log(errors,values,"errors")
                 name="unitPrice"
                 type="number"
                 value={values.unitPrice}
-                handleChange={handleChange}
+                 handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 handleBlur={handleBlur}
                 error={errors.unitPrice}
                 touched={touched.unitPrice}
@@ -431,7 +475,12 @@ console.log(errors,values,"errors")
                 name="unitMessurement"
                 type="number"
                 value={values.unitMessurement}
-                handleChange={handleChange}
+                 handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 handleBlur={handleBlur}
                 error={errors.unitMessurement}
                 touched={touched.unitMessurement}

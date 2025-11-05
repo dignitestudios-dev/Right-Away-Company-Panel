@@ -446,7 +446,7 @@ export default function OrderDetail() {
           {orderStatus == "Processing" && (
             <Button
               text={"Ready for Pickup"}
-              onClick={() => navigate("/app/order-tracking")}
+              onClick={() => navigate("/app/order-track-detail")}
               customClass={"w-full mt-4"}
             />
           )}

@@ -9,6 +9,7 @@ export default function CustomerDetail() {
   const [isReportOpen, setIsReportOpen] = useState(false);
   const loc = useLocation();
   const customer = loc?.state?.customer;
+   
   return (
     <div className="py-4">
       <div className="flex justify-between ">

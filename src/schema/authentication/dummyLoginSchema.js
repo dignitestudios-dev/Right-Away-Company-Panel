@@ -83,10 +83,9 @@ export const RegisterSchema = Yup.object({
     .email("Invalid email format")
     .required("Business email is required"),
 
-  phoneNumber: Yup.string()
-    .matches(/^[0-9]{10,15}$/, "Enter a valid phone number")
-    .required("Phone number is required"),
-
+phoneNumber: Yup.string()
+  .matches(/^(?:\+1)?\d{10}$/, "Enter a valid US phone number")
+  .required("Phone number is required"),
   registerNumber: Yup.string()
     .min(3, "Registration number is too short")
     .required("Company registration number is required"),

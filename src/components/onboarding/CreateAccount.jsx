@@ -119,10 +119,15 @@ export default function CreateAccount({ handleNext, setEmail }) {
               holder={"Enter Business Phone Number"}
               type={"text"}
               touched={touched.phoneNumber}
-              handleChange={handleChange}
+              handleChange={(e) => {
+                // allow only digits and optional +
+                const value = e.target.value.replace(/[^\d+]/g, "");
+                if (value.length <= 10) handleChange(e); // limit to +1 + 10 digits
+              }}
               name={"phoneNumber"}
               error={errors.phoneNumber}
               handleBlur={handleBlur}
+              maxLength={12}
             />
           </div>
           <div className="xl:col-span-6 col-span-12">
@@ -230,13 +235,19 @@ export default function CreateAccount({ handleNext, setEmail }) {
           <div className="flex-1 border-b border-gray-350 " />
         </div>
         <div className="w-full grid grid-cols-1 md:grid-cols-2 items-center gap-4">
-          <button onClick={handleGoogleLogin} className="bg-shadow flex items-center p-2 bg-[#FFFFFF]  rounded-full w-full h-12">
+          <button
+            onClick={handleGoogleLogin}
+            className="bg-shadow flex items-center p-2 bg-[#FFFFFF]  rounded-full w-full h-12"
+          >
             <img src={GoogleImage} alt="" className="w-8" />
             <span className="mx-auto text-[14px] font-[500] text-[#181818]">
               Continue With Google
             </span>
           </button>
-          <button onClick={handleAppleLogin} className="bg-shadow flex items-center p-2 bg-[#FFFFFF]  rounded-full w-full h-12">
+          <button
+            onClick={handleAppleLogin}
+            className="bg-shadow flex items-center p-2 bg-[#FFFFFF]  rounded-full w-full h-12"
+          >
             <img src={AppleImage} alt="" className="w-8" />
             <span className="mx-auto text-[14px] font-[500] text-[#181818]">
               Continue With Apple

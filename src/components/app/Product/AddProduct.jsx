@@ -298,7 +298,12 @@ export default function AddNewProduct() {
                   bg={true}
                   value={values.itemHeight}
                   error={errors?.itemHeight}
-                  handleChange={handleChange}
+                  handleChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || Number(value) > 0) {
+                      handleChange(e); // pass the event, not just value
+                    }
+                  }}
                   touched={touched.itemHeight}
                   handleBlur={handleBlur}
                 />
@@ -310,7 +315,12 @@ export default function AddNewProduct() {
                   bg={true}
                   value={values.itemWidth}
                   error={errors?.itemWidth}
-                  handleChange={handleChange}
+                  handleChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || Number(value) > 0) {
+                      handleChange(e); // pass the event, not just value
+                    }
+                  }}
                   touched={touched.itemWidth}
                   handleBlur={handleBlur}
                 />
@@ -322,7 +332,12 @@ export default function AddNewProduct() {
                   bg={true}
                   value={values.itemLength}
                   error={errors?.itemLength}
-                  handleChange={handleChange}
+                  handleChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || Number(value) > 0) {
+                      handleChange(e); // pass the event, not just value
+                    }
+                  }}
                   touched={touched.itemLength}
                   handleBlur={handleBlur}
                 />
@@ -334,7 +349,12 @@ export default function AddNewProduct() {
                   bg={true}
                   value={values.itemWeight}
                   error={errors?.itemWeight}
-                  handleChange={handleChange}
+                  handleChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || Number(value) > 0) {
+                      handleChange(e); // pass the event, not just value
+                    }
+                  }}
                   touched={touched.storeName}
                   handleBlur={handleBlur}
                 />
@@ -354,7 +374,12 @@ export default function AddNewProduct() {
                   bg={true}
                   value={values.packageHeight}
                   error={errors?.packageHeight}
-                  handleChange={handleChange}
+                  handleChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || Number(value) > 0) {
+                      handleChange(e); // pass the event, not just value
+                    }
+                  }}
                   touched={touched.packageHeight}
                   handleBlur={handleBlur}
                 />
@@ -366,7 +391,12 @@ export default function AddNewProduct() {
                   bg={true}
                   value={values.packageWidth}
                   error={errors?.packageWidth}
-                  handleChange={handleChange}
+                  handleChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || Number(value) > 0) {
+                      handleChange(e); // pass the event, not just value
+                    }
+                  }}
                   touched={touched.packageWidth}
                   handleBlur={handleBlur}
                 />
@@ -378,7 +408,12 @@ export default function AddNewProduct() {
                   bg={true}
                   value={values.packageLength}
                   error={errors?.packageLength}
-                  handleChange={handleChange}
+                  handleChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || Number(value) > 0) {
+                      handleChange(e); // pass the event, not just value
+                    }
+                  }}
                   touched={touched.packageLength}
                   handleBlur={handleBlur}
                 />
@@ -390,7 +425,12 @@ export default function AddNewProduct() {
                   bg={true}
                   value={values.packageWeight}
                   error={errors?.packageWeight}
-                  handleChange={handleChange}
+                  handleChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || Number(value) > 0) {
+                      handleChange(e); // pass the event, not just value
+                    }
+                  }}
                   touched={touched.packageWeight}
                   handleBlur={handleBlur}
                 />
@@ -408,7 +448,12 @@ export default function AddNewProduct() {
                   holder="Fixed Price"
                   name="unitPrice"
                   type={"number"}
-                  handleChange={handleChange}
+                  handleChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || Number(value) > 0) {
+                      handleChange(e); // pass the event, not just value
+                    }
+                  }}
                   touched={touched.unitPrice}
                   handleBlur={handleBlur}
                   value={values?.unitPrice}
@@ -419,7 +464,12 @@ export default function AddNewProduct() {
                   holder="lbs"
                   type={"number"}
                   name="unitMessurement"
-                  handleChange={handleChange}
+                  handleChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || Number(value) > 0) {
+                      handleChange(e); // pass the event, not just value
+                    }
+                  }}
                   touched={touched.unitMessurement}
                   handleBlur={handleBlur}
                   value={values?.unitMessurement}

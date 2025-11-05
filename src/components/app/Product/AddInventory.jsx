@@ -57,7 +57,7 @@ const AddInventory = ({ isOpen, setIsOpen, setInventories }) => {
                 handleChange={handleChange}
                 touched={touched.storeName}
                 handleBlur={handleBlur}
-                selectOptions={stores.map((item) => ({
+                selectOptions={stores?.map((item) => ({
                   value: item._id,
                   label: item.name,
                 }))}
@@ -65,14 +65,21 @@ const AddInventory = ({ isOpen, setIsOpen, setInventories }) => {
             </div>
             <div className="col-span-12">
               <Input
-                text={"Total Stock"}
-                holder={"Enter Store Address"}
-                type={"number"}
+                text="Total Stock"
+                holder="Enter Total Stock"
+                type="number"
                 touched={touched.stock}
-                handleChange={handleChange}
-                name={"stock"}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
+                value={values.stock}
+                name="stock"
                 error={errors.stock}
                 handleBlur={handleBlur}
+                min="0" // HTML level enforcement
               />
             </div>
             {/* Min Quantity */}
@@ -82,7 +89,12 @@ const AddInventory = ({ isOpen, setIsOpen, setInventories }) => {
                 holder="Type here"
                 type="number"
                 touched={touched.minOrder}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 name="minOrder"
                 error={errors.minOrder}
                 handleBlur={handleBlur}
@@ -97,7 +109,12 @@ const AddInventory = ({ isOpen, setIsOpen, setInventories }) => {
                 holder="Type here"
                 type="number"
                 touched={touched.maxOrder}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 name="maxOrder"
                 error={errors.maxOrder}
                 handleBlur={handleBlur}

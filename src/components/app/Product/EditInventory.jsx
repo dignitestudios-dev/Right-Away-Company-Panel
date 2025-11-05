@@ -14,7 +14,7 @@ const EditInventory = ({
   setInventories,
 }) => {
   const { stores } = useSelector((state) => state?.auth);
-  
+
   const inventoryToEdit = inventories[editIndex] || {
     storeName: "",
     stock: "",
@@ -73,7 +73,7 @@ const EditInventory = ({
                 error={errors.storeName}
                 handleChange={handleChange}
                 handleBlur={handleBlur}
-                selectOptions={stores.map((item) => ({
+                selectOptions={stores?.map((item) => ({
                   value: item._id,
                   label: item.name,
                 }))}
@@ -87,7 +87,12 @@ const EditInventory = ({
                 holder="Enter stock quantity"
                 type="number"
                 touched={touched.stock}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 name="stock"
                 error={errors.stock}
                 handleBlur={handleBlur}
@@ -102,7 +107,12 @@ const EditInventory = ({
                 holder="Type here"
                 type="number"
                 touched={touched.minOrder}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 name="minOrder"
                 error={errors.minOrder}
                 handleBlur={handleBlur}
@@ -117,7 +127,12 @@ const EditInventory = ({
                 holder="Type here"
                 type="number"
                 touched={touched.maxOrder}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) > 0) {
+                    handleChange(e); // pass the event, not just value
+                  }
+                }}
                 name="maxOrder"
                 error={errors.maxOrder}
                 handleBlur={handleBlur}

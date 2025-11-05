@@ -122,7 +122,7 @@ export default function ProductDetail() {
           </div>
 
           {/* Thumbnails */}
-          <div className="flex justify-between mt-4">
+          <div className="flex flex-wrap gap-3 mt-4">
             {singleProduct?.images?.map((img, i) => (
               <div
                 key={i}
