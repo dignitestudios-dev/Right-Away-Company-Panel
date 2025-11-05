@@ -5,22 +5,24 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
 export const baseUrl = "https://api.rightawayapp.com/";
 
+let cachedDeviceId = null;
+
 async function getDeviceFingerprint() {
+  if (cachedDeviceId) return cachedDeviceId;
   const fp = await FingerprintJS.load();
   const result = await fp.get();
-  return result.visitorId; // unique ID
+  cachedDeviceId = result.visitorId;
+  return cachedDeviceId;
 }
 
 const instance = axios.create({
   baseURL: baseUrl,
-  timeout: 10000,
+  timeout: 30000, // ✅ 30s safer for uploads
 });
 
-// ✅ Request Interceptor
 instance.interceptors.request.use(async (request) => {
   const token = Cookies.get("token");
 
-  // Handle offline
   if (!navigator.onLine) {
     ErrorToast(
       "No internet connection. Please check your network and try again."
@@ -28,21 +30,20 @@ instance.interceptors.request.use(async (request) => {
     return Promise.reject(new Error("No internet connection"));
   }
 
-  // Get unique device ID asynchronously
+  // ✅ Get cached fingerprint quickly (async once only)
   const deviceId = await getDeviceFingerprint();
 
   request.headers = {
     ...request.headers,
     Accept: "application/json, text/plain, */*",
-    devicemodel: deviceId, // ✅ now contains actual value
-    deviceuniqueid: deviceId, // ✅ same here
+    devicemodel: deviceId,
+    deviceuniqueid: deviceId,
     ...(token && { Authorization: `Bearer ${token}` }),
   };
 
   return request;
 });
 
-// ✅ Response Interceptor
 instance.interceptors.response.use(
   (response) => response,
   (error) => {

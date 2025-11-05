@@ -122,7 +122,7 @@ export default function EditProduct() {
       }
     },
   });
-
+console.log(errors,values,"errors")
   // 🖼️ Handle new image uploads
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);

@@ -21,51 +21,35 @@ export const ProductSchema = Yup.object({
     .required("Description is required"),
 
   category: Yup.string().required("Category is required"),
-  subCategory: Yup.string().required("Sub-category is required"),
+  // subCategory: Yup.string().required("Sub-category is required"),
 
-  itemHeight: Yup.number()
-    .typeError("Item height must be a number")
-    .positive("Item height must be positive")
+  itemHeight: Yup.string()
     .required("Item height is required"),
 
-  itemWidth: Yup.number()
-    .typeError("Item width must be a number")
-    .positive("Item width must be positive")
+  itemWidth: Yup.string()
     .required("Item width is required"),
 
-  itemLength: Yup.number()
-    .typeError("Item length must be a number")
-    .positive("Item length must be positive")
+  itemLength: Yup.string()
+
     .required("Item length is required"),
 
-  itemWeight: Yup.number()
-    .typeError("Item weight must be a number")
-    .positive("Item weight must be positive")
+  itemWeight: Yup.string()
+
     .required("Item weight is required"),
 
-  packageHeight: Yup.number()
-    .typeError("Package height must be a number")
-    .positive("Package height must be positive")
+  packageHeight: Yup.string()
     .required("Package height is required"),
 
-  packageWidth: Yup.number()
-    .typeError("Package width must be a number")
-    .positive("Package width must be positive")
+  packageWidth: Yup.string()
     .required("Package width is required"),
 
-  packageLength: Yup.number()
-    .typeError("Package length must be a number")
-    .positive("Package length must be positive")
+  packageLength: Yup.string()
     .required("Package length is required"),
 
-  packageWeight: Yup.number()
-    .typeError("Package weight must be a number")
-    .positive("Package weight must be positive")
+  packageWeight: Yup.string()
     .required("Package weight is required"),
 
-  unitPrice: Yup.number()
-    .typeError("Unit price must be a number")
-    .positive("Unit price must be positive")
+  unitPrice: Yup.string()
     .required("Unit price is required"),
 
   unitMessurement: Yup.string().required("Unit measurement is required"),

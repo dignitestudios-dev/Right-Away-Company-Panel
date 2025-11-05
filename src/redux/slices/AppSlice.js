@@ -16,7 +16,9 @@ export const CreateProduct = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/company/product", payload);
+      const response = await axios.post("/company/product", payload, {
+        "Content-Type": "multipart/form-data",
+      });
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
