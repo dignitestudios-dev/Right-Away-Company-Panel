@@ -6,17 +6,23 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router";
 import OtpForm from "../../components/global/OtpForm";
 import { useDispatch, useSelector } from "react-redux";
-import { VerifyForgotPassword } from "../../redux/slices/authSlice";
+import {
+  forgetPassword,
+  ResendForgetOtp,
+  VerifyForgotPassword,
+} from "../../redux/slices/authSlice";
+import { SuccessToast } from "../../components/global/Toaster";
+import { FaSpinner } from "react-icons/fa";
 
 const OtpVerification = () => {
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [timer, setTimer] = useState(60);
   const otpRefs = useRef([]);
   const navigate = useNavigate("");
-  const { isLoading } = useSelector((state) => state?.auth);
+  const { isLoading, isResendLoading } = useSelector((state) => state?.auth);
   const [otp, setOtp] = useState(twoFactorValues.otp);
   const dispatch = useDispatch();
-  const location=useLocation("");
+  const location = useLocation("");
   useEffect(() => {
     let interval;
     if (isResendDisabled && timer > 0) {
@@ -29,19 +35,22 @@ const OtpVerification = () => {
     }
     return () => clearInterval(interval);
   }, [isResendDisabled, timer]);
-const email=location?.state?.email
-  //   const handleResendClick = async () => {
-  //     const data = { email: email };
-  //     try {
-  //       await dispatch(ResentOtp(data)).unwrap();
-  //       SuccessToast("OTP resent successfully.");
-  //       setIsResendDisabled(true);
-  //       setTimer(60);
-  //       setOtp(emailVerificationValues.otp);
-  //     } catch (err) {
-  //       console.error("Resend OTP failed:", err);
-  //     }
-  //   };
+  const email = location?.state?.email;
+  const handleResendClick = async () => {
+    try {
+      const data = {
+        email: email,
+        role: "company",
+      };
+      await dispatch(ResendForgetOtp(data)).unwrap();
+      SuccessToast("OTP resent successfully.");
+      setIsResendDisabled(true);
+      setTimer(60);
+      setOtp(twoFactorValues.otp);
+    } catch (err) {
+      console.error("Resend OTP failed:", err);
+    }
+  };
 
   const handleChange = (e, i) => {
     const value = e.target.value;
@@ -88,12 +97,12 @@ const email=location?.state?.email
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = {
-      email:email,
-      role:"company",
+      email: email,
+      role: "company",
       otp: otp.join(""),
     };
     await dispatch(VerifyForgotPassword(data)).unwrap();
-    navigate("/auth/reset-password")
+    navigate("/auth/reset-password");
   };
 
   return (
@@ -146,10 +155,16 @@ const email=location?.state?.email
               </span>
               <button
                 type="button"
-                className="outline-none text-[14px] flex items-center gap-2 border-none gradient-text font-[600]"
+                onClick={handleResendClick}
+                disabled={isResendDisabled}
+                className={`${
+                  isResendDisabled ? "cursor-not-allowed" : ""
+                } outline-none text-[14px] flex items-center gap-2 border-none gradient-text font-[600]`}
               >
                 {isResendDisabled ? `Resend in ${timer}s` : "Resend now"}{" "}
-                {/* {isResendLoading && <FaSpinner className="animate-spin" />} */}
+                {isResendLoading && (
+                  <FaSpinner className="animate-spin text-[#22B573]" />
+                )}
               </button>
             </div>
             <Button

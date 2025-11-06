@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { FaPlus } from "react-icons/fa";
+import { useEffect, useState } from "react";
 import { MdOutlineCloudUpload } from "react-icons/md";
 import Button from "../../global/Button";
 import { GoArrowLeft } from "react-icons/go";

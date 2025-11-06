@@ -4,8 +4,10 @@ import Button from "../../components/global/Button";
 import { useEffect, useRef, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router";
-import { VerifyLoginOtp } from "../../redux/slices/authSlice";
+import { ReSendOtpFa, VerifyLoginOtp } from "../../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { SuccessToast } from "../../components/global/Toaster";
+import { FaSpinner } from "react-icons/fa";
 
 const TwoFactorAuthentication = () => {
   const [isResendDisabled, setIsResendDisabled] = useState(true);
@@ -14,7 +16,7 @@ const TwoFactorAuthentication = () => {
   const navigate = useNavigate("");
   const location = useLocation();
   const dispatch = useDispatch();
-  const { isLoading } = useSelector((state) => state?.auth);
+  const { isLoading, isResendLoading } = useSelector((state) => state?.auth);
   const [otp, setOtp] = useState(twoFactorValues.otp);
   useEffect(() => {
     let interval;
@@ -29,18 +31,18 @@ const TwoFactorAuthentication = () => {
     return () => clearInterval(interval);
   }, [isResendDisabled, timer]);
 
-  //   const handleResendClick = async () => {
-  //     const data = { email: email };
-  //     try {
-  //       await dispatch(ResentOtp(data)).unwrap();
-  //       SuccessToast("OTP resent successfully.");
-  //       setIsResendDisabled(true);
-  //       setTimer(60);
-  //       setOtp(emailVerificationValues.otp);
-  //     } catch (err) {
-  //       console.error("Resend OTP failed:", err);
-  //     }
-  //   };
+  const handleResendClick = async () => {
+    const data = { email: location?.state?.email, role: "company" };
+    try {
+      await dispatch(ReSendOtpFa(data)).unwrap();
+      SuccessToast("OTP resent successfully.");
+      setIsResendDisabled(true);
+      setTimer(60);
+      setOtp(twoFactorValues.otp);
+    } catch (err) {
+      console.error("Resend OTP failed:", err);
+    }
+  };
 
   const handleChange = (e, i) => {
     const value = e.target.value;
@@ -147,10 +149,16 @@ const TwoFactorAuthentication = () => {
               </span>
               <button
                 type="button"
-                className="outline-none text-[14px] flex items-center gap-2 border-none gradient-text font-[600]"
+                onClick={handleResendClick}
+                disabled={isResendDisabled}
+                className={`${
+                  isResendDisabled ? "cursor-not-allowed" : ""
+                } outline-none text-[14px] flex items-center gap-2 border-none gradient-text font-[600]`}
               >
                 {isResendDisabled ? `Resend in ${timer}s` : "Resend now"}{" "}
-                {/* {isResendLoading && <FaSpinner className="animate-spin" />} */}
+                {isResendLoading && (
+                  <FaSpinner className="animate-spin text-[#22B573]" />
+                )}
               </button>
             </div>
             <Button

@@ -1,8 +1,42 @@
-import React from "react";
-import { useNavigate } from "react-router";
+export default function GlobalTable({ columns = [], data = [], onRowClick, loading }) {
+  const renderSkeleton = () => {
+    // Show 5 fake rows while loading
+    return Array.from({ length: 5 }).map((_, rowIndex) => (
+      <tr key={rowIndex} className="border-t border-gray-100">
+        {columns.map((_, colIndex) => (
+          <td key={colIndex} className="px-6 py-4">
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+          </td>
+        ))}
+      </tr>
+    ));
+  };
 
-export default function GlobalTable({ columns = [], data = [], onRowClick }) {
-  const navigate = useNavigate();
+  const renderNoRecord = () => (
+    <tr>
+      <td
+        colSpan={columns.length}
+        className="text-center py-6 text-gray-500 text-sm"
+      >
+        No Record Found
+      </td>
+    </tr>
+  );
+
+  const renderRows = () =>
+    data.map((row, i) => (
+      <tr
+        key={i}
+        onClick={() => onRowClick && onRowClick(row?._id)}
+        className="border-t cursor-pointer border-gray-100 hover:bg-gray-50 transition"
+      >
+        {row?.cells?.map((cell, j) => (
+          <td key={j} className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
+            {cell}
+          </td>
+        ))}
+      </tr>
+    ));
 
   return (
     <div className="overflow-x-auto">
@@ -21,22 +55,11 @@ export default function GlobalTable({ columns = [], data = [], onRowClick }) {
         </thead>
 
         <tbody>
-          {data.map((row, i) => (
-            <tr
-              key={i}
-              onClick={() => onRowClick && onRowClick(row?._id)}
-              className="border-t cursor-pointer border-gray-100 hover:bg-gray-50 transition"
-            >
-              {row?.cells?.map((cell, j) => (
-                <td
-                  key={j}
-                  className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap"
-                >
-                  {cell}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {loading
+            ? renderSkeleton()
+            : data?.length > 0
+            ? renderRows()
+            : renderNoRecord()}
         </tbody>
       </table>
     </div>

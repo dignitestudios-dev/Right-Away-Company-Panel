@@ -14,7 +14,7 @@ import CompanyProfile from "../../components/onboarding/CompanyProfile";
 import AddStore from "../../components/onboarding/AddStore";
 import PaymentMethod from "../../components/onboarding/PaymentMethod";
 export default function SignUp() {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
   const providerSteps = [
     { icon: RxFileText, title: "Business Details" },
     { icon: IoMailOutline, title: "Verify email" },

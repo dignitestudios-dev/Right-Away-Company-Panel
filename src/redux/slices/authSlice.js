@@ -6,6 +6,7 @@ import { auth } from "../../firebase/firebase";
 import Cookies from "js-cookie";
 const initialState = {
   isLoading: false,
+  isResendLoading: false,
   token: null,
   refreshToken: null,
   company: null,
@@ -128,8 +129,46 @@ export const VerifyLoginOtp = createAsyncThunk(
   }
 );
 
+export const ReSendOtpFa = createAsyncThunk(
+  "/auth/resendFALoginOTP",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.post("/auth/resendLoginOTP", payload);
+      SuccessToast(response?.data?.message);
+      return response?.data;
+    } catch (error) {
+      console.error("Registration error:", error);
+      const message =
+        error.response?.data?.message || error.message || "Registration failed";
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const forgetPassword = createAsyncThunk(
   "/auth/resendLoginOTP",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.post("/auth/resendLoginOTP", payload);
+      Cookies.set("token", response?.data?.data?.token, { expires: 7 });
+      SuccessToast(response?.data?.message || "Forget password successful!");
+      return response?.data;
+    } catch (error) {
+      console.error("Forget password error:", error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Forget password failed";
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const ResendForgetOtp = createAsyncThunk(
+  "/auth/resendForgetPasswordOTP",
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
@@ -151,6 +190,23 @@ export const forgetPassword = createAsyncThunk(
 
 export const SendOtpAccountVerification = createAsyncThunk(
   "/account-verify",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.post("/auth/emailVerificationOTP");
+      SuccessToast(response?.data?.message);
+      return response?.data;
+    } catch (error) {
+      console.error("Registration error:", error);
+      const message =
+        error.response?.data?.message || error.message || "Registration failed";
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const ReSendOtpAccountVerification = createAsyncThunk(
+  "/resend-account-verify",
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
@@ -418,7 +474,7 @@ const authSlice = createSlice({
       .addCase(VerifyForgotPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
-      })
+      })   
       .addCase(updateForgotPassword.pending, (state, action) => {
         state.isLoading = true;
       })
@@ -559,6 +615,36 @@ const authSlice = createSlice({
       })
       .addCase(forgetPassword.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(ResendForgetOtp.pending, (state, action) => {
+        state.isResendLoading = true;
+      })
+      .addCase(ResendForgetOtp.fulfilled, (state, action) => {
+        state.isResendLoading = false;
+      })
+      .addCase(ResendForgetOtp.rejected, (state, action) => {
+        state.isResendLoading = false;
+        state.error = action.payload.message;
+      })
+       .addCase(ReSendOtpFa.pending, (state, action) => {
+        state.isResendLoading = true;
+      })
+      .addCase(ReSendOtpFa.fulfilled, (state, action) => {
+        state.isResendLoading = false;
+      })
+      .addCase(ReSendOtpFa.rejected, (state, action) => {
+        state.isResendLoading = false;
+        state.error = action.payload.message;
+      })
+       .addCase(ReSendOtpAccountVerification.pending, (state, action) => {
+        state.isResendLoading = true;
+      })
+      .addCase(ReSendOtpAccountVerification.fulfilled, (state, action) => {
+        state.isResendLoading = false;
+      })
+      .addCase(ReSendOtpAccountVerification.rejected, (state, action) => {
+        state.isResendLoading = false;
         state.error = action.payload.message;
       });
   },

@@ -1,15 +1,17 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { GoArrowLeft } from "react-icons/go";
 import { useLocation, useNavigate } from "react-router";
 import Button from "../../components/global/Button";
 import ReportModal from "../../components/app/Customer/ReportReasonModal";
+import CustomerDetailOrders from "../../components/app/Customer/CustomerDetailOrders";
+import Filter from "../../components/global/Filter";
 
 export default function CustomerDetail() {
   const navigate = useNavigate("");
   const [isReportOpen, setIsReportOpen] = useState(false);
   const loc = useLocation();
   const customer = loc?.state?.customer;
-   
+
   return (
     <div className="py-4">
       <div className="flex justify-between ">
@@ -94,6 +96,15 @@ export default function CustomerDetail() {
           </div>
         </div>
       </div>
+      <div className="flex justify-between mt-10">
+        <h3 className="font-[600] text-[32px] flex items-center gap-2">        
+         Order History
+        </h3>
+        <div className="flex items-center gap-4">
+          <Filter hide={true} dateHide={true} />
+        </div>
+      </div>
+      <CustomerDetailOrders customer={customer} />
       <ReportModal isOpen={isReportOpen} setIsOpen={setIsReportOpen} />
     </div>
   );

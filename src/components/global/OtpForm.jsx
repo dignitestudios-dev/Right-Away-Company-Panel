@@ -4,9 +4,12 @@ import { useNavigate } from "react-router";
 import { twoFactorValues } from "../../init/authentication/dummyLoginValues";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  ReSendOtpAccountVerification,
   SendOtpAccountVerification,
   VerifyEmail,
 } from "../../redux/slices/authSlice";
+import { SuccessToast } from "./Toaster";
+import { FaSpinner } from "react-icons/fa";
 
 export default function OtpForm({ handleNext }) {
   const [isResendDisabled, setIsResendDisabled] = useState(true);
@@ -15,7 +18,7 @@ export default function OtpForm({ handleNext }) {
   const navigate = useNavigate("");
   const [otp, setOtp] = useState(twoFactorValues.otp);
   const dispatch = useDispatch();
-  const { isLoading } = useSelector((state) => state?.auth);
+  const { isLoading,isResendLoading } = useSelector((state) => state?.auth);
   useEffect(() => {
     dispatch(SendOtpAccountVerification()).unwrap();
   }, []);
@@ -33,18 +36,17 @@ export default function OtpForm({ handleNext }) {
     return () => clearInterval(interval);
   }, [isResendDisabled, timer]);
 
-  //   const handleResendClick = async () => {
-  //     const data = { email: email };
-  //     try {
-  //       await dispatch(ResentOtp(data)).unwrap();
-  //       SuccessToast("OTP resent successfully.");
-  //       setIsResendDisabled(true);
-  //       setTimer(60);
-  //       setOtp(emailVerificationValues.otp);
-  //     } catch (err) {
-  //       console.error("Resend OTP failed:", err);
-  //     }
-  //   };
+    const handleResendClick = async () => {
+      try {
+        await dispatch(ReSendOtpAccountVerification()).unwrap();
+        SuccessToast("OTP resent successfully.");
+        setIsResendDisabled(true);
+        setTimer(60);
+        setOtp(twoFactorValues.otp);
+      } catch (err) {
+        console.error("Resend OTP failed:", err);
+      }
+    };
 
   const handleChange = (e, i) => {
     const value = e.target.value;
@@ -122,10 +124,12 @@ export default function OtpForm({ handleNext }) {
         </span>
         <button
           type="button"
-          className="outline-none text-[14px] flex items-center gap-2 border-none gradient-text font-[600]"
+          onClick={handleResendClick}
+          disabled={isResendDisabled}
+          className={`${isResendDisabled?"cursor-not-allowed":""} outline-none text-[14px] flex items-center gap-2 border-none gradient-text font-[600]`}
         >
           {isResendDisabled ? `Resend in ${timer}s` : "Resend now"}{" "}
-          {/* {isResendLoading && <FaSpinner className="animate-spin" />} */}
+          {isResendLoading && <FaSpinner className="animate-spin text-[#22B573]" />}
         </button>
       </div>
       <Button

@@ -87,6 +87,7 @@ export default function ProductsData() {
         <GlobalTable
           data={data}
           columns={columns}
+          loading={isLoading}
           onRowClick={(id) =>
             navigate("/app/product-detail", { state: { id } })
           }

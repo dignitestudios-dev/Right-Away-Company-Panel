@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ErrorToast, SuccessToast } from "../../components/global/Toaster";
 import axios from "../../axios";
-import Cookies from "js-cookie";
 const initialState = {
   isLoading: false,
   products: null,
@@ -9,8 +8,10 @@ const initialState = {
   singleProduct: null,
   orders: null,
   singleOrder: null,
+  Customers: null,
+  CustomerOrders: null,
 };
-
+//👽 ----------- Product Managment-----------👽
 export const CreateProduct = createAsyncThunk(
   "/company/product",
   async (payload, thunkAPI) => {
@@ -43,7 +44,6 @@ export const updateProduct = createAsyncThunk(
     }
   }
 );
-
 export const getProducts = createAsyncThunk(
   "company/product?page=1&limit=10",
   async (payload, thunkAPI) => {
@@ -74,7 +74,6 @@ export const getProductsById = createAsyncThunk(
     }
   }
 );
-
 export const deleteProducts = createAsyncThunk(
   "company/product/:id",
   async (payload, thunkAPI) => {
@@ -90,7 +89,7 @@ export const deleteProducts = createAsyncThunk(
     }
   }
 );
-
+//👽 ----------- Order Managment -----------👽
 export const getOrders = createAsyncThunk(
   "company/order?page=1&limit=10",
   async (payload, thunkAPI) => {
@@ -136,6 +135,42 @@ export const cancelOrder = createAsyncThunk(
     }
   }
 );
+//👽 ----------- Customer Managment -----------👽
+export const getCustomers = createAsyncThunk(
+  "/company/user?page=1&limit=10&search=",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.get(
+        `/company/user?search=""&page=${1}&limit=${10}`
+      );
+      SuccessToast(response?.data?.message);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const getCustomerOrders = createAsyncThunk(
+  "/company/user/:id/order?page=1&limit=10",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.get(
+        `/company/user/${payload}/order?search=""&page=${1}&limit=${10}`
+      );
+      SuccessToast(response?.data?.message);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 const appSlice = createSlice({
   name: "app",
   initialState,
@@ -159,7 +194,7 @@ const appSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Products
+      //👽 ----------- Product Managment-----------👽
       .addCase(CreateProduct.pending, (state, action) => {
         state.isLoading = true;
       })
@@ -212,6 +247,7 @@ const appSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload.message;
       })
+      //👽 ----------- Orders Managment-----------👽
       .addCase(getOrders.pending, (state, action) => {
         state.isLoading = true;
       })
@@ -241,6 +277,29 @@ const appSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(cancelOrder.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      //👽 ----------- Customer Managment-----------👽
+      .addCase(getCustomers.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getCustomers.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.Customers = action.payload.data;
+      })
+      .addCase(getCustomers.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(getCustomerOrders.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getCustomerOrders.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.CustomerOrders = action.payload.data;
+      })
+      .addCase(getCustomerOrders.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
       });

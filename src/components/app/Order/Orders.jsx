@@ -126,7 +126,7 @@ export default function OrdersData() {
         </div>
 
         {/* ✅ Global Table */}
-        <GlobalTable data={data} columns={columns} />
+        <GlobalTable data={data} columns={columns} loading={isLoading} />
       </div>
 
       <Pagination />
