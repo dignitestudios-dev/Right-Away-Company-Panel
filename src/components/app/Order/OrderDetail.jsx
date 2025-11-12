@@ -121,29 +121,6 @@ export default function OrderDetail() {
   useEffect(() => {
     setOrderStatus(singleOrder?.status);
   }, [singleOrder]);
-
-  // 🔴 Listen for order:updated socket event
-  useEffect(() => {
-    const handleOrderUpdated = (data) => {
-      console.log("✅ Order updated from server:", data);
-      
-      if (data?.status) {
-       setSingleOrder(data);
-        console.log("Order status updated to:", data.status);
-      }
-      
-      if (data?.message) {
-        console.log("Server message:", data.message);
-      }
-    };
-
-    socket.on("order:updated", handleOrderUpdated);
-
-    // Cleanup: remove listener when component unmounts
-    return () => {
-      socket.off("order:updated", handleOrderUpdated);
-    };
-  }, []);
   const statusStyles = {
     incoming: {
       bg: "bg-[#7D72F126]",
@@ -163,7 +140,7 @@ export default function OrderDetail() {
     },
   };
 
- 
+
 
   const handleStartPreparingClick = async (status) => {
     if (!selectedOption) {
@@ -172,21 +149,13 @@ export default function OrderDetail() {
     }
 
     try {
-      setLoading(true);
-      console.log("📤 Emitting order status update:", { id: orderId, status: status.toLowerCase() });
-
-      // Emit status update to server
+      // 2️⃣ Then emit event
       socket.emit("order:update:status", {
         id: orderId,
         status: status.toLowerCase(),
       });
-
-      // Wait a bit for server response (optional timeout to prevent infinite loading)
-      setTimeout(() => {
-        setLoading(false);
-      }, 3000);
+     
     } catch (error) {
-      setLoading(false);
       console.error("❌ Socket emit failed:", error);
       ErrorToast("Something went wrong while updating status.");
     }
