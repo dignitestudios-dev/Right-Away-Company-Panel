@@ -37,7 +37,7 @@ const RiderArivedModal = ({ isOpen, setIsOpen, setOrderStatus }) => {
           <Button
             text={"Acknowledge & Confirm Pickup"}
             onClick={() => {
-              setOrderStatus("Out for Delivery");
+              setOrderStatus("delivery");
               setIsOpen(false);
             }}
             customClass={"w-[428px] mt-4"}

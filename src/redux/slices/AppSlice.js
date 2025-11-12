@@ -92,10 +92,18 @@ export const deleteProducts = createAsyncThunk(
 //👽 ----------- Order Managment -----------👽
 export const getOrders = createAsyncThunk(
   "company/order?page=1&limit=10",
-  async (payload, thunkAPI) => {
+  async ({ type, status, page, limit }, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.get(`company/order?page=${1}&limit=${20}`);
+      const params = new URLSearchParams({
+        page,
+        limit,
+        type,
+      });
+
+      if (status) params.append("status", status); // only if defined
+
+      const response = await axios.get(`/company/order?${params.toString()}`);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -125,7 +133,7 @@ export const cancelOrder = createAsyncThunk(
   async ({ id, form }, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.put(`/company/order/${id}/cancel`,form);
+      const response = await axios.put(`/company/order/${id}/cancel`, form);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -192,9 +200,9 @@ const appSlice = createSlice({
       state.isAuthenticated = false;
     },
     setSingleOrder: (state, action) => {
-      alert("called")
+      console.log(action.payload, "setting single order");
       state.singleOrder = action.payload;
-    } 
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -310,5 +318,6 @@ const appSlice = createSlice({
   },
 });
 
-export const { setToken, setRefreshToken, setUser, logout,setSingleOrder } = appSlice.actions;
+export const { setToken, setRefreshToken, setUser, logout, setSingleOrder } =
+  appSlice.actions;
 export default appSlice.reducer;

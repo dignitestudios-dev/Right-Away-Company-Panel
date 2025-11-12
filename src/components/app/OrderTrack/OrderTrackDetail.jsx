@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GoArrowLeft } from "react-icons/go";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import {
   CallIcon,
   ChatBtnIcon,
@@ -16,6 +16,10 @@ import Button from "../../global/Button";
 
 import { FaStar, FaRegStar } from "react-icons/fa";
 import ShippingActivity from "./ShippingActivity";
+import { socket } from "../../../../socket";
+import { useDispatch, useSelector } from "react-redux";
+import { getOrderById, setSingleOrder } from "../../../redux/slices/AppSlice";
+import { formatDate } from "../../../lib/helpers";
 
 const CustomerReviewCard = () => {
   return (
@@ -94,27 +98,95 @@ export default function OrderTrackDetail() {
   const [isOpen, setIsOpen] = useState(false);
   const [orderStatus, setOrderStatus] = useState("Ready For Pickup");
 
+  const statusMap = {
+    pickUp: "Ready For Pickup",
+    delivery: "Out for Delivery",
+    completed: "Delivered",
+  };
+
+  // Map display statuses to styles
   const statusStyles = {
     "Ready For Pickup": {
-      bg: "bg-[#10CBFF26]", // light blue background
-      text: "text-[#10CBFF]", // blue text
+      bg: "bg-[#10CBFF26]",
+      text: "text-[#10CBFF]",
     },
     "Out for Delivery": {
-      bg: "bg-[#FF6D0826]", // light orange
-      text: "text-[#FF6D08]", // amber text
+      bg: "bg-[#FF6D0826]",
+      text: "text-[#FF6D08]",
     },
     Delivered: {
-      bg: "bg-[#20BD4A26]", // light green
-      text: "text-[#20BD4A]", // green text
+      bg: "bg-[#20BD4A26]",
+      text: "text-[#20BD4A]",
     },
   };
 
-  // Fallback style if status not found
-  const currentStyle = statusStyles[orderStatus] || {
+  // Convert backend status to display status
+  const displayStatus = statusMap[orderStatus] || "Unknown Status";
+
+  // Get current style
+  const currentStyle = statusStyles[displayStatus] || {
     bg: "bg-gray-100",
     text: "text-gray-500",
   };
+console.log(displayStatus,"display")
+  const dispatch = useDispatch();
+  const [selectedOption, setSelectedOption] = useState(""); // for radio
+  const [loading, setLoading] = useState(false);
 
+  const { singleOrder, isLoading } = useSelector((state) => state?.app);
+  const loc = useLocation();
+  const orderId = loc?.state?.id;
+  const gerOrderDetail = async () => {
+    dispatch(getOrderById(orderId));
+  };
+  useEffect(() => {
+    const fetchProductId = async () => {
+      await gerOrderDetail();
+    };
+
+    fetchProductId();
+  }, [orderId]);
+
+  useEffect(() => {
+    setOrderStatus(singleOrder?.status);
+  }, [singleOrder]);
+
+  useEffect(() => {
+    // ✅ Success response listener
+    socket.on("order:updated:status", (data) => {
+      console.log("✅ Order status update success:", data);
+      dispatch(setSingleOrder(data?.data));
+      SuccessToast("Order status updated successfully!");
+    });
+
+    // ❌ Error response listener
+    socket.on("order:update:status:error", (error) => {
+      ErrorToast(error?.message);
+    });
+
+    // 🧹 Cleanup on unmount
+    return () => {
+      socket.off("order:updated:status");
+      socket.off("order:update:status:error");
+    };
+  }, []);
+
+  const handleStartPreparingClick = async (status) => {
+    if (!selectedOption && status === "processing") {
+      ErrorToast("Please select a delivery option before proceeding.");
+      return;
+    }
+
+    try {
+      socket.emit("order:update:status", {
+        id: orderId,
+        status: status,
+      });
+    } catch (error) {
+      ErrorToast(error?.message);
+    }
+  };
+  console.log(singleOrder, "single order get");
   return (
     <div>
       <div className="flex justify-between ">
@@ -128,8 +200,8 @@ export default function OrderTrackDetail() {
           Order Tracking Details
         </h3>
         <div className="flex items-center gap-4">
-          {orderStatus == "Out for Delivery" ||
-            (orderStatus == "Ready For Pickup" && (
+          {statusMap[orderStatus] == "Out for Delivery" ||
+            (statusMap[orderStatus] == "Ready For Pickup" && (
               <>
                 <button
                   onClick={() => navigate("/app/chat")}
@@ -143,77 +215,109 @@ export default function OrderTrackDetail() {
         </div>
       </div>
       <div className="grid lg:grid-cols-12 gap-4  mt-4">
-        <div className="border col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
-          <div className="flex mb-5 justify-between">
-            <div className="flex gap-4 items-center">
-              <div className="w-[84px] flex items-center justify-center h-[84px] bg-[#F2FBF7] rounded-[15px]">
-                <img src={MilkPackImg} className="" alt="" />
-              </div>
-              <div>
-                <h3 className="text-[20px] text-[#000000] font-[600] ">
-                  Product Name
-                </h3>
-                <p className="text-[16px] font-[400] text-[#000000]">
-                  <span className="text-[#959393]  ">Category:</span> Building
-                  Material
-                </p>
-                <p className="text-[16px] font-[400] text-[#000000]">
-                  <span className="text-[#959393]  ">Sub Category:</span>{" "}
-                  Concrete Blocks
-                </p>
-              </div>
-            </div>
+        <div className="border col-span-12 lg:col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
+          <div className="flex justify-between items-center">
+            <h3 className="text-[20px] font-[600]">Order Items</h3>
             <div
-              className={`${currentStyle.bg} ${currentStyle.text}  text-[14px] p-3 font-[500]  w-[110x] h-[37px] rounded-full flex justify-center items-center`}
+              className={`${currentStyle.bg} ${currentStyle.text}  mb-4 capitalize text-[14px] ml-auto p-3 font-[500]  h-[37px] rounded-full flex justify-center items-center`}
             >
-              {orderStatus}
+              {displayStatus}
             </div>
           </div>
+          {singleOrder?.item?.map((item, i) => (
+            <div key={i} className="flex  py-2 mb-2 justify-between">
+              <div className="flex gap-4 items-center">
+                <div className="w-[84px] flex items-center justify-center h-[84px] bg-[#F2FBF7] rounded-[15px]">
+                  <img
+                    src={item?.products?.images[0]}
+                    className="w-[70px] rounded-md h-[70px]"
+                    alt=""
+                  />
+                </div>
+                <div>
+                  <h3 className="text-[20px] text-[#000000] font-[600] ">
+                    {item?.products?.name}
+                  </h3>
+                  <p className="text-[16px] font-[400] text-[#000000]">
+                    <span className="text-[#959393]  ">Category:</span>{" "}
+                    {item?.products?.category}
+                  </p>
+                  <p className="text-[16px] font-[400] text-[#000000]">
+                    <span className="text-[#959393]  ">Sub Category:</span>{" "}
+                    {item?.products?.subCategory}{" "}
+                    <span className="text-[#959393]  ">Qty:</span>{" "}
+                    {item?.quantity}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
           {/* Order Details */}
           <div className="border-b border-t py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">Order ID</p>
-            <p className="text-[#000000]  font-[400] text-[16px]">#6979</p>
+            <p className="text-[#000000]  font-[400] text-[16px]">
+              #{singleOrder?.orderId}
+            </p>
           </div>
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">Order Date</p>
             <p className="text-[#000000]  font-[400] text-[16px]">
-              Jan 15, 2023, 10:21
+              {formatDate(singleOrder?.createdAt)}
             </p>
           </div>
+          {singleOrder?.type == "Scheduled" && (
+            <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
+              <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                Scheduled Date
+              </p>
+              <p className="text-[#000000]  font-[400] text-[16px]">
+                {formatDate(singleOrder?.createdAt)}
+              </p>
+            </div>
+          )}
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">
               Delivery Address
             </p>
             <p className="text-[#000000]  font-[400] text-[16px]">
-              Lorem ipsum dolor sit amet, consectetur
+              {singleOrder?.address?.address}
             </p>
           </div>
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">
               Delivery Type
             </p>
-            <p className="text-[#000000]  font-[400] text-[16px]">Immediater</p>
+            <p className="text-[#000000]  font-[400] text-[16px]">
+              {" "}
+              {singleOrder?.type}
+            </p>
           </div>
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">
               Special Instructions
             </p>
             <p className="text-[#000000]  font-[400] text-[16px]">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incidid.
+              {singleOrder?.instruction}
             </p>
           </div>
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-            <p className="text-[#7C7C7C]  font-[400] text-[16px]">Qty</p>
-            <p className="text-[#000000]  font-[400] text-[16px]">100</p>
-          </div>
-          <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">User Name</p>
-            <p onClick={()=>navigate("/app/customer-detail")} className="cursor-pointer text-[#000000] flex items-center gap-3 font-[400] text-[16px]">
+            <p
+              onClick={() =>
+                navigate("/app/customer-detail", {
+                  state: { customer: singleOrder?.user },
+                })
+              }
+              className="text-[#000000] flex items-center gap-3 font-[400] text-[16px]"
+            >
               <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
-                <img src={Person1} alt="person" />
+                <img
+                  src={singleOrder?.user?.profilePicture}
+                  alt="person"
+                  className="w-full h-full rounded-full"
+                />
               </div>
-              Christine Easom
+              {singleOrder?.user?.name}
             </p>
           </div>
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
@@ -221,7 +325,7 @@ export default function OrderTrackDetail() {
               Email Address
             </p>
             <p className="text-[#000000]  font-[400] text-[16px]">
-              ceasomw@theguardian.com
+              {singleOrder?.user?.email}
             </p>
           </div>
           <div className=" py-4 flex items-center justify-between border-[#D4D4D4]">
@@ -229,12 +333,12 @@ export default function OrderTrackDetail() {
               Contact Number
             </p>
             <p className="text-[#000000]  font-[400] text-[16px]">
-              +1 000 000 000
+              {singleOrder?.user?.phone}
             </p>
           </div>
         </div>
         <div className="col-span-4 ">
-          {orderStatus === "Delivered" && (
+          {statusMap[orderStatus] === "Delivered" && (
             <div className="bg-[#FFFFFF] p-4  drop-shadow-sm rounded-[14px]">
               <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
                 Successfully Delivered
@@ -261,9 +365,9 @@ export default function OrderTrackDetail() {
               </div>
             </div>
           )}
-          {(orderStatus === "Out for Delivery" ||
-            orderStatus === "Ready For Pickup" ||
-            orderStatus === "Delivered") && (
+          {(statusMap[orderStatus] === "Out for Delivery" ||
+            statusMap[orderStatus] === "Ready For Pickup" ||
+            statusMap[orderStatus] === "Delivered") && (
             <div className="bg-[#FFFFFF] p-4 mt-4 drop-shadow-sm rounded-[14px]">
               <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
                 Rider Information
@@ -348,16 +452,13 @@ export default function OrderTrackDetail() {
             </div>
           )}
 
-          <ShippingActivity orderStatus={orderStatus} setOrderStatus={setOrderStatus} />
+          <ShippingActivity
+            orderStatus={statusMap[orderStatus]}
+            setOrderStatus={handleStartPreparingClick}
+          />
 
-          {orderStatus == "Completed" && <CustomerReviewCard />}
-          {orderStatus == "Processing" && (
-            <Button
-              text={"Ready for Pickup"}
-              onClick={() => navigate("/app/order-tracking")}
-              customClass={"w-full mt-4"}
-            />
-          )}
+          {statusMap[orderStatus] == "Completed" && <CustomerReviewCard />}
+          
         </div>
       </div>
       {/* <OrderCancelConfirmModal

@@ -23,7 +23,7 @@ import {
 } from "../../../redux/slices/AppSlice";
 import { formatDate } from "../../../lib/helpers";
 import { socket } from "../../../../socket";
-import { ErrorToast } from "../../global/Toaster";
+import { ErrorToast, SuccessToast } from "../../global/Toaster";
 
 const CustomerReviewCard = () => {
   return (
@@ -140,28 +140,42 @@ export default function OrderDetail() {
     },
   };
 
+  useEffect(() => {
+    // ✅ Success response listener
+    socket.on("order:updated:status", (data) => {
+      console.log("✅ Order status update success:", data);
+      dispatch(setSingleOrder(data?.data));
+      SuccessToast("Order status updated successfully!");
+    });
 
+    // ❌ Error response listener
+    socket.on("order:update:status:error", (error) => {
+      ErrorToast(error?.message);
+    });
+
+    // 🧹 Cleanup on unmount
+    return () => {
+      socket.off("order:updated:status");
+      socket.off("order:update:status:error");
+    };
+  }, []);
 
   const handleStartPreparingClick = async (status) => {
-    if (!selectedOption) {
+    if (!selectedOption&&status==="processing") {
       ErrorToast("Please select a delivery option before proceeding.");
       return;
     }
 
     try {
-      // 2️⃣ Then emit event
       socket.emit("order:update:status", {
         id: orderId,
-        status: status.toLowerCase(),
+        status: status,
       });
-     
     } catch (error) {
-      console.error("❌ Socket emit failed:", error);
-      ErrorToast("Something went wrong while updating status.");
+      ErrorToast(error?.message);
     }
   };
 
-  console.log(singleOrder, "single order get");
   // ✅ Always safely select a style (fallback = 'incoming')
   const currentStyle =
     statusStyles[orderStatus?.toLowerCase?.()] || statusStyles["incoming"];
@@ -508,7 +522,10 @@ export default function OrderDetail() {
           {orderStatus == "processing" && (
             <Button
               text={"Ready for Pickup"}
-              onClick={() => navigate("/app/order-track-detail")}
+              onClick={() => {
+                handleStartPreparingClick("pickUp");
+                navigate("/app/order-track-detail");
+              }}
               customClass={"w-full mt-4"}
             />
           )}

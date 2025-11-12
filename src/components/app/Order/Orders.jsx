@@ -13,12 +13,18 @@ export default function OrdersData() {
   const [activeStatus, setActiveStatus] = useState("All");
   const dispatch = useDispatch();
   const { orders, isLoading } = useSelector((state) => state.app);
-
   useEffect(() => {
-    dispatch(getOrders());
-  }, [dispatch]);
+    const payload = {
+      type: "manage",
+      ...(activeStatus !== "All" && { status: activeStatus }),
+      page: 1,
+      limit: 20,
+    };
+    console.log("🚀 Dispatching getOrders with payload:", payload);
+    dispatch(getOrders(payload));
+  }, [dispatch, activeStatus]);
 
-  const statuses = ["All", "Incoming", "Processing", "Completed", "Cancelled"];
+  const statuses = ["All", "incoming", "cancelled"];
 
   const columns = [
     "Order ID",
@@ -30,20 +36,15 @@ export default function OrdersData() {
     "Action",
   ];
 
-  // ✅ Filter orders based on selected status
-  const filteredOrders =
-    activeStatus === "All"
-      ? orders
-      : orders?.filter(
-          (order) =>
-            order?.status?.toLowerCase() === activeStatus.toLowerCase()
-        );
-
+console.log(orders,"order--->")
   // ✅ Properly structure data for GlobalTable
-  const data = filteredOrders?.map((item, index) => ({
+  const data = orders?.map((item, index) => ({
     _id: item._id,
     cells: [
-      <p key={`order-${index}-id`} className="text-[#181818] text-[14px] font-[400]">
+      <p
+        key={`order-${index}-id`}
+        className="text-[#181818] text-[14px] font-[400]"
+      >
         {item.orderId}
       </p>,
 
@@ -58,15 +59,24 @@ export default function OrdersData() {
         </div>
       </div>,
 
-      <p key={`order-${index}-date`} className="text-[#181818] text-[14px] font-[400]">
+      <p
+        key={`order-${index}-date`}
+        className="text-[#181818] text-[14px] font-[400]"
+      >
         {formatDate(item.createdAt)}
       </p>,
 
-      <p key={`order-${index}-type`} className="text-[#181818] text-[14px] font-[400]">
+      <p
+        key={`order-${index}-type`}
+        className="text-[#181818] text-[14px] font-[400]"
+      >
         {item.type}
       </p>,
 
-      <p key={`order-${index}-amount`} className="text-[#181818] text-[14px] font-[400]">
+      <p
+        key={`order-${index}-amount`}
+        className="text-[#181818] text-[14px] font-[400]"
+      >
         ${parseFloat(item.total || 0).toFixed(2)}
       </p>,
 
@@ -111,7 +121,7 @@ export default function OrdersData() {
             <button
               key={status}
               onClick={() => setActiveStatus(status)}
-              className={`text-[14px] font-[400] transition-colors relative pb-2 ${
+              className={`text-[14px] font-[400] capitalize transition-colors relative pb-2 ${
                 activeStatus === status
                   ? "gradient-text"
                   : "text-[#000000] hover:text-gray-900"
