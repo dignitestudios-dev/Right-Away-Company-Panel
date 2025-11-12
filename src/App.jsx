@@ -30,8 +30,10 @@ import Settings from "./pages/app/Settings";
 import BankDetail from "./components/app/Setting/BankDetail";
 import AddCard from "./components/app/Setting/AddCard";
 import EditCard from "./components/app/Setting/EditCard";
+import { useEffect } from "react";
 
 function App() {
+  
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/auth/login" />} />

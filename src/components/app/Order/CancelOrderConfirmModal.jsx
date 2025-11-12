@@ -8,8 +8,51 @@ import {
 import Button from "../../global/Button";
 import { useState } from "react";
 import Input from "../../global/Input";
-const OrderCancelConfirmModal = ({ isOpen, setIsOpen, setOrderStatus }) => {
+import { useDispatch } from "react-redux";
+import { cancelOrder, getOrderById } from "../../../redux/slices/AppSlice";
+const OrderCancelConfirmModal = ({
+  isOpen,
+  setIsOpen,
+  setOrderStatus,
+  orderId,
+}) => {
+  const dispatch = useDispatch();
   const [step, setStep] = useState(1);
+  const [title, setTitle] = useState("");
+  const [detail, setDetail] = useState("");
+  const [errors, setErrors] = useState({});
+  const validate = () => {
+    const newErrors = {};
+    if (!title.trim()) newErrors.title = "Title is required";
+    if (!detail.trim()) newErrors.detail = "Detail is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleCancelOrder = async () => {
+    if (!validate()) return;
+
+    try {
+      // Cancel order
+      await dispatch(
+        cancelOrder({
+          id: orderId,
+          form: { title, details: detail },
+        })
+      ).unwrap();
+
+      // Optionally fetch updated order info
+      await dispatch(getOrderById(orderId)).unwrap();
+
+      // Close modal and update step
+      setStep(3);
+      setOrderStatus("cancelled");
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+    }
+  };
+
+  if (!isOpen) return null;
   return (
     <Modal
       isOpen={isOpen}
@@ -55,7 +98,7 @@ const OrderCancelConfirmModal = ({ isOpen, setIsOpen, setOrderStatus }) => {
             </div>
           </>
         )}
-        {step == 2 && (
+        {step === 2 && (
           <>
             <div className="flex justify-end items-center">
               <IoCloseSharp
@@ -71,41 +114,50 @@ const OrderCancelConfirmModal = ({ isOpen, setIsOpen, setOrderStatus }) => {
               <h3 className="font-[700] mt-2 text-[24px] text-[#181818] ">
                 Cancellation Reasons
               </h3>
-              <form method="post" className="w-full mt-3">
+              <form
+                className="w-full mt-3"
+                onSubmit={(e) => e.preventDefault()}
+              >
                 <div className="w-full text-start">
-                  <label
-                    htmlFor=""
-                    className="text-[14px] font-[400] text-[#000000]"
-                  >
+                  <label className="text-[14px] font-[400] text-[#000000]">
                     Title
                   </label>
-                  <br />
                   <input
                     type="text"
-                    className="bg-[#F9F9F9] w-full p-2 focus:outline-none rounded-[8px] h-[54px]"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className={`bg-[#F9F9F9] w-full p-2 focus:outline-none rounded-[8px] h-[54px] ${
+                      errors.title ? "border border-red-500" : ""
+                    }`}
                   />
+                  {errors.title && (
+                    <p className="text-red-500 text-[12px]">{errors.title}</p>
+                  )}
                 </div>
+
                 <div className="w-full text-start mt-3">
-                  <label
-                    htmlFor=""
-                    className="text-[14px] font-[400] text-[#000000]"
-                  >
+                  <label className="text-[14px] font-[400] text-[#000000]">
                     Detail
                   </label>
-                  <br />
                   <textarea
-                    name=""
-                    id=""
-                    className="bg-[#F9F9F9] h-[165px] w-full p-3 focus:outline-none rounded-[8px] "
+                    value={detail}
+                    onChange={(e) => setDetail(e.target.value)}
+                    className={`bg-[#F9F9F9] h-[165px] w-full p-3 focus:outline-none rounded-[8px] ${
+                      errors.detail ? "border border-red-500" : ""
+                    }`}
                     placeholder="Write here"
                   ></textarea>
+                  {errors.detail && (
+                    <p className="text-red-500 text-[12px]">{errors.detail}</p>
+                  )}
                 </div>
               </form>
+
               <div className="flex gap-3 items-center mt-3">
                 <Button
                   text={"Submit"}
                   customClass={"w-[385px]"}
-                  onClick={() => setStep(3)}
+                  onClick={handleCancelOrder}
                 />
               </div>
             </div>

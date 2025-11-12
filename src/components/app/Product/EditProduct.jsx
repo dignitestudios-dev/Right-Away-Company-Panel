@@ -18,6 +18,38 @@ import { useDispatch, useSelector } from "react-redux";
 import { getProductsById, updateProduct } from "../../../redux/slices/AppSlice";
 
 export default function EditProduct() {
+  const storeCategories = [
+    {
+      category: "Food & Beverages",
+      subcategories: [
+        "Fast Food & Snacks",
+        "Restaurants & Cafés",
+        "Beverages & Juices",
+        "Desserts & Bakery",
+        "Healthy / Organic Food",
+      ],
+    },
+    {
+      category: "Groceries & Daily Essentials",
+      subcategories: [
+        "Fruits & Vegetables",
+        "Dairy & Eggs",
+        "Meat & Seafood",
+        "Snacks & Packaged Food",
+        "Household Supplies",
+      ],
+    },
+    {
+      category: "Electronics & Gadgets",
+      subcategories: [
+        "Mobile Phones & Accessories",
+        "Laptops & Computers",
+        "Home Appliances",
+        "Audio & Headphones",
+        "Smart Watches & Wearables",
+      ],
+    },
+  ];
   const [isOpen, setIsOpen] = useState(false);
   const [actionType, setActionType] = useState("");
   const [editIndex, setEditIndex] = useState(null);
@@ -211,17 +243,53 @@ export default function EditProduct() {
             )}
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="font-[500] text-[14px]">Category</label>
+              <div className="w-full">
+                <label htmlFor="category" className="font-[500] text-[14px]">
+                  Category
+                </label>
+                <br />
                 <select
                   name="category"
                   value={values.category}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    // Reset subCategory when category changes
+                    handleChange({
+                      target: { name: "subCategory", value: "" },
+                    });
+                  }}
                   className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-[#B7B7B7] outline-none"
                 >
-                  <option>Select Category</option>
-                  <option value="food">Food</option>
-                  <option value="Furniture">Furniture</option>
+                  <option value="">Select Category</option>
+                  {storeCategories?.map((cat, idx) => (
+                    <option key={idx} value={cat.category}>
+                      {cat.category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="w-full">
+                <label htmlFor="subCategory" className="font-[500] text-[14px]">
+                  Sub Category
+                </label>
+                <br />
+                <select
+                  name="subCategory"
+                  value={values.subCategory}
+                  onChange={handleChange}
+                  className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-[#B7B7B7] outline-none"
+                  disabled={!values.category}
+                >
+                  <option value="">Select Sub Category</option>
+                  {values.category &&
+                    storeCategories
+                      .find((c) => c.category === values.category)
+                      ?.subcategories.map((sub, idx) => (
+                        <option key={idx} value={sub}>
+                          {sub}
+                        </option>
+                      ))}
                 </select>
               </div>
             </div>
@@ -459,7 +527,7 @@ export default function EditProduct() {
                 name="unitPrice"
                 type="number"
                 value={values.unitPrice}
-                 handleChange={(e) => {
+                handleChange={(e) => {
                   const value = e.target.value;
                   if (value === "" || Number(value) > 0) {
                     handleChange(e); // pass the event, not just value
@@ -475,7 +543,7 @@ export default function EditProduct() {
                 name="unitMessurement"
                 type="number"
                 value={values.unitMessurement}
-                 handleChange={(e) => {
+                handleChange={(e) => {
                   const value = e.target.value;
                   if (value === "" || Number(value) > 0) {
                     handleChange(e); // pass the event, not just value

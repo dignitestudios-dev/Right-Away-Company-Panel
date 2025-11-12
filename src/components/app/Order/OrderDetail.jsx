@@ -16,8 +16,14 @@ import OrderCancelConfirmModal from "./CancelOrderConfirmModal";
 
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { cancelOrder, getOrderById } from "../../../redux/slices/AppSlice";
+import {
+  cancelOrder,
+  getOrderById,
+  setSingleOrder,
+} from "../../../redux/slices/AppSlice";
 import { formatDate } from "../../../lib/helpers";
+import { socket } from "../../../../socket";
+import { ErrorToast } from "../../global/Toaster";
 
 const CustomerReviewCard = () => {
   return (
@@ -96,6 +102,9 @@ export default function OrderDetail() {
   const [isOpen, setIsOpen] = useState(false);
   const [orderStatus, setOrderStatus] = useState();
   const dispatch = useDispatch();
+  const [selectedOption, setSelectedOption] = useState(""); // for radio
+  const [loading, setLoading] = useState(false);
+
   const { singleOrder, isLoading } = useSelector((state) => state?.app);
   const loc = useLocation();
   const orderId = loc?.state?.id;
@@ -112,6 +121,29 @@ export default function OrderDetail() {
   useEffect(() => {
     setOrderStatus(singleOrder?.status);
   }, [singleOrder]);
+
+  // 🔴 Listen for order:updated socket event
+  useEffect(() => {
+    const handleOrderUpdated = (data) => {
+      console.log("✅ Order updated from server:", data);
+      
+      if (data?.status) {
+       setSingleOrder(data);
+        console.log("Order status updated to:", data.status);
+      }
+      
+      if (data?.message) {
+        console.log("Server message:", data.message);
+      }
+    };
+
+    socket.on("order:updated", handleOrderUpdated);
+
+    // Cleanup: remove listener when component unmounts
+    return () => {
+      socket.off("order:updated", handleOrderUpdated);
+    };
+  }, []);
   const statusStyles = {
     incoming: {
       bg: "bg-[#7D72F126]",
@@ -130,11 +162,37 @@ export default function OrderDetail() {
       text: "text-[#DC1D00]",
     },
   };
-  const handleCancelOrder = async () => {
-    await dispatch(cancelOrder(singleOrder?._id)).unwrap();
-    await dispatch(getOrderById(singleOrder?._id)).unwrap();
-    
+
+ 
+
+  const handleStartPreparingClick = async (status) => {
+    if (!selectedOption) {
+      ErrorToast("Please select a delivery option before proceeding.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      console.log("📤 Emitting order status update:", { id: orderId, status: status.toLowerCase() });
+
+      // Emit status update to server
+      socket.emit("order:update:status", {
+        id: orderId,
+        status: status.toLowerCase(),
+      });
+
+      // Wait a bit for server response (optional timeout to prevent infinite loading)
+      setTimeout(() => {
+        setLoading(false);
+      }, 3000);
+    } catch (error) {
+      setLoading(false);
+      console.error("❌ Socket emit failed:", error);
+      ErrorToast("Something went wrong while updating status.");
+    }
   };
+
+  console.log(singleOrder, "single order get");
   // ✅ Always safely select a style (fallback = 'incoming')
   const currentStyle =
     statusStyles[orderStatus?.toLowerCase?.()] || statusStyles["incoming"];
@@ -165,7 +223,7 @@ export default function OrderDetail() {
               </button>
             </>
           )}
-          {orderStatus == "Processing" && (
+          {orderStatus == "processing" && (
             <>
               <button
                 onClick={() => navigate("/app/chat")}
@@ -180,16 +238,16 @@ export default function OrderDetail() {
       </div>
       <div className="grid lg:grid-cols-12 gap-4  mt-4">
         <div className="border col-span-12 lg:col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
-          <div
-            className={`${currentStyle.bg} ${currentStyle.text} mb-4 capitalize text-[14px] ml-auto p-3 font-[500]  w-[110px] h-[37px] rounded-full flex justify-center items-center`}
-          >
-            {orderStatus}
+          <div className="flex justify-between items-center">
+            <h3 className="text-[20px] font-[600]">Order Items</h3>
+            <div
+              className={`${currentStyle.bg} ${currentStyle.text} mb-4 capitalize text-[14px] ml-auto p-3 font-[500]  w-[110px] h-[37px] rounded-full flex justify-center items-center`}
+            >
+              {orderStatus}
+            </div>
           </div>
           {singleOrder?.item?.map((item, i) => (
-            <div
-              key={i}
-              className="flex bg-white border rounded-lg shadow-sm py-2 mb-2 justify-between"
-            >
+            <div key={i} className="flex  py-2 mb-2 justify-between">
               <div className="flex gap-4 items-center">
                 <div className="w-[84px] flex items-center justify-center h-[84px] bg-[#F2FBF7] rounded-[15px]">
                   <img
@@ -208,9 +266,7 @@ export default function OrderDetail() {
                   </p>
                   <p className="text-[16px] font-[400] text-[#000000]">
                     <span className="text-[#959393]  ">Sub Category:</span>{" "}
-                    {item?.products?.subCategory}
-                  </p>
-                  <p className="text-[16px] font-[400] text-[#000000]">
+                    {item?.products?.subCategory}{" "}
                     <span className="text-[#959393]  ">Qty:</span>{" "}
                     {item?.quantity}
                   </p>
@@ -231,6 +287,16 @@ export default function OrderDetail() {
               {formatDate(singleOrder?.createdAt)}
             </p>
           </div>
+          {singleOrder?.type == "Scheduled" && (
+            <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
+              <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                Scheduled Date
+              </p>
+              <p className="text-[#000000]  font-[400] text-[16px]">
+                {formatDate(singleOrder?.createdAt)}
+              </p>
+            </div>
+          )}
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">
               Delivery Address
@@ -258,7 +324,14 @@ export default function OrderDetail() {
           </div>
           <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
             <p className="text-[#7C7C7C]  font-[400] text-[16px]">User Name</p>
-            <p onClick={()=>navigate("/app/customer-detail",{state:{customer:singleOrder?.user}})} className="text-[#000000] flex items-center gap-3 font-[400] text-[16px]">
+            <p
+              onClick={() =>
+                navigate("/app/customer-detail", {
+                  state: { customer: singleOrder?.user },
+                })
+              }
+              className="text-[#000000] flex items-center gap-3 font-[400] text-[16px]"
+            >
               <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
                 <img
                   src={singleOrder?.user?.profilePicture}
@@ -287,12 +360,25 @@ export default function OrderDetail() {
           </div>
         </div>
         <div className="col-span-12 lg:col-span-4 ">
-          <div className="bg-[#FFFFFF] p-4  h-[267px] drop-shadow-sm rounded-[14px]">
+          <div className="bg-[#FFFFFF] p-4   drop-shadow-sm rounded-[14px]">
             <h3 className="text-[20px] font-[600] mb-4 text-[#000000] ">
               Payment Details
             </h3>
+            {singleOrder?.item?.map((item, i) => (
+              <div
+                key={i}
+                className="border-b border-t py-5 flex items-center justify-between border-[#D4D4D4]"
+              >
+                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                  {item?.products?.name}
+                </p>
+                <p className="text-[#000000] font-[400] text-[16px]">
+                  ${Number(item?.products?.unitPrice || 0).toFixed(2)}
+                </p>
+              </div>
+            ))}
             <div className="border-b border-t py-5 flex items-center justify-between border-[#D4D4D4]">
-              <p className="text-[#7C7C7C]  font-[400] text-[16px]">subtotal</p>
+              <p className="text-[#000000]  font-[600] text-[16px]">subtotal</p>
               <p className="text-[#000000] font-[400] text-[16px]">
                 ${Number(singleOrder?.subTotal || 0).toFixed(2)}
               </p>
@@ -314,32 +400,39 @@ export default function OrderDetail() {
               </p>
             </div>
           </div>
-          {orderStatus == "incoming" && (
+          {orderStatus === "incoming" && (
             <div className="bg-[#FFFFFF] p-4 mt-4 h-[205px] drop-shadow-sm rounded-[14px]">
-              <h3 className="text-[20px] font-[600] mb-4 text-[#000000] ">
+              <h3 className="text-[20px] font-[600] mb-4 text-[#000000]">
                 Delivery Options
               </h3>
+
               <div className="col-span-6">
                 <label className="flex items-center gap-2 cursor-pointer font-[500] text-[16px] text-[#262626]">
                   <input
                     type="radio"
-                    value={""}
-                    // onChange={handleChange}
+                    name="deliveryOption"
+                    value="platformRider"
+                    checked={selectedOption === "platformRider"}
+                    onChange={(e) => setSelectedOption(e.target.value)}
                     className="accent-[#0AA48B] w-4 h-4"
                   />
                   <span>Assign to Platform Riders</span>
                 </label>
+
                 <p className="text-[#686868] font-[400] text-[13px]">
                   System auto-assigns an available rider
                 </p>
+
                 <Button
-                  onClick={() => setOrderStatus("Processing")}
-                  text={"Start Preparing Order"}
-                  customClass={"w-[332px] mx-auto mt-5"}
+                  onClick={() => handleStartPreparingClick("processing")}
+                  text="Start Preparing Order"
+                  loading={loading}
+                  customClass="w-[332px] mx-auto mt-5"
                 />
               </div>
             </div>
           )}
+
           {orderStatus == "Cancelled" && (
             <div className="bg-[#FFFFFF] p-4 mt-4 h-[205px] drop-shadow-sm rounded-[14px]">
               <h3 className="text-[20px] font-[600] mb-4 text-[#000000] ">
@@ -357,7 +450,7 @@ export default function OrderDetail() {
               </div>
             </div>
           )}
-          {(orderStatus === "Processing" || orderStatus === "Completed") && (
+          {(orderStatus === "processing" || orderStatus === "Completed") && (
             <div className="bg-[#FFFFFF] p-4 mt-4 drop-shadow-sm rounded-[14px]">
               <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
                 Rider Information
@@ -443,7 +536,7 @@ export default function OrderDetail() {
           )}
 
           {orderStatus == "Completed" && <CustomerReviewCard />}
-          {orderStatus == "Processing" && (
+          {orderStatus == "processing" && (
             <Button
               text={"Ready for Pickup"}
               onClick={() => navigate("/app/order-track-detail")}
@@ -453,6 +546,7 @@ export default function OrderDetail() {
         </div>
       </div>
       <OrderCancelConfirmModal
+        orderId={singleOrder?._id}
         setOrderStatus={setOrderStatus}
         isOpen={isOpen}
         setIsOpen={setIsOpen}

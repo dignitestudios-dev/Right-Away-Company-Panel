@@ -17,7 +17,7 @@ async function getDeviceFingerprint() {
 
 const instance = axios.create({
   baseURL: baseUrl,
-  timeout: 10000, // ✅ 30s safer for uploads
+  timeout: 30000, // ✅ 30s safer for uploads
 });
 
 instance.interceptors.request.use(async (request) => {

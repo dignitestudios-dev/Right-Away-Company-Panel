@@ -75,7 +75,7 @@ export default function OrdersData() {
         className={`text-[14px] font-[500] capitalize ${
           item.status === "Completed"
             ? "text-[#00C853]"
-            : item.status === "Cancelled"
+            : item.status === "cancelled"
             ? "text-[#FF3B30]"
             : item.status === "Processing"
             ? "text-[#FF9800]"

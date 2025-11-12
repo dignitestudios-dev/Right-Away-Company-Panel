@@ -95,7 +95,7 @@ export const getOrders = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.get(`company/order?page=${1}&limit=${10}`);
+      const response = await axios.get(`company/order?page=${1}&limit=${20}`);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -122,10 +122,10 @@ export const getOrderById = createAsyncThunk(
 );
 export const cancelOrder = createAsyncThunk(
   "/company/order/:id/cancel",
-  async (payload, thunkAPI) => {
+  async ({ id, form }, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.get(`/company/order/${payload}/cancel`);
+      const response = await axios.put(`/company/order/${id}/cancel`,form);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -191,6 +191,10 @@ const appSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
     },
+    setSingleOrder: (state, action) => {
+      alert("called")
+      state.singleOrder = action.payload;
+    } 
   },
   extraReducers: (builder) => {
     builder
@@ -306,5 +310,5 @@ const appSlice = createSlice({
   },
 });
 
-export const { setToken, setRefreshToken, setUser, logout } = appSlice.actions;
+export const { setToken, setRefreshToken, setUser, logout,setSingleOrder } = appSlice.actions;
 export default appSlice.reducer;
