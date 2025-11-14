@@ -11,18 +11,29 @@ import { Person2 } from "../../../assets/export";
 
 export default function OrdersData() {
   const [activeStatus, setActiveStatus] = useState("All");
+  const [filters, setFilters] = useState({
+    search: "",
+    startDate: "",
+    endDate: "",
+  });
+
   const dispatch = useDispatch();
-  const { orders, isLoading } = useSelector((state) => state.app);
+  const { orders, isLoading, pagination } = useSelector((state) => state.app);
+
+  // ✅ Fetch orders when filters or status or page changes
   useEffect(() => {
     const payload = {
       type: "manage",
       ...(activeStatus !== "All" && { status: activeStatus }),
-      page: 1,
-      limit: 20,
+      page: pagination.currentPage,
+      limit:10,
+      search: filters.search,
+      startDate: filters.startDate,
+      endDate: filters.endDate,
     };
-    console.log("🚀 Dispatching getOrders with payload:", payload);
+
     dispatch(getOrders(payload));
-  }, [dispatch, activeStatus]);
+  }, [dispatch, filters, activeStatus]); // 👈 re-fetch when filters change
 
   const statuses = ["All", "incoming", "cancelled"];
 
@@ -36,11 +47,10 @@ export default function OrdersData() {
     "Action",
   ];
 
-console.log(orders,"order--->")
-  // ✅ Properly structure data for GlobalTable
   const data = orders?.map((item, index) => ({
     _id: item._id,
     cells: [
+      // Order ID
       <p
         key={`order-${index}-id`}
         className="text-[#181818] text-[14px] font-[400]"
@@ -48,6 +58,7 @@ console.log(orders,"order--->")
         {item.orderId}
       </p>,
 
+      // Customer Info
       <div key={`order-${index}-user`} className="flex items-center gap-3">
         <img
           src={item?.user?.profilePicture || Person2}
@@ -59,6 +70,7 @@ console.log(orders,"order--->")
         </div>
       </div>,
 
+      // Booking Date
       <p
         key={`order-${index}-date`}
         className="text-[#181818] text-[14px] font-[400]"
@@ -66,6 +78,7 @@ console.log(orders,"order--->")
         {formatDate(item.createdAt)}
       </p>,
 
+      // Delivery Type
       <p
         key={`order-${index}-type`}
         className="text-[#181818] text-[14px] font-[400]"
@@ -73,6 +86,7 @@ console.log(orders,"order--->")
         {item.type}
       </p>,
 
+      // Amount
       <p
         key={`order-${index}-amount`}
         className="text-[#181818] text-[14px] font-[400]"
@@ -80,6 +94,7 @@ console.log(orders,"order--->")
         ${parseFloat(item.total || 0).toFixed(2)}
       </p>,
 
+      // Status
       <p
         key={`order-${index}-status`}
         className={`text-[14px] font-[500] capitalize ${
@@ -95,6 +110,7 @@ console.log(orders,"order--->")
         {item.status}
       </p>,
 
+      // Action
       <div key={`order-${index}-action`} className="flex items-center gap-3">
         <NavLink
           to="/app/order-detail"
@@ -109,18 +125,23 @@ console.log(orders,"order--->")
 
   return (
     <div>
-      <div className="flex justify-between">
+      {/* ✅ Header and Filter */}
+      <div className="flex justify-between flex-wrap items-center">
         <h3 className="font-[600] text-[32px]">Order Management</h3>
-        <Filter hide={true} />
+        <Filter onFilterChange={setFilters} />
       </div>
 
-      <div className="mt-4 rounded-2xl shadow-sm border-t p-2 border-[#B9B9B9] bg-[#FFFFFF]">
-        {/* ✅ Status Tabs */}
+      {/* ✅ Tabs + Table */}
+      <div className="mt-4 rounded-2xl shadow-sm border-t p-3 border-[#B9B9B9] bg-[#FFFFFF]">
+        {/* Status Tabs */}
         <div className="flex items-center gap-8 p-2">
           {statuses.map((status) => (
             <button
               key={status}
-              onClick={() => setActiveStatus(status)}
+              onClick={() => {
+                setActiveStatus(status);
+                setCurrentPage(1); // reset page when changing tab
+              }}
               className={`text-[14px] font-[400] capitalize transition-colors relative pb-2 ${
                 activeStatus === status
                   ? "gradient-text"
@@ -135,11 +156,20 @@ console.log(orders,"order--->")
           ))}
         </div>
 
-        {/* ✅ Global Table */}
+        {/* Orders Table */}
         <GlobalTable data={data} columns={columns} loading={isLoading} />
       </div>
 
-      <Pagination />
+      {/* ✅ Pagination */}
+      <Pagination
+        currentPage={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={pagination.totalItems}
+        itemsPerPage={pagination.itemsPerPage}
+        onPageChange={(page) =>
+          dispatch(getOrders({...filters,type:"manage",page, limit: 10 }))
+        }
+      />
     </div>
   );
 }

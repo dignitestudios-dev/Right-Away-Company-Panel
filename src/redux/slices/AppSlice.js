@@ -10,6 +10,8 @@ const initialState = {
   singleOrder: null,
   Customers: null,
   CustomerOrders: null,
+  pagination: null,
+  ProductReview: null,
 };
 //👽 ----------- Product Managment-----------👽
 export const CreateProduct = createAsyncThunk(
@@ -45,20 +47,29 @@ export const updateProduct = createAsyncThunk(
   }
 );
 export const getProducts = createAsyncThunk(
-  "company/product?page=1&limit=10",
-  async (payload, thunkAPI) => {
+  "company/product",
+  async (
+    { page = 1, limit = 10, search = "", startDate = "", endDate = "" },
+    thunkAPI
+  ) => {
     try {
-      // 4️⃣ Send request to backend
-      const response = await axios.get(`company/product?page=${1}&limit=${10}`);
-      SuccessToast(response?.data?.message);
+      const params = new URLSearchParams({
+        page,
+        limit,
+        search,
+        ...(startDate && { startDate }),
+        ...(endDate && { endDate }),
+      });
+
+      const response = await axios.get(`company/product?${params.toString()}`);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
-      ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
+
 export const getProductsById = createAsyncThunk(
   "company/product/byid",
   async (payload, thunkAPI) => {
@@ -91,20 +102,37 @@ export const deleteProducts = createAsyncThunk(
 );
 //👽 ----------- Order Managment -----------👽
 export const getOrders = createAsyncThunk(
-  "company/order?page=1&limit=10",
-  async ({ type, status, page, limit }, thunkAPI) => {
+  "company/getOrders",
+  async (
+    {
+      type,
+      status,
+      page = 1,
+      limit = 10,
+      search = "",
+      startDate = "",
+      endDate = "",
+    },
+    thunkAPI
+  ) => {
     try {
-      // 4️⃣ Send request to backend
       const params = new URLSearchParams({
         page,
         limit,
         type,
       });
 
-      if (status) params.append("status", status); // only if defined
+      if (status) params.append("status", status);
+      if (search) params.append("search", search);
+      if (startDate) params.append("startDate", startDate);
+      if (endDate) params.append("endDate", endDate);
 
       const response = await axios.get(`/company/order?${params.toString()}`);
-      SuccessToast(response?.data?.message);
+
+      // ⚡ Only show toast when needed (optional)
+      // SuccessToast(response?.data?.message);
+
+      // ✅ Expect backend to return: { orders, pagination: { totalItems, totalPages, currentPage, itemsPerPage } }
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -113,6 +141,7 @@ export const getOrders = createAsyncThunk(
     }
   }
 );
+
 export const getOrderById = createAsyncThunk(
   "company/order/byid",
   async (payload, thunkAPI) => {
@@ -178,6 +207,24 @@ export const getCustomerOrders = createAsyncThunk(
     }
   }
 );
+//👽 ----------- Customer Managment -----------👽
+export const getProductReview = createAsyncThunk(
+  "/company/products/reviews",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.get(
+        `/company/products/reviews`
+      );
+      SuccessToast(response?.data?.message);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 const appSlice = createSlice({
   name: "app",
@@ -233,6 +280,7 @@ const appSlice = createSlice({
       .addCase(getProducts.fulfilled, (state, action) => {
         state.isLoading = false;
         state.products = action.payload.data;
+        state.pagination = action.payload.pagination;
       })
       .addCase(getProducts.rejected, (state, action) => {
         state.isLoading = false;
@@ -266,6 +314,7 @@ const appSlice = createSlice({
       .addCase(getOrders.fulfilled, (state, action) => {
         state.isLoading = false;
         state.orders = action.payload.data;
+        state.pagination = action.payload.pagination;
       })
       .addCase(getOrders.rejected, (state, action) => {
         state.isLoading = false;
@@ -314,7 +363,19 @@ const appSlice = createSlice({
       .addCase(getCustomerOrders.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
-      });
+      })
+       //👽 ----------- ProductReview Managment-----------👽
+      .addCase(getProductReview.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getProductReview.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.ProductReview = action.payload.data;
+      })
+      .addCase(getProductReview.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
   },
 });
 

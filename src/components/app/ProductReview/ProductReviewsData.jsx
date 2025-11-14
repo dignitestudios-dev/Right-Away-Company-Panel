@@ -1,176 +1,105 @@
-import React, { useState } from "react";
-import { MilkPackImg, Person2, RatingIcon } from "../../../assets/export";
-import { NavLink } from "react-router";
+import React, { useEffect, useState } from "react";
+import { RatingIcon } from "../../../assets/export";
 import GlobalTable from "../../global/Table";
 import Pagination from "../../global/Pagination";
 import ProductRatingReviewModal from "./ProductRatingReviewModal";
+import { useDispatch, useSelector } from "react-redux";
+import { getProductReview } from "../../../redux/slices/AppSlice";
 
 export default function ProductReviewsData() {
   const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
+  const { ProductReview } = useSelector((state) => state?.app);
+
   const columns = [
-    "Order ID",
     "Customer Name",
+    "Product",
     "Description",
-    "Ratings",
+    "Rating",
     "Date",
-    "Product Name",
     "Action",
   ];
 
-  const orders = [
-    {
-      _id: "1",
-      id: "#546979",
-      name: "Christine Easom",
-      description: "lorem ipsum dolor amet aute...",
-      rating: 4.5,
-      date: "20 jan, 2024",
-      productName: "Product Name",
-    },
-    {
-      _id: "2",
-      id: "#546979",
-      name: "Christine Easom",
-      description: "lorem ipsum dolor amet aute...",
-      rating: 4.5,
-      date: "20 jan, 2024",
-      productName: "Product Name",
-    },
-    {
-      _id: "3",
-      id: "#546979",
-      name: "Christine Easom",
-      description: "lorem ipsum dolor amet aute...",
-      rating: 4.5,
-      date: "20 jan, 2024",
-      productName: "Product Name",
-    },
-    {
-      _id: "4",
-      id: "#546979",
-      name: "Christine Easom",
-      description: "lorem ipsum dolor amet aute...",
-      rating: 4.5,
-      date: "20 jan, 2024",
-      productName: "Product Name",
-    },
-    {
-      _id: "5",
-      id: "#546979",
-      name: "Christine Easom",
-      description: "lorem ipsum dolor amet aute...",
-      rating: 4.5,
-      date: "20 jan, 2024",
-      productName: "Product Name",
-    },
-    {
-      _id: "6",
-      id: "#546979",
-      name: "Christine Easom",
-      description: "lorem ipsum dolor amet aute...",
-      rating: 4.5,
-      date: "20 jan, 2024",
-      productName: "Product Name",
-    },
-    {
-      _id: "7",
-      id: "#546979",
-      name: "Christine Easom",
-      description: "lorem ipsum dolor amet aute...",
-      rating: 4.5,
-      date: "20 jan, 2024",
-      productName: "Product Name",
-    },
-    {
-      _id: "8",
-      id: "#546979",
-      name: "Christine Easom",
-      description: "lorem ipsum dolor amet aute...",
-      rating: 4.5,
-      date: "20 jan, 2024",
-      productName: "Product Name",
-    },
-    {
-      _id: "9",
-      id: "#546979",
-      name: "Christine Easom",
-      description: "lorem ipsum dolor amet aute...",
-      rating: 4.5,
-      date: "20 jan, 2024",
-      productName: "Product Name",
-    },
-    {
-      _id: "10",
-      id: "#546979",
-      name: "Christine Easom",
-      description: "lorem ipsum dolor amet aute...",
-      rating: 4.5,
-      date: "20 jan, 2024",
-      productName: "Product Name",
-    },
-  ];
+  // Fetch Product Reviews
+  const fetchProductReview = async () => {
+    await dispatch(getProductReview()).unwrap();
+  };
 
-  // ✅ Properly structure rows for GlobalTable
-  const data = orders.map((item, index) => ({
-    _id: item._id,
-    cells: [
-      <p key={index + "-id"} className="text-[#181818] text-[14px] font-[400]">
-        {item.id}
-      </p>,
+  useEffect(() => {
+    fetchProductReview();
+  }, []);
 
-      <div key={index + "-name"} className="flex items-center gap-3">
-        <img
-          src={Person2}
-          alt="Person"
-          className="w-10 h-10 rounded-full border border-[#00C49A] object-cover"
-        />
-        <div>
-          <p className="font-medium text-[14px]">{item.name}</p>
-        </div>
-      </div>,
+  // ✅ Format the reviews for GlobalTable
+  const data =
+    ProductReview?.map((item, index) => ({
+      _id: item._id,
+      cells: [
+        // 🧍 Customer Name + Avatar
+        <div key={`user-${index}`} className="flex items-center gap-3">
+          <img
+            src={item?.userRecord?.profilePicture}
+            alt={item?.userRecord?.name}
+            className="w-10 h-10 rounded-full border border-[#00C49A] object-cover"
+          />
+          <p className="font-medium text-[14px]">
+            {item?.userRecord?.name || "N/A"}
+          </p>
+        </div>,
 
-      <p
-        key={index + "-description"}
-        className="text-[#181818] text-[14px] font-[400]"
-      >
-        {item.description}
-      </p>,
+        // 🛒 Product Name + Image
+        <div key={`product-${index}`} className="flex items-center gap-3">
+          <img
+            src={item?.productRecord?.images?.[0]}
+            alt={item?.productRecord?.name}
+            className="w-10 h-10 rounded object-cover"
+          />
+          <p className="text-[14px] text-[#181818]">
+            {item?.productRecord?.name || "N/A"}
+          </p>
+        </div>,
 
-      <div key={index + "-rating"} className="flex items-center gap-1">
-        <span className="text-yellow-500">
-          <img src={RatingIcon} alt="" className="w-[16px] h-[15px]" />{" "}
-        </span>
-        <p className="text-[#181818] text-[14px] font-[400]">{item.rating}</p>
-      </div>,
+        // 📝 Description
+        <p
+          key={`desc-${index}`}
+          className="text-[#181818] text-[14px] font-[400]"
+        >
+          {item?.productRecord?.description || "No description"}
+        </p>,
 
-      <p
-        key={index + "-date"}
-        className="text-[#181818] text-[14px] font-[400]"
-      >
-        {item.date}
-      </p>,
+        // ⭐ Rating
+        <div key={`rating-${index}`} className="flex items-center gap-1">
+          <img src={RatingIcon} alt="rating" className="w-[16px] h-[15px]" />
+          <p className="text-[#181818] text-[14px] font-[400]">
+            {item?.rating || 0}
+          </p>
+        </div>,
 
-      <div key={index + "-product"} className="flex items-center gap-2">
-        <img src={MilkPackImg} alt="Product" className="w-8 h-8 object-cover" />
-        <p className="text-[#181818] text-[14px] font-[400]">
-          {item.productName}
-        </p>
-      </div>,
+        // 📅 Date
+        <p
+          key={`date-${index}`}
+          className="text-[#181818] text-[14px] font-[400]"
+        >
+          {new Date(item?.createdAt).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })}
+        </p>,
 
-      <div key={index + "-action"} className="flex items-center gap-3">
+        // 🔍 Action
         <button
+          key={`action-${index}`}
           onClick={() => setIsOpen(true)}
           className="text-[#00C49A] font-[500] border-b border-[#00C49A]"
         >
           View Details
-        </button>
-      </div>,
-    ],
-  }));
+        </button>,
+      ],
+    })) || [];
+
   return (
     <>
-      <div className="mt-4 rounded-2xl shadow-sm border-t p-2 border-[#B9B9B9] bg-[#FFFFFF] ">
-        {/* ✅ Pass structured data to GlobalTable */}
+      <div className="mt-4 rounded-2xl shadow-sm border-t p-2 border-[#B9B9B9] bg-[#FFFFFF]">
         <GlobalTable data={data} columns={columns} />
       </div>
       <Pagination />
