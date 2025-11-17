@@ -13,6 +13,7 @@ import AddAvailabilityModal from "./AddAvaliablityModal";
 import { useDispatch, useSelector } from "react-redux";
 import { CreateStore, getStore } from "../../redux/slices/authSlice";
 import StoreAddedSuccessfully from "../app/Profile/StoreAddSuccessFully";
+import { ErrorToast } from "../global/Toaster";
 
 const AddNewStoreModal = ({ isOpen, setIsOpen }) => {
   const [mapCenter, setMapCenter] = useState({ lat: 38.7946, lng: 106.5348 });
@@ -38,6 +39,11 @@ const AddNewStoreModal = ({ isOpen, setIsOpen }) => {
       validateOnBlur: true,
       onSubmit: async (values, action) => {
         try {
+          if (!availability) {
+            ErrorToast("Please add store availability before submitting.");
+            return;
+          }
+
           // Build plain JSON object instead of FormData
           const payload = {
             name: values.businessName,

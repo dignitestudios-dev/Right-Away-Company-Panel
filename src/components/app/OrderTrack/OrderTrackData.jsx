@@ -44,7 +44,7 @@ const statusMap = {
   ];
   console.log(orders, "order--->");
   // ✅ Properly structure rows for GlobalTable
-  const data = orders.map((item, index) => ({
+  const data = orders?.map((item, index) => ({
     _id: item._id,
     cells: [
       <p

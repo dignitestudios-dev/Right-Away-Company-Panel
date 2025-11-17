@@ -11,6 +11,7 @@ const initialState = {
   refreshToken: null,
   company: null,
   isAuthenticated: false,
+  isOnboardingStep: 0,
   stores: null,
   Banks: null,
   isDeleteLoading: false,
@@ -401,10 +402,18 @@ export const ConectStripeAccount = createAsyncThunk(
   "/company/account/link",
   async (payload, thunkAPI) => {
     try {
-      // 4️⃣ Send request to backend
       const response = await axios.get("/company/account/link", payload);
       SuccessToast(response?.data?.message);
-      window.location.href = response?.data?.data.url;
+
+      const url = response?.data?.data?.url;
+      if (url) {
+        window.open(url, "_blank"); // "_blank" opens in new tab
+      }
+
+      // ✅ Dispatch the resetOnboarding action properly
+
+      thunkAPI.dispatch(resetOnboarding());
+
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -418,6 +427,9 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    setOnboardingStep(state, action) {
+      state.isOnboardingStep = action.payload;
+    },
     setToken: (state, action) => {
       state.token = action.payload;
       state.isAuthenticated = true;
@@ -433,6 +445,9 @@ const authSlice = createSlice({
       state.refreshToken = null;
       state.company = null;
       state.isAuthenticated = false;
+    },
+    resetOnboarding(state) {
+      state.isOnboardingStep = 0;
     },
   },
   extraReducers: (builder) => {
@@ -474,7 +489,7 @@ const authSlice = createSlice({
       .addCase(VerifyForgotPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
-      })   
+      })
       .addCase(updateForgotPassword.pending, (state, action) => {
         state.isLoading = true;
       })
@@ -499,6 +514,7 @@ const authSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(CompleteCompanyProfile.fulfilled, (state, action) => {
+        state.company = action.payload?.data;
         state.isLoading = false;
       })
       .addCase(CompleteCompanyProfile.rejected, (state, action) => {
@@ -627,7 +643,7 @@ const authSlice = createSlice({
         state.isResendLoading = false;
         state.error = action.payload.message;
       })
-       .addCase(ReSendOtpFa.pending, (state, action) => {
+      .addCase(ReSendOtpFa.pending, (state, action) => {
         state.isResendLoading = true;
       })
       .addCase(ReSendOtpFa.fulfilled, (state, action) => {
@@ -637,7 +653,7 @@ const authSlice = createSlice({
         state.isResendLoading = false;
         state.error = action.payload.message;
       })
-       .addCase(ReSendOtpAccountVerification.pending, (state, action) => {
+      .addCase(ReSendOtpAccountVerification.pending, (state, action) => {
         state.isResendLoading = true;
       })
       .addCase(ReSendOtpAccountVerification.fulfilled, (state, action) => {
@@ -650,5 +666,12 @@ const authSlice = createSlice({
   },
 });
 
-export const { setToken, setRefreshToken, setUser, logout } = authSlice.actions;
+export const {
+  setToken,
+  setRefreshToken,
+  setUser,
+  logout,
+  setOnboardingStep,
+  resetOnboarding,
+} = authSlice.actions;
 export default authSlice.reducer;

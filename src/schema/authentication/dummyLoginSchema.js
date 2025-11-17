@@ -80,13 +80,19 @@ export const RegisterSchema = Yup.object({
     .required("Business name is required"),
 
   email: Yup.string()
-    .email("Invalid email format")
+    .matches(
+      /^[A-Za-z0-9](?:[A-Za-z0-9._%+-]*[A-Za-z0-9])?@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+      "Invalid email format"
+    )
+    .matches(/^(?!.*\.\.)/, "Email cannot contain consecutive dots")
     .required("Business email is required"),
 
-phoneNumber: Yup.string()
-  .matches(/^(?:\+1)?\d{10}$/, "Enter a valid US phone number")
-  .required("Phone number is required"),
+  phoneNumber: Yup.string()
+    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+    .required("Phone number is required"),
+
   registerNumber: Yup.string()
+    .matches(/^\d+$/, "Registration number must contain only numbers")
     .min(3, "Registration number is too short")
     .required("Company registration number is required"),
 
@@ -99,6 +105,10 @@ phoneNumber: Yup.string()
     .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
     .matches(/[a-z]/, "Password must contain at least one lowercase letter")
     .matches(/[0-9]/, "Password must contain at least one number")
+    .matches(
+      /[@$!%*?&#^()_\-+=<>.,{}[\]|/~]/,
+      "Password must contain at least one special character"
+    )
     .required("Password is required"),
 
   reTypePassword: Yup.string()
@@ -108,10 +118,10 @@ phoneNumber: Yup.string()
 export const CompleteProfileSchema = Yup.object({
   profilePic: Yup.mixed()
     .required("Profile picture is required")
-    .test("fileType", "Only image files or valid URLs are allowed", (value) => {
+    .test("fileType", "Only PNG, JPG, or JPEG files are allowed", (value) => {
       // Accept if it's an existing URL string
       if (typeof value === "string") {
-        return /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(value);
+        return /^https?:\/\/.+\.(jpg|jpeg|png)$/i.test(value);
       }
 
       // Accept if it's a File object with valid image type
@@ -120,6 +130,13 @@ export const CompleteProfileSchema = Yup.object({
       }
 
       return false;
+    })
+    .test("fileSize", "File size must be less than 10 MB", (value) => {
+      // Only validate size if it's a File object
+      if (value && value.size) {
+        return value.size <= 10 * 1024 * 1024; // 10 MB
+      }
+      return true; // skip if it's a URL
     }),
 
   description: Yup.string()
@@ -133,11 +150,13 @@ export const CompleteProfileSchema = Yup.object({
 export const AddNewStoreSchema = Yup.object({
   businessName: Yup.string()
     .required("Store name is required")
-    .min(2, "Store name must be at least 2 characters"),
+    .min(3, "Store name must be at least 3 characters")
+    .max(50, "Store name cannot exceed 50 characters"),
 
   address: Yup.string()
     .required("Store address is required")
-    .min(5, "Please enter a valid address"),
+    .min(5, "Address must be at least 5 characters")
+    .max(120, "Address cannot exceed 120 characters"),
 });
 export const BankDetailsSchema = Yup.object().shape({
   bankName: Yup.string()

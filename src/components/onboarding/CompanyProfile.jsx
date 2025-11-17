@@ -163,6 +163,7 @@ export default function CompanyProfile({ handleNext }) {
               name="description"
               error={errors.description}
               handleBlur={handleBlur}
+              maxLength={300}
               value={values.description}
             />
           </div>

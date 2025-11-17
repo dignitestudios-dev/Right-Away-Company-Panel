@@ -21,7 +21,7 @@ import Chat from "./pages/app/Chat";
 import OrderTrack from "./pages/app/OrderTrack";
 import OrderTrackDetail from "./components/app/OrderTrack/OrderTrackDetail";
 import Profile from "./pages/app/Profile";
-import ProtectedRoute from "./routes/ProtectedRoute";
+import  {ProtectedRoute, PublicRoute } from "./routes/ProtectedRoute";
 import CustomerDetail from "./pages/app/CustomerDetail";
 import Wallet from "./pages/app/Wallet";
 import ProductReviews from "./pages/app/ProductReviews";
@@ -30,13 +30,22 @@ import Settings from "./pages/app/Settings";
 import BankDetail from "./components/app/Setting/BankDetail";
 import AddCard from "./components/app/Setting/AddCard";
 import EditCard from "./components/app/Setting/EditCard";
-import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 function App() {
-  
+  function DefaultRedirect() {
+    const currentStep = useSelector((state) => state.auth?.isOnboardingStep); // Redux selector
+
+    // Agar onboarding step > 0 → signup pe redirect, warna login
+    if (currentStep > 0) {
+      return <Navigate to="/auth/signup" replace />;
+    } else {
+      return <Navigate to="/auth/login" replace />;
+    }
+  }
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/auth/login" />} />
+      <Route path="/" element={<DefaultRedirect />} />
 
       {/* 🔒 Protected App Routes */}
       <Route
@@ -80,7 +89,15 @@ function App() {
       </Route>
 
       {/* Public Auth Routes */}
-      <Route path="auth" element={<AuthLayout />}>
+      <Route
+        path="auth"
+        element={
+          <PublicRoute>
+            {" "}
+            <AuthLayout />
+          </PublicRoute>
+        }
+      >
         <Route path="signup" element={<SignUp />} />
         <Route path="login" element={<Login />} />
         <Route

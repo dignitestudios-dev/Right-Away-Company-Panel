@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoMailOutline } from "react-icons/io5";
 import { LiaIdCard } from "react-icons/lia";
 import { MdOutlinePayment } from "react-icons/md";
@@ -13,8 +13,12 @@ import VerifyDocuments from "../../components/onboarding/VerifyDocuments";
 import CompanyProfile from "../../components/onboarding/CompanyProfile";
 import AddStore from "../../components/onboarding/AddStore";
 import PaymentMethod from "../../components/onboarding/PaymentMethod";
+import { setOnboardingStep } from "../../redux/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
 export default function SignUp() {
   const [currentStep, setCurrentStep] = useState(0);
+  const dispatch = useDispatch();
+  const { isOnboardingStep } = useSelector(state => state.auth);
   const providerSteps = [
     { icon: RxFileText, title: "Business Details" },
     { icon: IoMailOutline, title: "Verify email" },
@@ -23,16 +27,22 @@ export default function SignUp() {
     { icon: PiCertificateBold, title: "Multiple Store Location" },
     { icon: MdOutlinePayment, title: "Payment Method" },
   ];
+  console.log(isOnboardingStep, "reduxCurrentStep");
   const [email, setEmail] = useState("");
   const steps = providerSteps.map((step, index) => ({
     ...step,
     completed: index < currentStep,
     active: index === currentStep,
   }));
-
+  useEffect(() => {
+    if (isOnboardingStep != currentStep) {
+      setCurrentStep(isOnboardingStep);
+    }
+  }, [isOnboardingStep]);
   const handleNext = () => {
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
+      dispatch(setOnboardingStep(currentStep + 1));
     }
   };
 

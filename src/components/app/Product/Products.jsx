@@ -100,10 +100,10 @@ export default function ProductsData() {
 
       {/* ✅ Pagination now connected */}
       <Pagination
-        currentPage={pagination.currentPage}
-        totalPages={pagination.totalPages}
-        totalItems={pagination.totalItems}
-        itemsPerPage={pagination.itemsPerPage}
+        currentPage={pagination?.currentPage}
+        totalPages={pagination?.totalPages}
+        totalItems={pagination?.totalItems}
+        itemsPerPage={pagination?.itemsPerPage}
         onPageChange={(page) =>
           dispatch(getProducts({ ...filters, page, limit:10 }))
         }

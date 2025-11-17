@@ -45,9 +45,24 @@ export default function AddStore({ handleNext }) {
           {stores?.map((item, i) => (
             <div
               key={i}
-              className="border rounded-[10px] p-4 bg-white shadow-sm mt-5 relative"
+              className="border flex justify-between gap-3 rounded-[10px] p-4 bg-white shadow-sm mt-5 relative"
             >
-              <div className="absolute top-4 right-4 flex gap-2">
+              <div>
+                <p className="font-[400] text-[14px] flex -ml-1 items-start gap-2">
+                  {" "}
+                  <CiLocationOn
+                    className="text-[#22B573]  font-bold"
+                    size={22}
+                  />
+                  {item?.address}
+                </p>
+                <h4 className="font-[500] text-[14px] mt-1">{item?.name}</h4>
+                <p className="text-[#1F1F1F] font-[500] text-[14px] mt-1">
+                  {item?.openingTime} AM - {item?.closingTime} PM, Monday to
+                  Saturday
+                </p>
+              </div>
+              <div className="mr-4 flex gap-2">
                 <img
                   src={EditIcon}
                   onClick={() => {
@@ -67,16 +82,6 @@ export default function AddStore({ handleNext }) {
                   alt=""
                 />
               </div>
-              <p className="font-[400] text-[14px] flex -ml-1 items-center gap-2">
-                {" "}
-                <CiLocationOn className="text-[#22B573]  font-bold" size={22} />
-                {item?.address}
-              </p>
-              <h4 className="font-[500] text-[14px] mt-1">{item?.name}</h4>
-              <p className="text-[#1F1F1F] font-[500] text-[14px] mt-1">
-                {item?.openingTime} AM - {item?.closingTime} PM, Monday to
-                Saturday
-              </p>
             </div>
           ))}
         </div>
@@ -109,7 +114,6 @@ export default function AddStore({ handleNext }) {
         handleNext={handleNext}
         setIsOpen={setIsSkipStoreModal}
       />
-      
     </div>
   );
 }

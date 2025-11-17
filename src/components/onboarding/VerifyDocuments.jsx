@@ -23,8 +23,23 @@ export default function VerifyDocuments({ handleNext }) {
   const [submitted, setSubmitted] = useState(false);
 
   // handle file selection
+  // handle file selection with validation
   const handleFileChange = (key, file) => {
     if (!file) return;
+
+    // ✅ Validate file type
+    const allowedTypes = ["image/png", "image/jpg", "image/jpeg"];
+    if (!allowedTypes.includes(file.type)) {
+      ErrorToast("Only PNG, JPG, and JPEG files are allowed.");
+      return;
+    }
+
+    // ✅ Validate file size (<10 MB)
+    const maxSize = 10 * 1024 * 1024; // 10 MB in bytes
+    if (file.size > maxSize) {
+      ErrorToast("File size must be under 10 MB.");
+      return;
+    }
 
     setFiles((prev) => ({
       ...prev,
@@ -84,7 +99,7 @@ export default function VerifyDocuments({ handleNext }) {
             <div className="h-full border mt-2 border-gray-200 rounded-xl bg-white shadow-sm hover:border-gray-300 transition">
               <input
                 type="file"
-                accept="image/*,application/pdf"
+                 accept=".png,.jpg,.jpeg"
                 className="absolute inset-0 opacity-0 cursor-pointer z-10"
                 onChange={(e) => handleFileChange(field.key, e.target.files[0])}
               />

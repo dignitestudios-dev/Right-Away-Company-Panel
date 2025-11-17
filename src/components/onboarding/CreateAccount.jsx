@@ -13,6 +13,7 @@ import { Register, SocialLogin } from "../../redux/slices/authSlice";
 import { signInWithPopup } from "firebase/auth";
 import { appleProvider, auth, googleProvider } from "../../firebase/firebase";
 import getFCMToken from "../../firebase/getFcmToken";
+import TermsConditionModal from "../global/TermsCondition";
 export default function CreateAccount({ handleNext, setEmail }) {
   const [mapCenter, setMapCenter] = useState({ lat: 38.7946, lng: 106.5348 });
   const [isPrivacy, setIsPrivacy] = useState(false);
@@ -99,6 +100,7 @@ export default function CreateAccount({ handleNext, setEmail }) {
               name={"businessName"}
               error={errors.businessName}
               handleBlur={handleBlur}
+              maxLength={100}
             />
           </div>
           <div className="xl:col-span-6 col-span-12">
@@ -120,14 +122,19 @@ export default function CreateAccount({ handleNext, setEmail }) {
               type={"text"}
               touched={touched.phoneNumber}
               handleChange={(e) => {
-                // allow only digits and optional +
-                const value = e.target.value.replace(/[^\d+]/g, "");
-                if (value.length <= 10) handleChange(e); // limit to +1 + 10 digits
+                // allow only digits
+                const value = e.target.value.replace(/\D/g, "");
+
+                // limit to 10 digits
+                if (value.length <= 10) {
+                  e.target.value = value;
+                  handleChange(e);
+                }
               }}
               name={"phoneNumber"}
               error={errors.phoneNumber}
               handleBlur={handleBlur}
-              maxLength={12}
+              maxLength={10} // 🔥 required!
             />
           </div>
           <div className="xl:col-span-6 col-span-12">
@@ -136,10 +143,17 @@ export default function CreateAccount({ handleNext, setEmail }) {
               holder={"Enter Company Registration Number"}
               type={"text"}
               touched={touched.registerNumber}
-              handleChange={handleChange}
+              handleChange={(e) => {
+                // remove non-digit characters
+                const value = e.target.value.replace(/\D/g, "");
+                e.target.value = value;
+
+                if (value.length <= 10) handleChange(e);
+              }}
               name={"registerNumber"}
               error={errors.registerNumber}
               handleBlur={handleBlur}
+              maxLength={10}
             />
           </div>
           <div className="col-span-12">
@@ -178,6 +192,7 @@ export default function CreateAccount({ handleNext, setEmail }) {
               hideText={true}
               error={errors.password}
               handleBlur={handleBlur}
+              maxLength={8}
             />
           </div>
           <div className="xl:col-span-6 col-span-12">
@@ -191,6 +206,7 @@ export default function CreateAccount({ handleNext, setEmail }) {
               hideText={true}
               error={errors.reTypePassword}
               handleBlur={handleBlur}
+              maxLength={8}
             />
           </div>
         </div>
@@ -255,11 +271,11 @@ export default function CreateAccount({ handleNext, setEmail }) {
           </button>
         </div>
       </div>
-      <PrivacyPolicyModal isOpen={isPrivacy} setIsOpen={setIsPrivacy} />
       <PrivacyPolicyModal
         isOpen={termCondition}
         setIsOpen={setIsTermsCondition}
       />
+      <TermsConditionModal isOpen={isPrivacy} setIsOpen={setIsPrivacy} />
     </div>
   );
 }

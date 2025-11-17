@@ -25,7 +25,7 @@ export default function OrdersData() {
     const payload = {
       type: "manage",
       ...(activeStatus !== "All" && { status: activeStatus }),
-      page: pagination.currentPage,
+      page: pagination?.currentPage,
       limit:10,
       search: filters.search,
       startDate: filters.startDate,
@@ -162,10 +162,10 @@ export default function OrdersData() {
 
       {/* ✅ Pagination */}
       <Pagination
-        currentPage={pagination.currentPage}
-        totalPages={pagination.totalPages}
-        totalItems={pagination.totalItems}
-        itemsPerPage={pagination.itemsPerPage}
+        currentPage={pagination?.currentPage}
+        totalPages={pagination?.totalPages}
+        totalItems={pagination?.totalItems}
+        itemsPerPage={pagination?.itemsPerPage}
         onPageChange={(page) =>
           dispatch(getOrders({...filters,type:"manage",page, limit: 10 }))
         }

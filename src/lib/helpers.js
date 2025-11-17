@@ -23,10 +23,10 @@ const formatDays = (days = []) => {
 };
 
 const formatOperatingDays = (days = []) => {
-  if (!days.length) return "";
+  if (!days?.length) return "";
 
   // Ensure all lowercase and remove duplicates
-  const cleanDays = [...new Set(days.map((d) => d.toLowerCase()))];
+  const cleanDays = [...new Set(days?.map((d) => d.toLowerCase()))];
 
   // Define full week order
   const weekOrder = [
