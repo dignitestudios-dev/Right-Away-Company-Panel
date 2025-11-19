@@ -5,6 +5,8 @@ import { HiOutlineXMark } from "react-icons/hi2";
 import { changedPasswordValues } from "../../../init/authentication/dummyLoginValues";
 import { changedPasswordSchema } from "../../../schema/authentication/dummyLoginSchema";
 import Button from "../../global/Button";
+import { useDispatch, useSelector } from "react-redux";
+import { ChangePassword } from "../../../redux/slices/authSlice";
 
 export default function ChangedPassword({
   isOpen,
@@ -12,6 +14,8 @@ export default function ChangedPassword({
   successFullUpdate,
   SetSuccessfulUpdate,
 }) {
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.auth);
   const {
     values,
     handleBlur,
@@ -28,6 +32,12 @@ export default function ChangedPassword({
     onSubmit: async (vals) => {
       // just simulate success — no API call
       console.log("Password change submitted:", vals);
+      await dispatch(
+        ChangePassword({
+          password: vals.password,
+          newPassword: vals.newPassword,
+        })
+      ).unwrap();
       setIsOpen(false);
       SetSuccessfulUpdate(!successFullUpdate);
       resetForm();
@@ -104,7 +114,12 @@ export default function ChangedPassword({
               hideText={true}
             />
             <div className="flex justify-center w-full">
-              <Button text="Update" customClass={"w-[390px]"} type="submit" />
+              <Button
+                loading={isLoading}
+                text="Update"
+                customClass={"w-[390px]"}
+                type="submit"
+              />
             </div>
           </form>
         </div>

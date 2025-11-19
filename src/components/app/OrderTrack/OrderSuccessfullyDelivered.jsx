@@ -38,7 +38,7 @@ const OrderSuccessfullyDelivered = ({ isOpen, setIsOpen,setOrderStatus }) => {
             text={"Acknowledge & Close"}
             customClass={"w-[428px] mt-4"}
             onClick={() => {
-              setOrderStatus("Delivered");
+              setOrderStatus("completed");
               setIsOpen(false);
             }}
           />

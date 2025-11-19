@@ -14,32 +14,34 @@ const ShippingActivity = ({ setOrderStatus, orderStatus }) => {
     { label: "On The Way", completed: false },
     { label: "Delivered", completed: false },
   ]);
+  const statusToStepIndex = {
+    "Ready For Pickup": 1, // pickUp
+    "Out for Delivery": 3, // delivery
+    Delivered: 4, // completed
+  };
 
   const [openModal, setOpenModal] = useState(false);
   const [openDeliveredModal, setOpenDeliveredModal] = useState(false);
   useEffect(() => {
     if (!orderStatus) return;
 
-    const statusIndex = steps.findIndex((s) =>
-      s.label.toLowerCase().includes(orderStatus?.toLowerCase())
-    );
+    const statusIndex = statusToStepIndex[orderStatus];
 
-    if (statusIndex !== -1) {
+    if (statusIndex !== undefined) {
       const updated = steps.map((step, i) => ({
         ...step,
-        completed: i <= statusIndex, // mark up to current status
+        completed: i <= statusIndex,
       }));
       setSteps(updated);
     }
   }, [orderStatus]);
 
-  
   const handlePickedClick = (index) => {
     // complete all steps up to "On The Way"
     const updated = steps.map((step, i) =>
       i <= index + 1 ? { ...step, completed: true } : step
     );
-    setSteps(updated);
+    // setSteps(updated);
     setOpenModal(true); // show modal
   };
   const handleDeliveredClick = (index) => {
@@ -48,7 +50,7 @@ const ShippingActivity = ({ setOrderStatus, orderStatus }) => {
       i <= index + 1 ? { ...step, completed: true } : step
     );
     console.log(updated, "update--");
-    setSteps(updated);
+    // setSteps(updated);
     setOpenDeliveredModal(true); // show modal
   };
 

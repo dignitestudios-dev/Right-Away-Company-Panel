@@ -11,26 +11,33 @@ import { formatDate } from "../../../lib/helpers";
 export default function OrderTrackData() {
   const [activeStatus, setActiveStatus] = useState("All");
   const dispatch = useDispatch();
-  const { orders, isLoading } = useSelector((state) => state.app);
-useEffect(() => {
-  const payload = {
-    type: "track",
-    ...(activeStatus !== "All" && { status: statusMap[activeStatus] }),
-    page: 1,
-    limit: 20,
+  const { orders, isLoading, pagination } = useSelector((state) => state.app);
+  const [filters, setFilters] = useState({
+    search: "",
+    startDate: "",
+    endDate: "",
+  });
+  useEffect(() => {
+    const payload = {
+      type: "track",
+      ...(activeStatus !== "All" && { status: statusMap[activeStatus] }),
+      page: pagination?.currentPage,
+      limit: 10,
+      search: filters.search,
+      startDate: filters.startDate,
+      endDate: filters.endDate,
+    };
+    console.log("🚀 Dispatching getOrders with payload:", payload);
+    dispatch(getOrders(payload));
+  }, [dispatch, filters, activeStatus]);
+
+  const statuses = ["All", "Ready for Pickup", "Out for Delivery", "Completed"];
+  const statusMap = {
+    All: null, // no filter
+    "Ready for Pickup": "pickUp",
+    "Out for Delivery": "delivery",
+    Completed: "completed",
   };
-  console.log("🚀 Dispatching getOrders with payload:", payload);
-  dispatch(getOrders(payload));
-}, [dispatch, activeStatus]);
-
-const statuses = ["All", "Ready for Pickup", "Out for Delivery", "Completed"];
-const statusMap = {
-  "All": null, // no filter
-  "Ready for Pickup": "pickUp",
-  "Out for Delivery": "delivery",
-  "Completed": "completed",
-};
-
 
   const columns = [
     "Order ID",
@@ -117,33 +124,40 @@ const statusMap = {
     <div>
       <div className="flex justify-between">
         <h3 className="font-[600] text-[32px]">Order Tracking</h3>
-        <Filter hide={true} />
+        <Filter onFilterChange={setFilters} hide={true} />
       </div>
 
       <div className="mt-4 rounded-2xl shadow-sm border-t p-2 border-[#B9B9B9] bg-[#FFFFFF] ">
         {/* ✅ Filter Tabs */}
-    <div className="flex items-center gap-8 p-2">
-  {statuses.map((status) => (
-    <button
-      key={status}
-      onClick={() => setActiveStatus(status)}
-      className={`text-[14px] font-[400] transition-colors relative pb-2 ${
-        activeStatus === status
-          ? "text-[#03958A] border-b-[1.5px] border-[#03958A]"
-          : "text-[#000000] hover:text-gray-900"
-      }`}
-    >
-      {status}
-    </button>
-  ))}
-</div>
+        <div className="flex items-center gap-8 p-2">
+          {statuses.map((status) => (
+            <button
+              key={status}
+              onClick={() => setActiveStatus(status)}
+              className={`text-[14px] font-[400] transition-colors relative pb-2 ${
+                activeStatus === status
+                  ? "text-[#03958A] border-b-[1.5px] border-[#03958A]"
+                  : "text-[#000000] hover:text-gray-900"
+              }`}
+            >
+              {status}
+            </button>
+          ))}
+        </div>
 
-
-        {/* ✅ Pass structured data to GlobalTable */}
-        <GlobalTable data={data} columns={columns} />
+        {/* ✅ Pass structured data to GlobalTable */} 
+        <GlobalTable data={data} columns={columns}  loading={isLoading} />
       </div>
 
-      <Pagination />
+      <Pagination
+        currentPage={pagination?.currentPage}
+        totalPages={pagination?.totalPages}
+        totalItems={pagination?.totalItems}
+        itemsPerPage={pagination?.itemsPerPage}
+        onPageChange={(page) =>
+          dispatch(getOrders({ ...filters, type: "track", page, limit: 10 }))
+        }
+      />
     </div>
   );
 }

@@ -398,6 +398,50 @@ export const CreateBank = createAsyncThunk(
     }
   }
 );
+export const GetBanks = createAsyncThunk(
+  "get/company/bank",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.get("/company/bank");
+      SuccessToast(response?.data?.message);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const EditBank = createAsyncThunk(
+  "update/company/bank",
+  async ({ data, bankId }, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.put(`/company/bank/${bankId}`, data);
+      SuccessToast(response?.data?.message);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const DeleteBank = createAsyncThunk(
+  "delete/company/bank",
+  async (bankId, thunkAPI) => {
+    try {
+      const response = await axios.delete(`/company/bank/${bankId}`);
+      SuccessToast(response?.data?.message || "Bank deleted successfully");
+      return bankId; // returning bankId so reducer can remove it from state
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 export const ConectStripeAccount = createAsyncThunk(
   "/company/account/link",
   async (payload, thunkAPI) => {
@@ -414,6 +458,21 @@ export const ConectStripeAccount = createAsyncThunk(
 
       thunkAPI.dispatch(resetOnboarding());
 
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const ChangePassword = createAsyncThunk(
+  "/auth/changePassword",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await axios.post("/auth/changePassword", payload);
+      SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -569,9 +628,40 @@ const authSlice = createSlice({
       })
       .addCase(CreateBank.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.Banks = action.payload.data;
       })
       .addCase(CreateBank.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(GetBanks.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(GetBanks.fulfilled, (state, action) => {
+        state.Banks = action.payload.data;
+        state.isLoading = false;
+      })
+      .addCase(GetBanks.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(DeleteBank.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(DeleteBank.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(DeleteBank.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(EditBank.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(EditBank.fulfilled, (state, action) => {
+        state.Banks = action.payload.data;
+        state.isLoading = false;
+      })
+      .addCase(EditBank.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
       })
@@ -661,6 +751,16 @@ const authSlice = createSlice({
       })
       .addCase(ReSendOtpAccountVerification.rejected, (state, action) => {
         state.isResendLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(ChangePassword.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(ChangePassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(ChangePassword.rejected, (state, action) => {
+        state.isLoading = false;
         state.error = action.payload.message;
       });
   },

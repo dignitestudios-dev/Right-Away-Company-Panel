@@ -2,12 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Person2 } from "../../../assets/export";
 import GlobalTable from "../../global/Table";
 import Pagination from "../../global/Pagination";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { getCustomers } from "../../../redux/slices/AppSlice";
+import { GoArrowLeft } from "react-icons/go";
+import Filter from "../../global/Filter";
 
 export default function CustomersData() {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const [filters, setFilters] = useState({
+    search: "",
+    startDate: "",
+    endDate: "",
+  });
   const columns = [
     "Customer Name",
     "Email Address",
@@ -16,14 +24,23 @@ export default function CustomersData() {
     "Action",
   ];
 
-  const { Customers } = useSelector((state) => state?.app);
+  const { Customers, isLoading, pagination } = useSelector(
+    (state) => state?.app
+  );
   const dispatch = useDispatch();
   const fetchCustomers = async () => {
-    await dispatch(getCustomers()).unwrap();
+    await dispatch(
+      getCustomers({
+        search: filters.search,
+        startDate: filters.startDate,
+        endDate: filters.endDate,
+      })
+    ).unwrap();
   };
   useEffect(() => {
     fetchCustomers();
-  }, []);
+  }, [dispatch, filters]);
+
   // const customers = [
   //   {
   //     _id: "1",
@@ -144,11 +161,33 @@ export default function CustomersData() {
   }));
   return (
     <>
+      <div className="flex justify-between ">
+        <h3 className="font-[600] text-[32px] flex items-center gap-2">
+          {" "}
+          <GoArrowLeft
+            onClick={() => navigate(-1)}
+            className="text-[#03958A] cursor-pointer "
+            size={21}
+          />{" "}
+          Customer
+        </h3>
+        <div className="flex items-center gap-4">
+          <Filter hide={true} onFilterChange={setFilters} />
+        </div>
+      </div>
       <div className="mt-4 rounded-2xl shadow-sm border-t p-2 border-[#B9B9B9] bg-[#FFFFFF] ">
         {/* ✅ Pass structured data to GlobalTable */}
-        <GlobalTable data={data} columns={columns} />
+        <GlobalTable data={data} columns={columns} loading={isLoading} />
       </div>
-      <Pagination />
+      <Pagination
+        currentPage={pagination?.currentPage}
+        totalPages={pagination?.totalPages}
+        totalItems={pagination?.totalItems}
+        itemsPerPage={pagination?.itemsPerPage}
+        onPageChange={(page) =>
+          dispatch(getCustomers({ ...filters, page, limit: 10 }))
+        }
+      />
     </>
   );
 }

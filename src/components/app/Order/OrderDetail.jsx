@@ -24,6 +24,7 @@ import {
 import { formatDate } from "../../../lib/helpers";
 import { socket } from "../../../../socket";
 import { ErrorToast, SuccessToast } from "../../global/Toaster";
+import OrderDetailSkeleton from "../../global/DetailSkeliton";
 
 const CustomerReviewCard = () => {
   return (
@@ -161,7 +162,7 @@ export default function OrderDetail() {
   }, []);
 
   const handleStartPreparingClick = async (status) => {
-    if (!selectedOption&&status==="processing") {
+    if (!selectedOption && status === "processing") {
       ErrorToast("Please select a delivery option before proceeding.");
       return;
     }
@@ -181,362 +182,381 @@ export default function OrderDetail() {
     statusStyles[orderStatus?.toLowerCase?.()] || statusStyles["incoming"];
 
   return (
-    <div>
-      <div className="flex justify-between ">
-        <h3 className="font-[600] text-[32px] flex items-center gap-2">
-          {" "}
-          <GoArrowLeft
-            onClick={() => navigate(-1)}
-            className="text-[#03958A] cursor-pointer "
-            size={21}
-          />{" "}
-          Order Details
-        </h3>
-        <div className="flex items-center gap-4">
-          {orderStatus == "incoming" && (
-            <>
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="bg-[#EE3131] font-[500] text-white  text-[13px] w-[150px] h-[44px] rounded-[15px]"
-              >
-                Cancel Order
-              </button>
-              <button className="bg-[#E7E7E8] font-[500] text-[#181818] text-[13px] w-[150px] h-[44px] rounded-[15px]">
-                Track Order
-              </button>
-            </>
-          )}
-          {orderStatus == "processing" && (
-            <>
-              <button
-                onClick={() => navigate("/app/chat")}
-                className="bg-transparent border border-[#03958A] font-[500] gradient-text  text-[13px] w-[150px] h-[44px] rounded-[15px]"
-              >
-                Chat With Buyer
-              </button>
-              <Button customClass={"w-[150px]"} text={"Track Order"} />
-            </>
-          )}
-        </div>
-      </div>
-      <div className="grid lg:grid-cols-12 gap-4  mt-4">
-        <div className="border col-span-12 lg:col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
-          <div className="flex justify-between items-center">
-            <h3 className="text-[20px] font-[600]">Order Items</h3>
-            <div
-              className={`${currentStyle.bg} ${currentStyle.text} mb-4 capitalize text-[14px] ml-auto p-3 font-[500]  w-[110px] h-[37px] rounded-full flex justify-center items-center`}
-            >
-              {orderStatus}
-            </div>
-          </div>
-          {singleOrder?.item?.map((item, i) => (
-            <div key={i} className="flex  py-2 mb-2 justify-between">
-              <div className="flex gap-4 items-center">
-                <div className="w-[84px] flex items-center justify-center h-[84px] bg-[#F2FBF7] rounded-[15px]">
-                  <img
-                    src={item?.products?.images[0]}
-                    className="w-[70px] rounded-md h-[70px]"
-                    alt=""
-                  />
-                </div>
-                <div>
-                  <h3 className="text-[20px] text-[#000000] font-[600] ">
-                    {item?.products?.name}
-                  </h3>
-                  <p className="text-[16px] font-[400] text-[#000000]">
-                    <span className="text-[#959393]  ">Category:</span>{" "}
-                    {item?.products?.category}
-                  </p>
-                  <p className="text-[16px] font-[400] text-[#000000]">
-                    <span className="text-[#959393]  ">Sub Category:</span>{" "}
-                    {item?.products?.subCategory}{" "}
-                    <span className="text-[#959393]  ">Qty:</span>{" "}
-                    {item?.quantity}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-          {/* Order Details */}
-          <div className="border-b border-t py-4 flex items-center justify-between border-[#D4D4D4]">
-            <p className="text-[#7C7C7C]  font-[400] text-[16px]">Order ID</p>
-            <p className="text-[#000000]  font-[400] text-[16px]">
-              #{singleOrder?.orderId}
-            </p>
-          </div>
-          <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-            <p className="text-[#7C7C7C]  font-[400] text-[16px]">Order Date</p>
-            <p className="text-[#000000]  font-[400] text-[16px]">
-              {formatDate(singleOrder?.createdAt)}
-            </p>
-          </div>
-          {singleOrder?.type == "Scheduled" && (
-            <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-              <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                Scheduled Date
-              </p>
-              <p className="text-[#000000]  font-[400] text-[16px]">
-                {formatDate(singleOrder?.createdAt)}
-              </p>
-            </div>
-          )}
-          <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-            <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-              Delivery Address
-            </p>
-            <p className="text-[#000000]  font-[400] text-[16px]">
-              {singleOrder?.address?.address}
-            </p>
-          </div>
-          <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-            <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-              Delivery Type
-            </p>
-            <p className="text-[#000000]  font-[400] text-[16px]">
+    <>
+      {isLoading ? (
+        <OrderDetailSkeleton />
+      ) : (
+        <div>
+          <div className="flex justify-between ">
+            <h3 className="font-[600] text-[32px] flex items-center gap-2">
               {" "}
-              {singleOrder?.type}
-            </p>
-          </div>
-          <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-            <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-              Special Instructions
-            </p>
-            <p className="text-[#000000]  font-[400] text-[16px]">
-              {singleOrder?.instruction}
-            </p>
-          </div>
-          <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-            <p className="text-[#7C7C7C]  font-[400] text-[16px]">User Name</p>
-            <p
-              onClick={() =>
-                navigate("/app/customer-detail", {
-                  state: { customer: singleOrder?.user },
-                })
-              }
-              className="text-[#000000] flex items-center gap-3 font-[400] text-[16px]"
-            >
-              <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
-                <img
-                  src={singleOrder?.user?.profilePicture}
-                  alt="person"
-                  className="w-full h-full rounded-full"
-                />
-              </div>
-              {singleOrder?.user?.name}
-            </p>
-          </div>
-          <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-            <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-              Email Address
-            </p>
-            <p className="text-[#000000]  font-[400] text-[16px]">
-              {singleOrder?.user?.email}
-            </p>
-          </div>
-          <div className=" py-4 flex items-center justify-between border-[#D4D4D4]">
-            <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-              Contact Number
-            </p>
-            <p className="text-[#000000]  font-[400] text-[16px]">
-              {singleOrder?.user?.phone}
-            </p>
-          </div>
-        </div>
-        <div className="col-span-12 lg:col-span-4 ">
-          <div className="bg-[#FFFFFF] p-4   drop-shadow-sm rounded-[14px]">
-            <h3 className="text-[20px] font-[600] mb-4 text-[#000000] ">
-              Payment Details
+              <GoArrowLeft
+                onClick={() => navigate(-1)}
+                className="text-[#03958A] cursor-pointer "
+                size={21}
+              />{" "}
+              Order Details
             </h3>
-            {singleOrder?.item?.map((item, i) => (
-              <div
-                key={i}
-                className="border-b border-t py-5 flex items-center justify-between border-[#D4D4D4]"
-              >
-                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                  {item?.products?.name}
-                </p>
-                <p className="text-[#000000] font-[400] text-[16px]">
-                  ${Number(item?.products?.unitPrice || 0).toFixed(2)}
-                </p>
-              </div>
-            ))}
-            <div className="border-b border-t py-5 flex items-center justify-between border-[#D4D4D4]">
-              <p className="text-[#000000]  font-[600] text-[16px]">subtotal</p>
-              <p className="text-[#000000] font-[400] text-[16px]">
-                ${Number(singleOrder?.subTotal || 0).toFixed(2)}
-              </p>
-            </div>
-            <div className="border-b  py-5 flex items-center justify-between border-[#D4D4D4]">
-              <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                Total Items
-              </p>
-              <p className="text-[#000000]  font-[400] text-[16px]">
-                {singleOrder?.item?.length}
-              </p>
-            </div>
-            <div className=" py-5 flex items-center justify-between border-[#D4D4D4]">
-              <p className="text-[#202224]  font-[600] text-[16px]">
-                Total Amount
-              </p>
-              <p className="gradient-text  font-[700] text-[16px]">
-                ${Number(singleOrder?.total || 0).toFixed(2)}
-              </p>
+            <div className="flex items-center gap-4">
+              {orderStatus == "incoming" && (
+                <>
+                  <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="bg-[#EE3131] font-[500] text-white  text-[13px] w-[150px] h-[44px] rounded-[15px]"
+                  >
+                    Cancel Order
+                  </button>
+                  <button className="bg-[#E7E7E8] font-[500] text-[#181818] text-[13px] w-[150px] h-[44px] rounded-[15px]">
+                    Track Order
+                  </button>
+                </>
+              )}
+              {orderStatus == "processing" && (
+                <>
+                  <button
+                    onClick={() => navigate("/app/chat")}
+                    className="bg-transparent border border-[#03958A] font-[500] gradient-text  text-[13px] w-[150px] h-[44px] rounded-[15px]"
+                  >
+                    Chat With Buyer
+                  </button>
+                  <Button customClass={"w-[150px]"} text={"Track Order"} />
+                </>
+              )}
             </div>
           </div>
-          {orderStatus === "incoming" && (
-            <div className="bg-[#FFFFFF] p-4 mt-4 h-[205px] drop-shadow-sm rounded-[14px]">
-              <h3 className="text-[20px] font-[600] mb-4 text-[#000000]">
-                Delivery Options
-              </h3>
-
-              <div className="col-span-6">
-                <label className="flex items-center gap-2 cursor-pointer font-[500] text-[16px] text-[#262626]">
-                  <input
-                    type="radio"
-                    name="deliveryOption"
-                    value="platformRider"
-                    checked={selectedOption === "platformRider"}
-                    onChange={(e) => setSelectedOption(e.target.value)}
-                    className="accent-[#0AA48B] w-4 h-4"
-                  />
-                  <span>Assign to Platform Riders</span>
-                </label>
-
-                <p className="text-[#686868] font-[400] text-[13px]">
-                  System auto-assigns an available rider
-                </p>
-
-                <Button
-                  onClick={() => handleStartPreparingClick("processing")}
-                  text="Start Preparing Order"
-                  loading={loading}
-                  customClass="w-[332px] mx-auto mt-5"
-                />
+          <div className="grid lg:grid-cols-12 gap-4  mt-4">
+            <div className="border col-span-12 lg:col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
+              <div className="flex justify-between items-center">
+                <h3 className="text-[20px] font-[600]">Order Items</h3>
+                <div
+                  className={`${currentStyle.bg} ${currentStyle.text} mb-4 capitalize text-[14px] ml-auto p-3 font-[500]  w-[110px] h-[37px] rounded-full flex justify-center items-center`}
+                >
+                  {orderStatus}
+                </div>
               </div>
-            </div>
-          )}
-
-          {orderStatus == "Cancelled" && (
-            <div className="bg-[#FFFFFF] p-4 mt-4 h-[205px] drop-shadow-sm rounded-[14px]">
-              <h3 className="text-[20px] font-[600] mb-4 text-[#000000] ">
-                Cancellation Reason
-              </h3>
-              <div className="col-span-6">
-                <h5 className="text-[16px] font-[500] text-[#000000] ">
-                  Lorem ipsum
-                </h5>
-                <p className="text-[#7C7C7C] text-[15px] font-[400] mt-2">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud
-                </p>
-              </div>
-            </div>
-          )}
-          {(orderStatus === "processing" || orderStatus === "Completed") && (
-            <div className="bg-[#FFFFFF] p-4 mt-4 drop-shadow-sm rounded-[14px]">
-              <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
-                Rider Information
-              </h3>
-
-              <div className="col-span-6">
-                {/* Rider Header */}
-                <div className="py-4 flex items-center justify-between">
-                  <p className="text-[#000000] flex items-center gap-3 font-[600] text-[14px]">
-                    <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
-                      <img src={Person1} alt="person" />
+              {singleOrder?.item?.map((item, i) => (
+                <div key={i} className="flex  py-2 mb-2 justify-between">
+                  <div className="flex gap-4 items-center">
+                    <div className="w-[84px] flex items-center justify-center h-[84px] bg-[#F2FBF7] rounded-[15px]">
+                      <img
+                        src={item?.products?.images[0]}
+                        className="w-[70px] rounded-md h-[70px]"
+                        alt=""
+                      />
                     </div>
-                    John Doe
-                  </p>
-                  <button onClick={() => navigate("/app/chat")}>
-                    <img
-                      src={ChatBtnIcon}
-                      className="w-[34px] h-[34px]"
-                      alt="chat"
-                    />
-                  </button>
+                    <div>
+                      <h3 className="text-[20px] text-[#000000] font-[600] ">
+                        {item?.products?.name}
+                      </h3>
+                      <p className="text-[16px] font-[400] text-[#000000]">
+                        <span className="text-[#959393]  ">Category:</span>{" "}
+                        {item?.products?.category}
+                      </p>
+                      <p className="text-[16px] font-[400] text-[#000000]">
+                        <span className="text-[#959393]  ">Sub Category:</span>{" "}
+                        {item?.products?.subCategory}{" "}
+                        <span className="text-[#959393]  ">Qty:</span>{" "}
+                        {item?.quantity}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-
-                {/* Contact Number */}
-                <div className="py-1 flex items-center justify-between">
-                  <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
-                    <img
-                      src={CallIcon}
-                      className="w-[18px] h-[14px]"
-                      alt="call"
-                    />
-                    Contact Number
+              ))}
+              {/* Order Details */}
+              <div className="border-b border-t py-4 flex items-center justify-between border-[#D4D4D4]">
+                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                  Order ID
+                </p>
+                <p className="text-[#000000]  font-[400] text-[16px]">
+                  #{singleOrder?.orderId}
+                </p>
+              </div>
+              <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
+                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                  Order Date
+                </p>
+                <p className="text-[#000000]  font-[400] text-[16px]">
+                  {formatDate(singleOrder?.createdAt)}
+                </p>
+              </div>
+              {singleOrder?.type == "Scheduled" && (
+                <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
+                  <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                    Scheduled Date
                   </p>
-                  <p className="text-[#464646] font-[500] text-[12px]">
-                    +1 234 567 890
-                  </p>
-                </div>
-
-                {/* Email */}
-                <div className="py-1 flex items-center justify-between">
-                  <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
-                    <img
-                      src={MessageIcon}
-                      className="w-[18px] h-[14px]"
-                      alt="email"
-                    />
-                    Email Address
-                  </p>
-                  <p className="text-[#464646] font-[500] text-[12px]">
-                    johndoe@email.com
+                  <p className="text-[#000000]  font-[400] text-[16px]">
+                    {formatDate(singleOrder?.createdAt)}
                   </p>
                 </div>
-
-                {/* Vehicle Type */}
-                <div className="py-1 flex items-center justify-between">
-                  <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
+              )}
+              <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
+                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                  Delivery Address
+                </p>
+                <p className="text-[#000000]  font-[400] text-[16px]">
+                  {singleOrder?.address?.address}
+                </p>
+              </div>
+              <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
+                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                  Delivery Type
+                </p>
+                <p className="text-[#000000]  font-[400] text-[16px]">
+                  {" "}
+                  {singleOrder?.type}
+                </p>
+              </div>
+              <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
+                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                  Special Instructions
+                </p>
+                <p className="text-[#000000]  font-[400] text-[16px]">
+                  {singleOrder?.instruction}
+                </p>
+              </div>
+              <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
+                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                  User Name
+                </p>
+                <p
+                  onClick={() =>
+                    navigate("/app/customer-detail", {
+                      state: { customer: singleOrder?.user },
+                    })
+                  }
+                  className="text-[#000000] flex items-center gap-3 font-[400] text-[16px]"
+                >
+                  <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
                     <img
-                      src={TruckIcon}
-                      className="w-[18px] h-[14px]"
-                      alt="truck"
+                      src={singleOrder?.user?.profilePicture}
+                      alt="person"
+                      className="w-full h-full rounded-full"
                     />
-                    Vehicle Type
+                  </div>
+                  {singleOrder?.user?.name}
+                </p>
+              </div>
+              <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
+                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                  Email Address
+                </p>
+                <p className="text-[#000000]  font-[400] text-[16px]">
+                  {singleOrder?.user?.email}
+                </p>
+              </div>
+              <div className=" py-4 flex items-center justify-between border-[#D4D4D4]">
+                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                  Contact Number
+                </p>
+                <p className="text-[#000000]  font-[400] text-[16px]">
+                  {singleOrder?.user?.phone}
+                </p>
+              </div>
+            </div>
+            <div className="col-span-12 lg:col-span-4 ">
+              <div className="bg-[#FFFFFF] p-4   drop-shadow-sm rounded-[14px]">
+                <h3 className="text-[20px] font-[600] mb-4 text-[#000000] ">
+                  Payment Details
+                </h3>
+                {singleOrder?.item?.map((item, i) => (
+                  <div
+                    key={i}
+                    className="border-b border-t py-5 flex items-center justify-between border-[#D4D4D4]"
+                  >
+                    <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                      {item?.products?.name}
+                    </p>
+                    <p className="text-[#000000] font-[400] text-[16px]">
+                      ${Number(item?.products?.unitPrice || 0).toFixed(2)}
+                    </p>
+                  </div>
+                ))}
+                <div className="border-b border-t py-5 flex items-center justify-between border-[#D4D4D4]">
+                  <p className="text-[#000000]  font-[600] text-[16px]">
+                    subtotal
                   </p>
-                  <p className="text-[#464646] font-[500] text-[12px]">Truck</p>
+                  <p className="text-[#000000] font-[400] text-[16px]">
+                    ${Number(singleOrder?.subTotal || 0).toFixed(2)}
+                  </p>
                 </div>
-
-                {/* Vehicle Number */}
-                <div className="py-1 flex items-center justify-between">
-                  <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
-                    <img
-                      src={SubTitleIcon}
-                      className="w-[18px] h-[14px]"
-                      alt="icon"
-                    />
-                    Vehicle Number
+                <div className="border-b  py-5 flex items-center justify-between border-[#D4D4D4]">
+                  <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                    Total Items
                   </p>
-                  <p className="text-[#464646] font-[500] text-[12px]">
-                    ABC-1234
+                  <p className="text-[#000000]  font-[400] text-[16px]">
+                    {singleOrder?.item?.length}
+                  </p>
+                </div>
+                <div className=" py-5 flex items-center justify-between border-[#D4D4D4]">
+                  <p className="text-[#202224]  font-[600] text-[16px]">
+                    Total Amount
+                  </p>
+                  <p className="gradient-text  font-[700] text-[16px]">
+                    ${Number(singleOrder?.total || 0).toFixed(2)}
                   </p>
                 </div>
               </div>
-            </div>
-          )}
+              {orderStatus === "incoming" && (
+                <div className="bg-[#FFFFFF] p-4 mt-4 h-[205px] drop-shadow-sm rounded-[14px]">
+                  <h3 className="text-[20px] font-[600] mb-4 text-[#000000]">
+                    Delivery Options
+                  </h3>
 
-          {orderStatus == "Completed" && <CustomerReviewCard />}
-          {orderStatus == "processing" && (
-            <Button
-              text={"Ready for Pickup"}
-              onClick={() => {
-                handleStartPreparingClick("pickUp");
-                navigate("/app/order-track-detail");
-              }}
-              customClass={"w-full mt-4"}
-            />
-          )}
+                  <div className="col-span-6">
+                    <label className="flex items-center gap-2 cursor-pointer font-[500] text-[16px] text-[#262626]">
+                      <input
+                        type="radio"
+                        name="deliveryOption"
+                        value="platformRider"
+                        checked={selectedOption === "platformRider"}
+                        onChange={(e) => setSelectedOption(e.target.value)}
+                        className="accent-[#0AA48B] w-4 h-4"
+                      />
+                      <span>Assign to Platform Riders</span>
+                    </label>
+
+                    <p className="text-[#686868] font-[400] text-[13px]">
+                      System auto-assigns an available rider
+                    </p>
+
+                    <Button
+                      onClick={() => handleStartPreparingClick("processing")}
+                      text="Start Preparing Order"
+                      loading={loading}
+                      customClass="w-[332px] mx-auto mt-5"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {orderStatus == "Cancelled" && (
+                <div className="bg-[#FFFFFF] p-4 mt-4 h-[205px] drop-shadow-sm rounded-[14px]">
+                  <h3 className="text-[20px] font-[600] mb-4 text-[#000000] ">
+                    Cancellation Reason
+                  </h3>
+                  <div className="col-span-6">
+                    <h5 className="text-[16px] font-[500] text-[#000000] ">
+                      Lorem ipsum
+                    </h5>
+                    <p className="text-[#7C7C7C] text-[15px] font-[400] mt-2">
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                      sed do eiusmod tempor incididunt ut labore et dolore magna
+                      aliqua. Ut enim ad minim veniam, quis nostrud
+                    </p>
+                  </div>
+                </div>
+              )}
+              {(orderStatus === "processing" ||
+                orderStatus === "completed") && (
+                <div className="bg-[#FFFFFF] p-4 mt-4 drop-shadow-sm rounded-[14px]">
+                  <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
+                    Rider Information
+                  </h3>
+
+                  <div className="col-span-6">
+                    {/* Rider Header */}
+                    <div className="py-4 flex items-center justify-between">
+                      <p className="text-[#000000] flex items-center gap-3 font-[600] text-[14px]">
+                        <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
+                          <img src={Person1} alt="person" />
+                        </div>
+                        John Doe
+                      </p>
+                      <button onClick={() => navigate("/app/chat")}>
+                        <img
+                          src={ChatBtnIcon}
+                          className="w-[34px] h-[34px]"
+                          alt="chat"
+                        />
+                      </button>
+                    </div>
+
+                    {/* Contact Number */}
+                    <div className="py-1 flex items-center justify-between">
+                      <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
+                        <img
+                          src={CallIcon}
+                          className="w-[18px] h-[14px]"
+                          alt="call"
+                        />
+                        Contact Number
+                      </p>
+                      <p className="text-[#464646] font-[500] text-[12px]">
+                        +1 234 567 890
+                      </p>
+                    </div>
+
+                    {/* Email */}
+                    <div className="py-1 flex items-center justify-between">
+                      <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
+                        <img
+                          src={MessageIcon}
+                          className="w-[18px] h-[14px]"
+                          alt="email"
+                        />
+                        Email Address
+                      </p>
+                      <p className="text-[#464646] font-[500] text-[12px]">
+                        johndoe@email.com
+                      </p>
+                    </div>
+
+                    {/* Vehicle Type */}
+                    <div className="py-1 flex items-center justify-between">
+                      <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
+                        <img
+                          src={TruckIcon}
+                          className="w-[18px] h-[14px]"
+                          alt="truck"
+                        />
+                        Vehicle Type
+                      </p>
+                      <p className="text-[#464646] font-[500] text-[12px]">
+                        Truck
+                      </p>
+                    </div>
+
+                    {/* Vehicle Number */}
+                    <div className="py-1 flex items-center justify-between">
+                      <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
+                        <img
+                          src={SubTitleIcon}
+                          className="w-[18px] h-[14px]"
+                          alt="icon"
+                        />
+                        Vehicle Number
+                      </p>
+                      <p className="text-[#464646] font-[500] text-[12px]">
+                        ABC-1234
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {orderStatus == "Completed" && <CustomerReviewCard />}
+              {orderStatus == "processing" && (
+                <Button
+                  text={"Ready for Pickup"}
+                  onClick={() => {
+                    handleStartPreparingClick("pickUp");
+                    navigate(`/app/order-track-detail`, {
+                      state: { id: singleOrder?._id },
+                    });
+                  }}
+                  customClass={"w-full mt-4"}
+                />
+              )}
+            </div>
+          </div>
+          <OrderCancelConfirmModal
+            orderId={singleOrder?._id}
+            setOrderStatus={setOrderStatus}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+          />
         </div>
-      </div>
-      <OrderCancelConfirmModal
-        orderId={singleOrder?._id}
-        setOrderStatus={setOrderStatus}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      />
-    </div>
+      )}
+    </>
   );
 }

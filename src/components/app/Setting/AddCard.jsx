@@ -6,9 +6,13 @@ import { BankDetailsSchema } from "../../../schema/authentication/dummyLoginSche
 import Button from "../../global/Button";
 import { GoArrowLeft } from "react-icons/go";
 import { useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { CreateBank } from "../../../redux/slices/authSlice";
 
 export default function AddCard() {
   const navigate = useNavigate("");
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.auth);
   const {
     values,
     handleBlur,
@@ -23,15 +27,15 @@ export default function AddCard() {
     validateOnChange: true,
     validateOnBlur: true,
     onSubmit: async (values, action) => {
-      console.log(values, "valuess");
       const data = {
         accountHolderName: values?.holderName,
         routingNumber: values?.routingNumber,
         accountNumber: values?.accountNumber,
         bankName: values?.bankName,
       };
-      //   dispatch(CreateBank(data));
-      //   setIsSuccess(true);
+      await dispatch(CreateBank(data)).unwrap();
+      navigate(-1);
+      action.resetForm();
     },
   });
 
@@ -104,7 +108,7 @@ export default function AddCard() {
         </div>
         <br />
         <div className="flex flex-col items-end">
-          <Button text={"Save"} customClass={"w-[140px]"} />
+          <Button loading={isLoading} text={"Save"} customClass={"w-[140px]"} />
         </div>
       </form>
     </div>

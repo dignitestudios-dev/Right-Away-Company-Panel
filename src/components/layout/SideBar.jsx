@@ -105,10 +105,10 @@ const SideBar = () => {
             })}
           </div>
         </div>
-        <div className="bg-img flex px-4 justify-center gap-6 flex-col  mt-5 py-4 relative z-0 rounded-[18px] ">
+        <div className="bg-img flex px-4 justify-center gap-6 flex-col  mt-5 py-4 relative z-50 rounded-[18px] ">
           <NavLink
           to={"/app/setting"}
-            className={`text-white flex items-center gap-2 text-[12px] font-[400] `}
+            className={`text-white cursor-pointer  flex items-center gap-2 text-[12px] font-[400] `}
           >
             {" "}
             <img src={settingIcon} className="w-4" alt="setting-icon" />{" "}

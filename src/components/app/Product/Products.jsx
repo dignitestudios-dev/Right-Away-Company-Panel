@@ -22,7 +22,7 @@ export default function ProductsData() {
   const navigate = useNavigate("");
 
   useEffect(() => {
-    dispatch(getProducts({search: filters.search }));
+    dispatch(getProducts({search: filters.search, startDate: filters.startDate, endDate: filters.endDate}));
   }, [dispatch, filters]); // 👈 re-fetch when filters change
 
   const productList = Array.isArray(products)
