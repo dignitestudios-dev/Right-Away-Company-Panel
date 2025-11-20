@@ -29,13 +29,15 @@ export const forgetPasswordSchema = Yup.object({
 
 export const resetPasswordSchema = Yup.object({
   password: Yup.string()
-    .matches(/^(?!\s)(?!.*\s$)/, "Password must not begin or end with spaces")
-    .min(6, "Password must contain at least 6 characters.")
+    .min(8, "Password must be at least 8 characters long")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+    .matches(/[0-9]/, "Password must contain at least one number")
     .matches(
-      /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
+      /[@$!%*?&#^()_\-+=<>.,{}[\]|/~]/,
       "Password must contain at least one special character"
     )
-    .required("Please enter your password"),
+    .required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .matches(
@@ -47,22 +49,26 @@ export const resetPasswordSchema = Yup.object({
 
 export const changedPasswordSchema = Yup.object().shape({
   password: Yup.string()
-    .matches(/^(?!\s)(?!.*\s$)/, "Password must not begin or end with spaces")
-    .min(6, "Password must contain at least 6 characters.")
+    .min(8, "Password must be at least 8 characters long")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+    .matches(/[0-9]/, "Password must contain at least one number")
     .matches(
-      /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
+      /[@$!%*?&#^()_\-+=<>.,{}[\]|/~]/,
       "Password must contain at least one special character"
     )
-    .required("Please enter your password"),
+    .required("Password is required"),
 
   newPassword: Yup.string()
-    .matches(/^(?!\s)(?!.*\s$)/, "Password must not begin or end with spaces")
-    .min(6, "Password must contain at least 6 characters.")
+    .min(8, "New Password must be at least 8 characters long")
+    .matches(/[A-Z]/, "New Password must contain at least one uppercase letter")
+    .matches(/[a-z]/, "New Password must contain at least one lowercase letter")
+    .matches(/[0-9]/, "New Password must contain at least one number")
     .matches(
-      /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
-      "Password must contain at least one special character"
+      /[@$!%*?&#^()_\-+=<>.,{}[\]|/~]/,
+      "New Password must contain at least one special character"
     )
-    .required("Please enter your password"),
+    .required("New Password is required"),
 
   confirmPassword: Yup.string()
     .trim()

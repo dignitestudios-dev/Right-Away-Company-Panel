@@ -8,9 +8,14 @@ import { AddInventoryValues } from "../../../init/app/AppValues";
 import { AddInventorySchema } from "../../../schema/app/AppSchema";
 import { useSelector } from "react-redux";
 
-const AddInventory = ({ isOpen, setIsOpen, setInventories }) => {
+const AddInventory = ({
+  isOpen,
+  setIsOpen,
+  setInventories,
+  setUploadError,
+  uploadError,
+}) => {
   const { stores } = useSelector((state) => state?.auth);
-
 
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
@@ -21,6 +26,7 @@ const AddInventory = ({ isOpen, setIsOpen, setInventories }) => {
       onSubmit: async (values, action) => {
         setInventories((prev) => [...prev, values]);
         setIsOpen(!isOpen);
+        setUploadError({ ...uploadError, inventories: "" });
       },
     });
   return (

@@ -85,17 +85,23 @@ export default function AddStore({ handleNext }) {
             </div>
           ))}
         </div>
-        <Button
-          text={"Next"}
-          onClick={handleNext}
-          customClass={"w-[360px] mt-10"}
-        />
-        <button
-          onClick={() => setIsSkipStoreModal(true)}
-          className="mt-8 w-[360px] bg-[#EDEDED] hover:bg-[#d9d9d9] text-[#181818] px-12 py-3 rounded-xl text-[13px] font-[700] transition-all duration-200"
-        >
-          Skip
-        </button>
+        {/* Show NEXT only when store exists, else show SKIP */}
+        {stores?.length > 0 ? (
+          <Button
+            text={"Next"}
+            onClick={handleNext}
+            customClass={"w-[360px] mt-10"}
+          />
+        ) : (
+          <>           
+            <button
+              onClick={() => setIsSkipStoreModal(true)}
+              className="mt-8 w-[360px] bg-[#EDEDED] hover:bg-[#d9d9d9] text-[#181818] px-12 py-3 rounded-xl text-[13px] font-[700] transition-all duration-200"
+            >
+              Skip
+            </button>
+          </>
+        )}
       </div>
 
       <AddNewStoreModal isOpen={isStoreModal} setIsOpen={setIsStoreModal} />

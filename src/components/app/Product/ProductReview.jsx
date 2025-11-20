@@ -91,6 +91,7 @@ export default function ProductReview({
                 <input
                   type="file"
                   multiple
+                  accept="application/pdf"
                   className="hidden"
                   name="productDocuments"
                   id="productDocuments"

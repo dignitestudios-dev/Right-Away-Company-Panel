@@ -29,7 +29,12 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
     touched,
     setFieldValue,
   } = useFormik({
-    initialValues: CompleteProfileValues,
+    initialValues: {
+      description: company?.description || "",
+      fulfillmentMethod: company?.deliveryMethod || "",
+      address: company?.businessAddress || "",
+      profilePic: company?.profilePicture || "",
+    },
     validationSchema: CompleteProfileSchema,
     validateOnChange: true,
     validateOnBlur: true,
@@ -55,12 +60,12 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
       }
     },
   });
-  useEffect(() => {
-    setFieldValue("description", company?.description);
-    setFieldValue("fulfillmentMethod", company?.deliveryMethod);
-    setFieldValue("address", company?.businessAddress);
-    setFieldValue("profilePic", company?.profilePicture);
-  }, []);
+  // useEffect(() => {
+  //   setFieldValue("description", company?.description);
+  //   setFieldValue("fulfillmentMethod", company?.deliveryMethod);
+  //   setFieldValue("address", company?.businessAddress);
+  //   setFieldValue("profilePic", company?.profilePicture);
+  // }, []);
   console.log(values, company, "testValues---->");
   // ✅ Handle image upload and preview
   const handleFileChange = (e) => {
@@ -170,6 +175,7 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
                 error={errors.description}
                 handleBlur={handleBlur}
                 value={values.description}
+                maxLength={300}
               />
             </div>
 

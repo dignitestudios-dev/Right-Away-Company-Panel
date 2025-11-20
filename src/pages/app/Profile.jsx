@@ -113,7 +113,7 @@ const Profile = () => {
           </button>
         </div>
 
-        {stores.map((loc, i) => (
+        {stores?.map((loc, i) => (
           <div
             key={i}
             className="border-b border-[#EEEEEE] py-4 flex justify-between items-center"

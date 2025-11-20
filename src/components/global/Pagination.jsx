@@ -39,7 +39,7 @@ export default function Pagination({
           className={`w-10 h-10 flex items-center justify-center rounded-[14px] transition ${
             currentPage === 1
               ? "bg-[#EDEDED] text-gray-400 cursor-not-allowed"
-              : "bg-[#22B573] text-gray-600 hover:bg-gray-200"
+              : "bg-[#22B573] text-white hover:bg-gray-200"
           }`}
         >
           <IoChevronBack size={18} />

@@ -358,7 +358,6 @@ export const getStore = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await axios.get("/company/store");
-      SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -404,7 +403,6 @@ export const GetBanks = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await axios.get("/company/bank");
-      SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;

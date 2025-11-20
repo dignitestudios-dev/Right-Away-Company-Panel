@@ -33,13 +33,17 @@ export default function AddAvailabilityModal({ onClose, onSave, edit, data }) {
       setEndTime(data.availability.end_time || "18:00");
 
       const newDays = days.reduce((acc, day) => {
-        acc[day] = data.availability.days.includes(day);
+        acc[day] = data.availability.days?.includes(day) || false;
         return acc;
       }, {});
 
-      setWorkingDays({ all: false, ...newDays });
+      // if all days are present in data, mark "all" true
+      const allSelected =
+        days.every((d) => (data.availability.days || []).includes(d)) || false;
+
+      setWorkingDays({ all: allSelected, ...newDays });
     }
-  }, [data]);
+  }, [data]); // dependency added to run when `data` changes
 
   const toggleDay = (day) => {
     if (day === "all") {
@@ -71,12 +75,38 @@ export default function AddAvailabilityModal({ onClose, onSave, edit, data }) {
   const handleSave = () => {
     if (!validateTimes(startTime, endTime)) return;
 
-    const selectedDays = days.filter((day) => workingDays[day]);
+    // If "all" is true, use all days
+    const selectedDays = workingDays.all
+      ? [...days]
+      : days.filter((day) => workingDays[day]);
+
+    if (!selectedDays || selectedDays.length === 0) {
+      setError("Please select at least one working day.");
+      return;
+    }
+
+    // Clear any previous error and call onSave
+    setError("");
     onSave({
       start_time: startTime,
       end_time: endTime,
       days: selectedDays,
     });
+  };
+
+  // convenience: is Save allowed?
+  const canSave = () => {
+    const selectedDays = workingDays.all
+      ? [...days]
+      : days.filter((day) => workingDays[day]);
+    // must have at least one day and valid times
+    const timesValid = (() => {
+      const today = new Date().toDateString();
+      const s = new Date(`${today} ${startTime}`);
+      const e = new Date(`${today} ${endTime}`);
+      return e > s;
+    })();
+    return selectedDays.length > 0 && timesValid;
   };
 
   return (
@@ -161,7 +191,10 @@ export default function AddAvailabilityModal({ onClose, onSave, edit, data }) {
         {/* Save Button */}
         <button
           onClick={handleSave}
-          className="w-full bg-gradient py-2 rounded-xl text-white font-semibold"         
+          className={`w-full py-2 rounded-xl text-white font-semibold ${
+            canSave() ? "bg-gradient" : "bg-gray-300 cursor-not-allowed"
+          }`}
+          disabled={!canSave()}
         >
           Save
         </button>

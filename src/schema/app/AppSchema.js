@@ -21,38 +21,57 @@ export const ProductSchema = Yup.object({
     .required("Description is required"),
 
   category: Yup.string().required("Category is required"),
-  // subCategory: Yup.string().required("Sub-category is required"),
+  subCategory: Yup.string().required("Sub-category is required"),
 
   itemHeight: Yup.string()
+    .matches(/^\d+$/, "Only numbers allowed")
+    .max(4, "Max 4 digits allowed")
     .required("Item height is required"),
 
   itemWidth: Yup.string()
+    .matches(/^\d+$/, "Only numbers allowed")
+    .max(4, "Max 4 digits allowed")
     .required("Item width is required"),
 
   itemLength: Yup.string()
-
+    .matches(/^\d+$/, "Only numbers allowed")
+    .max(4, "Max 4 digits allowed")
     .required("Item length is required"),
 
   itemWeight: Yup.string()
-
+    .matches(/^\d+$/, "Only numbers allowed")
+    .max(4, "Max 4 digits allowed")
     .required("Item weight is required"),
 
   packageHeight: Yup.string()
+    .matches(/^\d+$/, "Only numbers allowed")
+    .max(4, "Max 4 digits allowed")
     .required("Package height is required"),
 
   packageWidth: Yup.string()
+    .matches(/^\d+$/, "Only numbers allowed")
+    .max(4, "Max 4 digits allowed")
     .required("Package width is required"),
 
   packageLength: Yup.string()
+    .matches(/^\d+$/, "Only numbers allowed")
+    .max(4, "Max 4 digits allowed")
     .required("Package length is required"),
 
   packageWeight: Yup.string()
+    .matches(/^\d+$/, "Only numbers allowed")
+    .max(4, "Max 4 digits allowed")
     .required("Package weight is required"),
 
   unitPrice: Yup.string()
+    .matches(/^\d+$/, "Only numbers allowed")
+    .max(4, "Max 4 digits allowed")
     .required("Unit price is required"),
 
-  unitMessurement: Yup.string().required("Unit measurement is required"),
+  unitMessurement: Yup.string()
+    .matches(/^\d+$/, "Only numbers allowed")
+    .max(4, "Max 4 digits allowed")
+    .required("Unit measurement is required"),
 
   instructions: Yup.string()
     .max(300, "Special instructions can't exceed 300 characters")

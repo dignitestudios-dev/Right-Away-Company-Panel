@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { CreateProduct } from "../../../redux/slices/AppSlice";
 import ProductReview from "./ProductReview";
 import { getStore } from "../../../redux/slices/authSlice";
+import { ErrorToast } from "../../global/Toaster";
 export default function AddNewProduct() {
   const storeCategories = [
     {
@@ -53,7 +54,11 @@ export default function AddNewProduct() {
   const [isOpen, setIsOpen] = useState(false);
   const [actionType, setActionType] = useState("");
   const navigate = useNavigate("");
-  const [uploadError, setUploadError] = useState({ images: "", docs: "" });
+  const [uploadError, setUploadError] = useState({
+    images: "",
+    docs: "",
+    inventories: "",
+  });
 
   const [productImages, setProductImages] = useState([]);
   const [inventories, setInventories] = useState([]);
@@ -64,14 +69,101 @@ export default function AddNewProduct() {
   const { isLoading } = useSelector((state) => state.app);
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    setProductImages((prevImages) => [...prevImages, ...files]);
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxImages = 5;
+
+    // ❌ Limit Check
+    if (productImages.length >= maxImages) {
+      setUploadError({ images: "You can upload a maximum of 5 images." });
+      return;
+    }
+
+    const validFiles = [];
+    let errorMsg = "";
+
+    for (let file of files) {
+      // Stop if adding more files exceeds the limit
+      if (productImages.length + validFiles.length >= maxImages) {
+        errorMsg = "You can upload a maximum of 5 images.";
+        break;
+      }
+
+      // ❌ Invalid file type
+      if (!allowedTypes.includes(file.type)) {
+        errorMsg = "Only JPG, JPEG, and PNG images are allowed.";
+        break;
+      }
+
+      // ❌ File too large
+      if (file.size > maxSize) {
+        errorMsg = "Each image must be smaller than 5MB.";
+        break;
+      }
+
+      validFiles.push(file);
+    }
+
+    if (errorMsg) {
+      setUploadError({ images: errorMsg });
+      return;
+    }
+
+    // Add valid images (max 5)
+    setProductImages((prev) => [...prev, ...validFiles]);
+    setUploadError({ images: "" });
   };
+
   const [productDocs, setProductDocs] = useState([]);
 
   const handleDocChange = (e) => {
     const files = Array.from(e.target.files);
-    setProductDocs((prevDocs) => [...prevDocs, ...files]);
+
+    const allowedType = "application/pdf";
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxDocs = 5;
+
+    // If already at limit
+    if (productDocs.length >= maxDocs) {
+      setUploadError({ docs: "You can upload a maximum of 5 PDF documents." });
+      return;
+    }
+
+    const validFiles = [];
+    let errorMsg = "";
+
+    for (let file of files) {
+      // Stop if adding more files exceeds the limit
+      if (productDocs.length + validFiles.length >= maxDocs) {
+        errorMsg = "You can upload a maximum of 5 PDF documents.";
+        break;
+      }
+
+      // ❌ Invalid File Type
+      if (file.type !== allowedType) {
+        errorMsg = "Only PDF files are allowed.";
+        break;
+      }
+
+      // ❌ Size Exceeds 10MB
+      if (file.size > maxSize) {
+        errorMsg = "Each document must be 10MB or less.";
+        break;
+      }
+
+      validFiles.push(file);
+    }
+
+    if (errorMsg) {
+      setUploadError({ docs: errorMsg });
+      return;
+    }
+
+    setProductDocs((prev) => [...prev, ...validFiles]);
+    setUploadError({ docs: "" });
   };
+
   const form = new FormData();
   const {
     values,
@@ -96,10 +188,17 @@ export default function AddNewProduct() {
       );
       if (productImages.length === 0) {
         setUploadError({ images: "At least one image is required" });
+        ErrorToast("At least one image is required");
+        return;
+      }
+      if (!inventories || inventories.length === 0) {
+        setUploadError({ inventories: "At least one inventory is required" });
+        ErrorToast("At least one inventory is required");
         return;
       }
       if (productDocs.length === 0) {
         setUploadError({ docs: "At least one PDF document is required" });
+        ErrorToast("At least one PDF document is required");
         return;
       }
       const invalidDocs = productDocs.filter(
@@ -165,7 +264,7 @@ export default function AddNewProduct() {
               console.error("❌ FormData missing, please resubmit.");
               return;
             }
-            await dispatch(CreateProduct(finalForm));
+            await dispatch(CreateProduct(finalForm)).unwrap();
             navigate("/app/product-management");
           }}
         />
@@ -210,22 +309,24 @@ export default function AddNewProduct() {
                 handleBlur={handleBlur}
                 handleChange={handleChange}
               />
-              <label htmlFor="" className="font-[500] text-[14px]">
-                Product Description
-              </label>
-              <textarea
-                placeholder="Enter Product Description"
-                rows={8}
-                name="description"
-                value={values.description}
-                onChange={handleChange}
-                className="w-full  border bg-[#F8F8F8] border-[#F8F8F8] rounded-[15px] p-3 text-sm text-[#959393] outline-none resize-none"
-              ></textarea>
-              {errors.description && touched.description && (
-                <p className="text-red-700 text-sm font-medium">
-                  {errors.description}
-                </p>
-              )}
+              <div>
+                <label htmlFor="" className="font-[500] text-[14px]">
+                  Product Description
+                </label>
+                <textarea
+                  placeholder="Enter Product Description"
+                  rows={8}
+                  name="description"
+                  value={values.description}
+                  onChange={handleChange}
+                  className="w-full mt-1 border bg-[#F8F8F8] border-[#F8F8F8] rounded-[15px] p-3 text-sm text-[#959393] outline-none resize-none"
+                ></textarea>
+                {errors.description && touched.description && (
+                  <p className="text-red-700 text-sm font-medium">
+                    {errors.description}
+                  </p>
+                )}
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="w-full">
                   <label htmlFor="category" className="font-[500] text-[14px]">
@@ -278,6 +379,11 @@ export default function AddNewProduct() {
                           </option>
                         ))}
                   </select>
+                  {errors.subCategory && touched.subCategory && (
+                    <p className="text-red-700 text-sm font-medium">
+                      {errors.subCategory}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -306,11 +412,13 @@ export default function AddNewProduct() {
                 <input
                   type="file"
                   multiple
+                  accept="image/jpeg,image/jpg,image/png"
                   className="hidden"
                   id="productImages"
                   name="productImages"
                   onChange={handleImageChange}
                 />
+
                 {uploadError.images && (
                   <p className="text-red-500 text-sm mt-1">
                     {uploadError.images}
@@ -415,7 +523,7 @@ export default function AddNewProduct() {
                       handleChange(e); // pass the event, not just value
                     }
                   }}
-                  touched={touched.storeName}
+                  touched={touched.itemWeight}
                   handleBlur={handleBlur}
                 />
               </div>
@@ -571,6 +679,11 @@ export default function AddNewProduct() {
                   </button>
                 </div>
               </div>
+              {uploadError.inventories && (
+                <p className="text-red-500 text-sm mt-1">
+                  {uploadError.inventories}
+                </p>
+              )}
             </div>
 
             {/* Delivery & Shipping */}
@@ -581,7 +694,7 @@ export default function AddNewProduct() {
               <Input
                 text={"Special Handling Instructions"}
                 holder={"Details Here"}
-                type={"text"}
+                type={"textarea"}
                 bg={true}
                 name="instructions"
                 value={values.instructions}
@@ -589,6 +702,7 @@ export default function AddNewProduct() {
                 handleChange={handleChange}
                 touched={touched.instructions}
                 handleBlur={handleBlur}
+                maxLength={300}
               />
             </div>
 
@@ -606,17 +720,18 @@ export default function AddNewProduct() {
               >
                 <MdOutlineCloudUpload className="text-gray-400 text-2xl mb-2" />
                 <p className="text-sm text-gray-600">Upload “document name”</p>
-                <p className="text-xs text-gray-400">
-                  Up to 20MBs, JPG, PNG, PDF
-                </p>
+                <p className="text-xs text-gray-400">Up to 20MB, PDF only</p>
+
                 <input
                   type="file"
                   multiple
+                  accept="application/pdf"
                   className="hidden"
-                  name="productDocuments"
                   id="productDocuments"
+                  name="productDocuments"
                   onChange={handleDocChange}
                 />
+
                 {uploadError.docs && (
                   <p className="text-red-500 text-sm mt-1">
                     {uploadError.docs}
@@ -668,6 +783,8 @@ export default function AddNewProduct() {
           setInventories={setInventories}
           isOpen={isOpen}
           setIsOpen={setIsOpen}
+          uploadError={uploadError}
+          setUploadError={setUploadError}
         />
       )}
       {actionType == "dell" && (

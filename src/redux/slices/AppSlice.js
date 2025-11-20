@@ -75,8 +75,7 @@ export const getProductsById = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.get(`/company/product/${payload}`);
-      SuccessToast(response?.data?.message);
+      const response = await axios.get(`/company/product/${payload}`);     
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -146,8 +145,7 @@ export const getOrderById = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.get(`/company/order/${payload}`);
-      SuccessToast(response?.data?.message);
+      const response = await axios.get(`/company/order/${payload}`);     
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -207,7 +205,6 @@ export const getCustomerOrders = createAsyncThunk(
       const response = await axios.get(
         `/company/user/${payload}/order?search=""&page=${1}&limit=${10}`
       );
-      SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
