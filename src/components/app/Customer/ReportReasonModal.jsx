@@ -2,11 +2,15 @@ import { IoCloseSharp } from "react-icons/io5";
 import Modal from "react-modal";
 import { useState } from "react";
 import Button from "../../global/Button";
-import { ReviewSubmit } from "../../../assets/export"; // success icon/image
+import { ReviewSubmit } from "../../../assets/export";
+import { useDispatch, useSelector } from "react-redux";
+import { Reported } from "../../../redux/slices/AppSlice";
 
-const ReportModal = ({ isOpen, setIsOpen }) => {
+const ReportModal = ({ isOpen, setIsOpen, reviewId }) => {
   const [step, setStep] = useState(1);
   const [selectedReason, setSelectedReason] = useState("");
+  const [error, setError] = useState(""); // 🔥 NEW
+  const { isLoading } = useSelector((state) => state.app);
 
   const reportReasons = [
     "False Information",
@@ -15,6 +19,30 @@ const ReportModal = ({ isOpen, setIsOpen }) => {
     "Review Violates Guidelines",
     "Conflict of Interest",
   ];
+
+  const dispatch = useDispatch();
+
+  const handleReportSubmit = async () => {
+    // 🔥 Validation
+    if (!selectedReason) {
+      setError("Please select a reason before submitting.");
+      return;
+    }
+
+    setError(""); // clear previous errors
+
+    const payload = {
+      reportedReview: reviewId,
+      reason: selectedReason,
+    };
+
+    try {
+      await dispatch(Reported(payload)).unwrap();
+      setStep(2);
+    } catch (err) {
+      setError("Something went wrong, please try again.");
+    }
+  };
 
   return (
     <Modal
@@ -25,7 +53,7 @@ const ReportModal = ({ isOpen, setIsOpen }) => {
       overlayClassName="fixed inset-0 bg-[#C6C6C6] bg-opacity-50 backdrop-blur-sm z-[1000] flex justify-center items-center"
     >
       <div className="bg-white rounded-[24px] p-6 shadow-lg w-[460px]">
-        {/* Step 1 - Select Reason */}
+        {/* Step 1 */}
         {step === 1 && (
           <>
             <div className="flex justify-end items-center">
@@ -35,28 +63,33 @@ const ReportModal = ({ isOpen, setIsOpen }) => {
                 onClick={() => setIsOpen(false)}
               />
             </div>
-            <div className="flex flex-col  text-center items-center">
+
+            <div className="flex flex-col text-center items-center">
               <h3 className="font-[700] text-[24px] text-[#181818] mb-4">
                 Report Reasons
               </h3>
+
               <div className="w-full mt-4 flex flex-col gap-3">
                 {reportReasons.map((reason) => (
                   <label
                     key={reason}
                     className={`flex items-center gap-3 p-3 rounded-[12px] shadow-[0px_6px_20px_0px_#0000000A]
- cursor-pointer  ${
-   selectedReason === reason
-     ? "border-[#03958A] border bg-[#F3FCF8]"
-     : ""
- }`}
+                    cursor-pointer ${
+                      selectedReason === reason
+                        ? "border-[#03958A] border bg-[#F3FCF8]"
+                        : ""
+                    }`}
                   >
                     <input
                       type="radio"
                       name="reportReason"
                       value={reason}
                       checked={selectedReason === reason}
-                      onChange={() => setSelectedReason(reason)}
-                      className=" w-4 h-4"
+                      onChange={() => {
+                        setSelectedReason(reason);
+                        setError(""); // clear on selection
+                      }}
+                      className="w-4 h-4"
                     />
                     <span className="text-[14px] font-[400] text-[#000000]">
                       {reason}
@@ -64,17 +97,24 @@ const ReportModal = ({ isOpen, setIsOpen }) => {
                   </label>
                 ))}
               </div>
+
+              {/* 🔥 Error Message */}
+              {error && (
+                <p className="text-red-500 mr-auto text-[14px] mt-2">{error}</p>
+              )}
+
               <Button
                 text={"Submit"}
                 customClass={"w-[385px] mt-5"}
-                disabled={!selectedReason}
-                onClick={() => setStep(2)}
+                disabled={isLoading}
+                loading={isLoading}
+                onClick={handleReportSubmit}
               />
             </div>
           </>
         )}
 
-        {/* Step 2 - Report Submitted */}
+        {/* Step 2 */}
         {step === 2 && (
           <>
             <div className="flex justify-end items-center">
@@ -87,21 +127,25 @@ const ReportModal = ({ isOpen, setIsOpen }) => {
                 }}
               />
             </div>
+
             <div className="flex flex-col items-center text-center mt-5">
               <img
                 src={ReviewSubmit}
                 alt="Report Submitted"
                 className="w-[157px] h-[118px]"
               />
+
               <h3 className="font-[700] text-[24px] text-[#000000] mt-4">
                 Report Submitted,
                 <br /> We Will Review Shortly
               </h3>
+
               <p className="text-[#3C3C43D9] text-[16px] font-[400] mt-2 max-w-[360px]">
                 Thank you for submitting your report. Our team will review it,
                 and you’ll be notified once a decision is made. We appreciate
                 your cooperation.
               </p>
+
               <Button
                 text={"Okay"}
                 customClass={"w-[385px] mt-5"}

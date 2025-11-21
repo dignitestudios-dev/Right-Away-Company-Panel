@@ -525,6 +525,11 @@ export default function AddNewProduct() {
                   }}
                   touched={touched.itemWeight}
                   handleBlur={handleBlur}
+                  onKeyDown={(e) => {
+                    if (["e", "E", "+", "-"].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -601,6 +606,11 @@ export default function AddNewProduct() {
                   }}
                   touched={touched.packageWeight}
                   handleBlur={handleBlur}
+                  onKeyDown={(e) => {
+                    if (["e", "E", "+", "-"].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               </div>
             </div>

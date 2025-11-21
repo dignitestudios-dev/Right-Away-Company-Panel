@@ -18,7 +18,8 @@ export default function Input({
   selectOptions = [], // ✅ Renamed for select inputs
   options = [], // for radio buttons
   bg,
-  disabled
+  disabled,
+  onKeyDown
 }) {
   const [isPassVisible, setIsPassVisible] = useState(true);
 
@@ -157,6 +158,7 @@ export default function Input({
           onBlur={handleBlur}
           placeholder={holder}
           disabled={disabled}
+          onKeyDown={onKeyDown}
           className={`w-full h-[49px] bg-transparent outline-none px-3 text-[16px] text-[#262626] placeholder:text-[#959393] ${disabled&&"cursor-not-allowed"}`}
         />
 

@@ -52,11 +52,11 @@ const EditInventory = ({
           <h3 className="text-[28px] font-[700] text-[#181818]">
             Edit Inventory Details
           </h3>
-          <IoCloseSharp
+          {/* <IoCloseSharp
             size={22}
             className="cursor-pointer"
             onClick={() => setIsOpen(false)}
-          />
+          /> */}
         </div>
 
         <form onSubmit={handleSubmit} className="w-full mt-4">
@@ -79,7 +79,6 @@ const EditInventory = ({
                 }))}
               />
             </div>
-
             {/* Total Stock */}
             <div className="col-span-12">
               <Input
@@ -89,14 +88,24 @@ const EditInventory = ({
                 touched={touched.stock}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+
+                  // Allow empty, allow >0, block >1000
+                  if (
+                    value === "" ||
+                    (Number(value) > 0 && Number(value) <= 1000)
+                  ) {
+                    handleChange(e);
                   }
                 }}
                 name="stock"
                 error={errors.stock}
                 handleBlur={handleBlur}
                 value={values.stock}
+                onKeyDown={(e) => {
+                  if (["e", "E", "+", "-"].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
               />
             </div>
 
@@ -109,8 +118,12 @@ const EditInventory = ({
                 touched={touched.minOrder}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+
+                  if (
+                    value === "" ||
+                    (Number(value) > 0 && Number(value) <= 1000)
+                  ) {
+                    handleChange(e);
                   }
                 }}
                 name="minOrder"
@@ -129,8 +142,12 @@ const EditInventory = ({
                 touched={touched.maxOrder}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+
+                  if (
+                    value === "" ||
+                    (Number(value) > 0 && Number(value) <= 1000)
+                  ) {
+                    handleChange(e);
                   }
                 }}
                 name="maxOrder"

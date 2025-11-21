@@ -138,7 +138,11 @@ export default function ProductRatingReviewModal({
         </div>
       </Modal>
 
-      <ReportModal isOpen={isReport} setIsOpen={setIsReport} />
+      <ReportModal
+        reviewId={selected?._id}
+        isOpen={isReport}
+        setIsOpen={setIsReport}
+      />
     </>
   );
 }

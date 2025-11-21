@@ -17,7 +17,7 @@ const AddInventory = ({
 }) => {
   const { stores } = useSelector((state) => state?.auth);
 
-  const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
+  const { values, handleBlur, handleChange, handleSubmit, errors, touched,resetForm } =
     useFormik({
       initialValues: AddInventoryValues,
       validationSchema: AddInventorySchema,
@@ -26,6 +26,7 @@ const AddInventory = ({
       onSubmit: async (values, action) => {
         setInventories((prev) => [...prev, values]);
         setIsOpen(!isOpen);
+        resetForm();
         setUploadError({ ...uploadError, inventories: "" });
       },
     });
@@ -76,17 +77,29 @@ const AddInventory = ({
                 touched={touched.stock}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+
+                  // allow empty or numbers only AND enforce max 1000
+                  if (
+                    value === "" ||
+                    (Number(value) > 0 && Number(value) <= 1000)
+                  ) {
+                    handleChange(e);
                   }
                 }}
                 value={values.stock}
                 name="stock"
                 error={errors.stock}
                 handleBlur={handleBlur}
-                min="0" // HTML level enforcement
+                onKeyDown={(e) => {
+                  if (["e", "E", "+", "-"].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                min="1"
+                max="1000"
               />
             </div>
+
             {/* Min Quantity */}
             <div className="col-span-6">
               <Input
@@ -96,34 +109,46 @@ const AddInventory = ({
                 touched={touched.minOrder}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+
+                  if (
+                    value === "" ||
+                    (Number(value) > 0 && Number(value) <= 1000)
+                  ) {
+                    handleChange(e);
                   }
                 }}
                 name="minOrder"
                 error={errors.minOrder}
                 handleBlur={handleBlur}
                 value={values.minOrder}
+                min="1"
+                max="1000"
               />
             </div>
 
             {/* Maximum Quantity */}
             <div className="col-span-6">
               <Input
-                text="Maximum Order Quanntity"
+                text="Maximum Order Quantity"
                 holder="Type here"
                 type="number"
                 touched={touched.maxOrder}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+
+                  if (
+                    value === "" ||
+                    (Number(value) > 0 && Number(value) <= 1000)
+                  ) {
+                    handleChange(e);
                   }
                 }}
                 name="maxOrder"
                 error={errors.maxOrder}
                 handleBlur={handleBlur}
                 value={values.maxOrder}
+                min="1"
+                max="1000"
               />
             </div>
           </div>

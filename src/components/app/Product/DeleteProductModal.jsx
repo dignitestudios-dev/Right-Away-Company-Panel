@@ -3,11 +3,14 @@ import Modal from "react-modal";
 import { CrossIcon } from "../../../assets/export";
 import { useDispatch } from "react-redux";
 import { deleteProducts, getProducts } from "../../../redux/slices/AppSlice";
+import { useNavigate } from "react-router";
 const DeleteProductModal = ({ isOpen, setIsOpen, selected, loading }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleSubmit = async () => {
     await dispatch(deleteProducts(selected));
-    await dispatch(getProducts());
+    await dispatch(getProducts()).unwrap();
+    navigate("/app/product-management");
     setIsOpen(false);
   };
   return (

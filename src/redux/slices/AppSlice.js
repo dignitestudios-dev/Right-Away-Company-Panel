@@ -75,7 +75,7 @@ export const getProductsById = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.get(`/company/product/${payload}`);     
+      const response = await axios.get(`/company/product/${payload}`);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -145,7 +145,7 @@ export const getOrderById = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.get(`/company/order/${payload}`);     
+      const response = await axios.get(`/company/order/${payload}`);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -213,7 +213,7 @@ export const getCustomerOrders = createAsyncThunk(
     }
   }
 );
-//👽 ----------- Customer Managment -----------👽
+//👽 ----------- Product Review Managment -----------👽
 export const getProductReview = createAsyncThunk(
   "/company/products/reviews",
   async (payload = {}, thunkAPI) => {
@@ -233,6 +233,18 @@ export const getProductReview = createAsyncThunk(
 
       const response = await axios.get(`/company/products/reviews?${params}`);
 
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const Reported = createAsyncThunk(
+  "/company/report/",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.post(`/company/report`, payload);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -299,7 +311,6 @@ const appSlice = createSlice({
       })
       .addCase(getProducts.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload.message;
       })
       .addCase(getProductsById.pending, (state, action) => {
         state.isLoading = true;
@@ -390,6 +401,16 @@ const appSlice = createSlice({
         state.pagination = action.payload.pagination;
       })
       .addCase(getProductReview.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(Reported.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(Reported.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(Reported.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
       });
