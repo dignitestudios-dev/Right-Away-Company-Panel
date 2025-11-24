@@ -10,9 +10,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductsById } from "../../../redux/slices/AppSlice";
 
-const RatingDisplay = () => {
-  const rating = 4.5;
-  const totalRatings = 56;
+const RatingDisplay = ({ rating = 0 }) => {
+  const totalRatings = rating;
 
   return (
     <div className="flex items-center space-x-2">
@@ -21,8 +20,8 @@ const RatingDisplay = () => {
         {[...Array(5)].map((_, index) => (
           <FaStar
             key={index}
-            className={`text-yellow-400 ${
-              index < Math.floor(rating) ? "fill-yellow-400" : "text-gray-300"
+            className={`${
+              index < Math.floor(rating) ? "text-yellow-400" : "text-gray-300"
             }`}
           />
         ))}

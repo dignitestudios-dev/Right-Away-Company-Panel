@@ -72,7 +72,7 @@ const ReviewsSection = () => {
             </div>
 
             {/* Comment */}
-            <div className="flex justify-between items-center mb-5">
+            <div className="flex justify-between gap-4 items-baseline mb-5">
               <p className="text-[#181818] text-[12px] font-[400] leading-relaxed ">
                 {review.comment}
               </p>
