@@ -331,7 +331,8 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
-      <ReviewsSection />
+
+      <ReviewsSection id={singleProduct?._id} />
       <DeleteProductModal
         loading={isLoading}
         selected={singleProduct?._id}

@@ -3,8 +3,8 @@ import { ErrorToast } from "./components/global/Toaster";
 import Cookies from "js-cookie";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
-// export const baseUrl = "https://api.rightawayapp.com/";
-export const baseUrl = "http://192.168.9.56:8080/";
+export const baseUrl = "https://api.rightawayapp.com/";
+// export const baseUrl = "http://192.168.9.56:8080/";
 
 let cachedDeviceId = null;
 

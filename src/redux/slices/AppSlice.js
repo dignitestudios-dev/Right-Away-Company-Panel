@@ -12,6 +12,7 @@ const initialState = {
   CustomerOrders: null,
   pagination: null,
   ProductReview: null,
+  SingleProductReview: null,
 };
 //👽 ----------- Product Managment-----------👽
 export const CreateProduct = createAsyncThunk(
@@ -240,6 +241,18 @@ export const getProductReview = createAsyncThunk(
     }
   }
 );
+export const getProductReviewByID = createAsyncThunk(
+  "/company/products/:id/reviews",
+  async (payload, thunkAPI) => {
+    try {    
+      const response = await axios.get(`/company/products/${payload}/reviews`);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 export const Reported = createAsyncThunk(
   "/company/report/",
   async (payload, thunkAPI) => {
@@ -401,6 +414,17 @@ const appSlice = createSlice({
         state.pagination = action.payload.pagination;
       })
       .addCase(getProductReview.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(getProductReviewByID.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getProductReviewByID.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.SingleProductReview = action.payload.data;
+      })
+      .addCase(getProductReviewByID.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
       })

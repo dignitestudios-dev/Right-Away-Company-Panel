@@ -1,62 +1,51 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
-import { FaReply } from "react-icons/fa";
-import { ReplyComment } from "../../../assets/export";
 import Button from "../../global/Button";
 import ReplyReviewModal from "./ReplyReviewModal";
+import { useDispatch, useSelector } from "react-redux";
+import { getProductReviewByID } from "../../../redux/slices/AppSlice";
+import { ReplyComment } from "../../../assets/export";
 
-const ReviewsSection = () => {
+const ReviewsSection = ({ id }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const reviews = [
-    {
-      id: 1,
-      name: "Jason Cruz",
-      date: "27 April, 2024",
-      rating: 4,
-      comment:
-        "Amazing product. I booked on Monday and I got my order on the next day. I’m highly impressed with their services. Highly recommended. Amazing product. I booked on Monday and I got my order on the next day. I’m highly impressed with their services. Highly recommended!!",
-      reply:
-        "Amazing product. I’m highly impressed with their services. Highly recommended!",
-    },
-    {
-      id: 2,
-      name: "Jason Cruz",
-      date: "27 April, 2024",
-      rating: 4,
-      comment:
-        "Amazing product. I booked on Monday and I got my order on the next day. I’m highly impressed with their services. Highly recommended. Amazing product. I booked on Monday and I got my order on the next day. I’m highly impressed with their services. Highly recommended!!",
-    },
-    {
-      id: 3,
-      name: "Jason Cruz",
-      date: "27 April, 2024",
-      rating: 4,
-      comment:
-        "Amazing product. I booked on Monday and I got my order on the next day. I’m highly impressed with their services. Highly recommended. Amazing product. I booked on Monday and I got my order on the next day. I’m highly impressed with their services. Highly recommended!!",
-    },
-    {
-      id: 4,
-      name: "Jason Cruz",
-      date: "27 April, 2024",
-      rating: 4,
-      comment:
-        "Amazing product. I booked on Monday and I got my order on the next day. I’m highly impressed with their services. Highly recommended. Amazing product. I booked on Monday and I got my order on the next day. I’m highly impressed with their services. Highly recommended!!",
-    },
-  ];
+  const { SingleProductReview, isLoading } = useSelector((state) => state.app);
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(getProductReviewByID(id));
+  }, [id]);
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+console.log(SingleProductReview,"single-product-review")
   return (
-    <div className="bg-[#FFFFFF] rounded-2xl shadow-sm border-[0.3px] border-gray-200  p-6 mt-10 mx-auto font-inter">
+    <div className="bg-[#FFFFFF] rounded-2xl shadow-sm border-[0.3px] border-gray-200 p-6 mt-10 mx-auto font-inter">
       {/* Header */}
       <h2 className="text-[18px] font-semibold text-[#181818] mb-6">
         Reviews{" "}
-        <span className="text-[#5C5C5C] text-[13px] font-[400]">(56)</span>
+        <span className="text-[#5C5C5C] text-[13px] font-[400]">
+          ({SingleProductReview?.length || 0})
+        </span>
       </h2>
+
+      {/* Loader */}
+      {isLoading && <p>Loading reviews...</p>}
+
+      {/* No Reviews */}
+      {!isLoading && SingleProductReview?.length === 0 && (
+        <p className="text-gray-500 text-sm">No reviews yet.</p>
+      )}
 
       {/* Reviews List */}
       <div className="space-y-6">
-        {reviews.map((review) => (
+        {SingleProductReview?.map((review) => (
           <div
-            key={review.id}
+            key={review._id}
             className="border-b border-gray-200 pb-6 last:border-none"
           >
             {/* Stars */}
@@ -72,29 +61,31 @@ const ReviewsSection = () => {
             </div>
 
             {/* Comment */}
-            <div className="flex justify-between gap-4 items-baseline mb-5">
-              <p className="text-[#181818] text-[12px] font-[400] leading-relaxed ">
-                {review.comment}
+            <div className="flex justify-between gap-4 items-start mb-5">
+              <p className="text-[#181818] text-[12px] font-[400] leading-relaxed">
+                {review.reviews}
               </p>
 
-              {!review.reply && (
+              {!review.reply && review.isOwnReview && (
                 <Button
-                  onClick={() => setIsOpen(!isOpen)}
+                  onClick={() => setIsOpen(true)}
                   text={"Write a Reply"}
                   customClass={
-                    "w-[120px] !text-[14px] !font-[400] !rounded-[15px] "
+                    "w-[120px] !text-[14px] !font-[400] !rounded-[15px]"
                   }
                 />
               )}
             </div>
-            {/* User Info + Button */}
+
+            {/* User Info */}
             <div className="flex justify-between items-center">
               <div className="flex relative items-center space-x-3">
                 <img
-                  src="https://i.pravatar.cc/40?img=1"
-                  alt={review.name}
+                  src={review.user?.profilePicture}
+                  alt={review.user?.name}
                   className="w-10 h-10 rounded-full object-cover"
                 />
+
                 {review.reply && (
                   <img
                     src={ReplyComment}
@@ -102,12 +93,13 @@ const ReviewsSection = () => {
                     alt="ReplyComment"
                   />
                 )}
+
                 <div className="flex items-center gap-2">
                   <p className="font-medium text-[12px] text-[#181818]">
-                    {review.name}
+                    {review.user?.name}
                   </p>
-                  <p className="text-[#838383]  text-[12px] font-[400]">
-                    {review.date}
+                  <p className="text-[#838383] text-[12px] font-[400]">
+                    {formatDate(review.createdAt)}
                   </p>
                 </div>
               </div>
@@ -116,13 +108,13 @@ const ReviewsSection = () => {
             {/* Reply Section */}
             {review.reply && (
               <div className="mt-2 ml-8 pl-4">
-                <p className="text-[#181818] text-[12px] w-[260px] font-[400]  mb-2">
+                <p className="text-[#181818] text-[12px] w-[260px] font-[400] mb-2">
                   {review.reply}
                 </p>
                 <p className="text-[#181818] flex items-center mt-2 gap-2 text-[12px] font-medium">
                   <img
-                    src="https://i.pravatar.cc/40?img=1"
-                    alt={review.name}
+                    src={review.user.profilePicture}
+                    alt="reply-user"
                     className="w-10 h-10 rounded-full object-cover"
                   />{" "}
                   Replied By You
@@ -132,6 +124,7 @@ const ReviewsSection = () => {
           </div>
         ))}
       </div>
+
       <ReplyReviewModal isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );
