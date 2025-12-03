@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GoArrowLeft } from "react-icons/go";
 import Filter from "../../components/global/Filter";
 import { useNavigate } from "react-router";
@@ -6,13 +6,23 @@ import Button from "../../components/global/Button";
 import WalletData from "../../components/app/Wallet/WalletData";
 import AddBankModal from "../../components/app/Wallet/AddBankModal";
 import WithdrawModal from "../../components/app/Wallet/WithdrawModal";
+import { useDispatch, useSelector } from "react-redux";
+import { getWallet } from "../../redux/slices/AppSlice";
 
 export default function Wallet() {
   const navigate = useNavigate("");
   const [addFunds, setAddFunds] = useState(false);
-  const [isConnect, setIsConnect] = useState(false);
-
   const [withrawModal, setWithrawModal] = useState(false);
+  const dispatch = useDispatch();
+  const { wallet } = useSelector((state) => state?.app);
+  const { Banks } = useSelector((state) => state?.auth);
+  const handleGetWallet = async () => {
+    await dispatch(getWallet()).unwrap();
+  };
+  useEffect(() => {
+    handleGetWallet();
+  }, []);
+  console.log(wallet, "wallet-get");
   return (
     <div className="py-4">
       <div className="flex justify-between ">
@@ -34,10 +44,12 @@ export default function Wallet() {
           <p className="text-[20px] text-[#A0A0A0]  font-[500]">
             Remaining Balance
           </p>
-          <h3 className="gradient-text font-[700] text-[40px] ">$ 3,5362</h3>
+          <h3 className="gradient-text font-[700] text-[40px] ">
+            $ {wallet?.dollars}
+          </h3>
         </div>
         <div>
-          {isConnect ? (
+          {Banks?.lenght > 0 ? (
             <Button
               onClick={() => setWithrawModal(!withrawModal)}
               text={"Funds withdraw"}
@@ -53,11 +65,7 @@ export default function Wallet() {
         </div>
       </div>
       <WalletData />
-      <AddBankModal
-        setIsConnect={setIsConnect}
-        isOpen={addFunds}
-        setIsOpen={setAddFunds}
-      />
+      <AddBankModal isOpen={addFunds} setIsOpen={setAddFunds} />
       <WithdrawModal isOpen={withrawModal} setIsOpen={setWithrawModal} />
     </div>
   );

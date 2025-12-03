@@ -13,6 +13,8 @@ const initialState = {
   pagination: null,
   ProductReview: null,
   SingleProductReview: null,
+  wallet: null,
+  walletTransactions: null,
 };
 //👽 ----------- Product Managment-----------👽
 export const CreateProduct = createAsyncThunk(
@@ -244,8 +246,24 @@ export const getProductReview = createAsyncThunk(
 export const getProductReviewByID = createAsyncThunk(
   "/company/products/:id/reviews",
   async (payload, thunkAPI) => {
-    try {    
+    try {
       const response = await axios.get(`/company/products/${payload}/reviews`);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const ProductReviewReply = createAsyncThunk(
+  "/company/products/reviews/:id",
+  async (payload, thunkAPI) => {
+    try {
+      console.log(payload, "payload");
+      const response = await axios.put(
+        `company/products/reviews/${payload?.id}`,
+        payload?.data
+      );
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -258,6 +276,46 @@ export const Reported = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       const response = await axios.post(`/company/report`, payload);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+//👽 ----------- Wallet Managment -----------👽
+export const getWallet = createAsyncThunk(
+  "/company/wallet",
+  async (payload = {}, thunkAPI) => {
+    try {
+      const response = await axios.get(`/company/wallet`);
+
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const getWalletTransactions = createAsyncThunk(
+  "/company/wallet/transaction?page=1&limit=10",
+  async (payload = {}, thunkAPI) => {
+    try {
+      const { search, startDate, endDate, page = 1, limit = 10 } = payload;
+
+      // Build query object with only existing values
+      const query = {
+        page,
+        limit,
+        ...(search && { search }),
+        ...(startDate && { startDate }),
+        ...(endDate && { endDate }),
+      };
+
+      const params = new URLSearchParams(query).toString();
+
+      const response = await axios.get(`/company/wallet/transaction?${params}`);
+
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -435,6 +493,40 @@ const appSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(Reported.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(ProductReviewReply.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(ProductReviewReply.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(ProductReviewReply.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      //👽 ----------- Wallet State Managment -----------👽
+      .addCase(getWallet.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getWallet.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.wallet = action.payload.data;
+      })
+      .addCase(getWallet.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(getWalletTransactions.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getWalletTransactions.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.walletTransactions = action.payload.data;
+        state.pagination = action.payload.pagination;
+      })
+      .addCase(getWalletTransactions.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
       });

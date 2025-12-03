@@ -542,7 +542,6 @@ const authSlice = createSlice({
         state.token = action.payload?.data?.token;
         state.isAuthenticated = true;
       })
-
       .addCase(VerifyForgotPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;

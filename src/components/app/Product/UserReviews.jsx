@@ -8,12 +8,15 @@ import { ReplyComment } from "../../../assets/export";
 
 const ReviewsSection = ({ id }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { SingleProductReview, isLoading } = useSelector((state) => state.app);
+  const [selectedReviewId, setSelectedReviewId] = useState(null);
+
   const dispatch = useDispatch();
+  const { SingleProductReview, isLoading } = useSelector((state) => state.app);
+  const { company } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(getProductReviewByID(id));
-  }, [id]);
+  }, [id, dispatch]);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -22,10 +25,9 @@ const ReviewsSection = ({ id }) => {
       day: "numeric",
     });
   };
-console.log(SingleProductReview,"single-product-review")
+
   return (
     <div className="bg-[#FFFFFF] rounded-2xl shadow-sm border-[0.3px] border-gray-200 p-6 mt-10 mx-auto font-inter">
-      {/* Header */}
       <h2 className="text-[18px] font-semibold text-[#181818] mb-6">
         Reviews{" "}
         <span className="text-[#5C5C5C] text-[13px] font-[400]">
@@ -33,22 +35,18 @@ console.log(SingleProductReview,"single-product-review")
         </span>
       </h2>
 
-      {/* Loader */}
       {isLoading && <p>Loading reviews...</p>}
 
-      {/* No Reviews */}
       {!isLoading && SingleProductReview?.length === 0 && (
         <p className="text-gray-500 text-sm">No reviews yet.</p>
       )}
 
-      {/* Reviews List */}
       <div className="space-y-6">
         {SingleProductReview?.map((review) => (
           <div
             key={review._id}
             className="border-b border-gray-200 pb-6 last:border-none"
           >
-            {/* Stars */}
             <div className="flex items-center space-x-1 mb-2">
               {[...Array(5)].map((_, i) => (
                 <FaStar
@@ -60,15 +58,17 @@ console.log(SingleProductReview,"single-product-review")
               ))}
             </div>
 
-            {/* Comment */}
-            <div className="flex justify-between gap-4 items-start mb-5">
+            <div className="flex justify-between gap-4 items-start ">
               <p className="text-[#181818] text-[12px] font-[400] leading-relaxed">
                 {review.reviews}
               </p>
 
-              {!review.reply && review.isOwnReview && (
+              {!review.reply && (
                 <Button
-                  onClick={() => setIsOpen(true)}
+                  onClick={() => {
+                    setSelectedReviewId(review._id);
+                    setIsOpen(true);
+                  }}
                   text={"Write a Reply"}
                   customClass={
                     "w-[120px] !text-[14px] !font-[400] !rounded-[15px]"
@@ -77,7 +77,6 @@ console.log(SingleProductReview,"single-product-review")
               )}
             </div>
 
-            {/* User Info */}
             <div className="flex justify-between items-center">
               <div className="flex relative items-center space-x-3">
                 <img
@@ -102,10 +101,9 @@ console.log(SingleProductReview,"single-product-review")
                     {formatDate(review.createdAt)}
                   </p>
                 </div>
-              </div>
+              </div> 
             </div>
 
-            {/* Reply Section */}
             {review.reply && (
               <div className="mt-2 ml-8 pl-4">
                 <p className="text-[#181818] text-[12px] w-[260px] font-[400] mb-2">
@@ -113,7 +111,7 @@ console.log(SingleProductReview,"single-product-review")
                 </p>
                 <p className="text-[#181818] flex items-center mt-2 gap-2 text-[12px] font-medium">
                   <img
-                    src={review.user.profilePicture}
+                    src={company?.profilePicture}
                     alt="reply-user"
                     className="w-10 h-10 rounded-full object-cover"
                   />{" "}
@@ -124,8 +122,12 @@ console.log(SingleProductReview,"single-product-review")
           </div>
         ))}
       </div>
-
-      <ReplyReviewModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <ReplyReviewModal
+        apiCallOnReplye={() => dispatch(getProductReviewByID(id))}
+        reviewId={selectedReviewId}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      />
     </div>
   );
 };

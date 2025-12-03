@@ -55,30 +55,9 @@ export default function ProductDetail() {
 
     fetchProduct();
   }, [id]);
-  const stores = [
-    {
-      name: "Store 01",
-      address: "123 Bay Street, Downtown Toronto M5J",
-      stock: 258,
-    },
-    {
-      name: "Store 02",
-      address: "123 Bay Street, Downtown Toronto M5J",
-      stock: 258,
-    },
-    {
-      name: "Store 03",
-      address: "123 Bay Street, Downtown Toronto M5J",
-      stock: 258,
-    },
-    {
-      name: "Store 04",
-      address: "123 Bay Street, Downtown Toronto M5J",
-      stock: 258,
-    },
-  ];
 
   return (
+
     <div className=" min-h-screen p-2">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
@@ -152,9 +131,9 @@ export default function ProductDetail() {
                     href={doc}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer hover:border hover:border-[#22b573]"
+                    className=" p-2 bg-[#FFFFFF] rounded-[9px] flex flex-col items-center justify-center text-center cursor-pointer hover:border hover:border-[#22b573]"
                   >
-                    <div className="bg-[#FFFFFF] rounded-[9px] p-3 w-full flex items-center justify-center h-[74px]">
+                    <div className="w-full flex items-center justify-center">
                       <FaFilePdf className="text-red-600 text-3xl mb-1" />
                     </div>
                     <p className="text-sm font-medium text-gray-700">

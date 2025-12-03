@@ -8,11 +8,12 @@ import Modal from "react-modal";
 import { IoCloseSharp } from "react-icons/io5";
 import Button from "../../global/Button";
 import { BorderSuccessIcon } from "../../../assets/export";
+import { CreateBank, GetBanks } from "../../../redux/slices/authSlice";
 
-export default function AddBankModal({ isOpen, setIsOpen, setIsConnect }) {
+export default function AddBankModal({ isOpen, setIsOpen }) {
   const [isSuccess, setIsSuccess] = useState(false);
   const dispatch = useDispatch();
-  const { isLoading } = useSelector((state) => state?.app);
+  const { isLoading } = useSelector((state) => state?.auth);
 
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
@@ -21,16 +22,18 @@ export default function AddBankModal({ isOpen, setIsOpen, setIsConnect }) {
       validateOnChange: true,
       validateOnBlur: true,
       onSubmit: async (values) => {
-        console.log(values, "Submitted Values");
-
-        // ✅ simulate API call success
+        const data = {
+          accountHolderName: values?.holderName,
+          routingNumber: values?.routingNumber,
+          accountNumber: values?.accountNumber,
+          bankName: values?.bankName,
+        };
+        await dispatch(CreateBank(data)).unwrap();
         setTimeout(() => {
           setIsSuccess(true);
         }, 400);
-
-        // Close the form modal
+        dispatch(GetBanks());
         setIsOpen(false);
-        setIsConnect(true);
       },
     });
 

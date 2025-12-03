@@ -67,12 +67,14 @@ import TruckIcon from "./group.png";
 import BorderSuccessIcon from "./borderSuccess.png";
 import RedAlertIcon from "./red-alert.png";
 import BankFlagIcon from "./bank-flag.png";
+import PersonImage from "./person.png";
 
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
 export {
+  PersonImage,
   RedAlertIcon,
   BorderSuccessIcon,
   CallIcon,

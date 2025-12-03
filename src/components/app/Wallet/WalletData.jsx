@@ -1,21 +1,44 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MilkPackImg } from "../../../assets/export";
 import GlobalTable from "../../global/Table";
 import { formatDate } from "../../../lib/helpers";
 import Pagination from "../../global/Pagination";
 import Filter from "../../global/Filter";
+import { useDispatch, useSelector } from "react-redux";
+import { getWalletTransactions } from "../../../redux/slices/AppSlice";
 
 export default function WalletData() {
   const [activeStatus, setActiveStatus] = useState("Transaction History");
-
+  const [filters, setFilters] = useState({
+    search: "",
+    startDate: "",
+    endDate: "",
+  });
   const statuses = ["Transaction History", "Withdrawal History"];
+  const dispatch = useDispatch();
+  const { walletTransactions, isLoading, pagination } = useSelector(
+    (state) => state.app
+  );
+
+  const handleWalletTransactions = async () => {
+    await dispatch(
+      getWalletTransactions({
+        search: filters.search,
+        startDate: filters.startDate,
+        endDate: filters.endDate,
+      })
+    ).unwrap();
+  };
+
+  useEffect(() => {
+    handleWalletTransactions();
+  }, [dispatch, filters]);
 
   // Transaction Table Columns
   const transactionColumns = [
     "Transactions ID",
-    "Product Name",
+    "Order Id",
     "User Name",
-    "Qty",
     "Amount",
     "Date",
   ];
@@ -164,70 +187,41 @@ export default function WalletData() {
   // ✅ Decide which data & columns to show
   const isWithdrawal = activeStatus === "Withdrawal History";
   const columns = isWithdrawal ? withdrawalColumns : transactionColumns;
-  const sourceData = isWithdrawal ? withdrawals : transactions;
+  const sourceData = isWithdrawal ? withdrawals : walletTransactions || [];
 
   // ✅ Format data for GlobalTable
+  // Real API Transactions Mapping
+  console.log(sourceData, "transactions-- data");
   const data = sourceData.map((item, index) => {
     if (isWithdrawal) {
       return {
-        _id: item.id,
-        cells: [
-          <p key={index + "-id"} className="text-[#181818] text-[14px]">
-            {item.id}
-          </p>,
-          <p key={index + "-acc"} className="text-[#181818] text-[14px]">
-            {item.accountNumber}
-          </p>,
-          <p key={index + "-amount"} className="text-[#181818] text-[14px]">
-            {item.withdrawalAmount}
-          </p>,
-          <p key={index + "-method"} className="text-[#181818] text-[14px]">
-            {item.transferMethod}
-          </p>,
-          <p
-            key={index + "-status"}
-            className={`${item.statusColor} text-[14px] font-[500]`}
-          >
-            {item.status}
-          </p>,
-          <p key={index + "-date"} className="text-[#181818] text-[14px]">
-            {formatDate(item.date)}
-          </p>,
-        ],
-      };
-    } else {
-      return {
         _id: item._id,
         cells: [
-          <p
-            key={index + "-id"}
-            className="text-[#181818] text-[14px] font-[400]"
-          >
-            {item.id}
-          </p>,
-          <div key={index + "-name"} className="flex items-center gap-3">
-            <img
-              src={MilkPackImg}
-              alt="Product"
-              className="w-10 h-10 rounded-[8px] object-cover"
-            />
-            <p className="font-medium text-[14px]">{item.productName}</p>
-          </div>,
-          <p key={index + "-user"} className="text-[#181818] text-[14px]">
-            {item.name}
-          </p>,
-          <p key={index + "-qty"} className="text-[#181818] text-[14px]">
-            {item.qty}
-          </p>,
-          <p key={index + "-amount"} className="text-[#181818] text-[14px]">
-            {item.amount}
-          </p>,
-          <p key={index + "-date"} className="text-[#181818] text-[14px]">
-            {formatDate(item.date)}
-          </p>,
+          <p key={index + "-id"}>{item._id}</p>,
+          <p key={index + "-acc"}>{item.accountNumber || "--"}</p>,
+          <p key={index + "-amount"}>{item.withdrawalAmount || "--"}</p>,
+          <p key={index + "-method"}>{item.transferMethod || "--"}</p>,
+          <p key={index + "-status"}>{item.status || "--"}</p>,
+          <p key={index + "-date"}>{formatDate(item.createdAt)}</p>,
         ],
       };
     }
+
+    // 🚀 Show Real Transaction Table Data
+    return {
+      _id: item._id,
+      cells: [
+        <p key={index + "-order"}>{item.orderId}</p>,
+
+        <p key={index + "-order"}>{item.orderId}</p>,
+
+        <p key={index + "-user"}>{item.user?.name}</p>,
+
+        <p key={index + "-amount"}>{item.total}</p>,
+
+        <p key={index + "-date"}>{formatDate(item.createdAt)}</p>,
+      ],
+    };
   });
 
   return (
@@ -237,7 +231,7 @@ export default function WalletData() {
           {activeStatus}
         </h3>
         <div className="flex items-center gap-4">
-          <Filter hide={true} dateHide={true} />
+          <Filter hide={true} dateHide={true} onFilterChange={setFilters} />
         </div>
       </div>
 
@@ -265,7 +259,15 @@ export default function WalletData() {
         {/* ✅ Dynamic Table */}
         <GlobalTable data={data} columns={columns} />
       </div>
-      <Pagination />
+      <Pagination
+        currentPage={pagination?.currentPage}
+        totalPages={pagination?.totalPages}
+        totalItems={pagination?.totalItems}
+        itemsPerPage={pagination?.itemsPerPage}
+        onPageChange={(page) =>
+          dispatch(getWalletTransactions({ ...filters, page, limit: 10 }))
+        }
+      />
     </>
   );
 }

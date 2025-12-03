@@ -5,7 +5,6 @@ import {
   CallIcon,
   ChatBtnIcon,
   MessageIcon,
-  MilkPackImg,
   Person1,
   ReplyComment,
   SubTitleIcon,
@@ -23,6 +22,7 @@ import { formatDate } from "../../../lib/helpers";
 import OrderDetailSkeleton from "../../global/DetailSkeliton";
 import { ErrorToast, SuccessToast } from "../../global/Toaster";
 import ReportModal from "../Customer/ReportReasonModal";
+import { OpenRiderChat } from "../../../redux/slices/ChatSlice";
 
 const CustomerReviewCard = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,11 +33,14 @@ const CustomerReviewCard = () => {
         <h2 className=" text-gray-900 text-[20px]  font-[600]">
           Customer Review
         </h2>
-        <button onClick={()=>setIsOpen(!isOpen)} className="text-[14px] border-b border-[#22B573] font-[400] gradient-text  underline">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="text-[14px] border-b border-[#22B573] font-[400] gradient-text  underline"
+        >
           Report Review
         </button>
       </div>
-<ReportModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <ReportModal isOpen={isOpen} setIsOpen={setIsOpen} />
       {/* Rating */}
       <div className="flex items-center gap-1 mb-2">
         <FaStar className="text-yellow-400 text-lg" />
@@ -99,7 +102,6 @@ const CustomerReviewCard = () => {
 
 export default function OrderTrackDetail() {
   const navigate = useNavigate("");
-  const [isOpen, setIsOpen] = useState(false);
   const [orderStatus, setOrderStatus] = useState("Ready For Pickup");
 
   const statusMap = {
@@ -133,8 +135,7 @@ export default function OrderTrackDetail() {
     text: "text-gray-500",
   };
   const dispatch = useDispatch();
-  const [selectedOption, setSelectedOption] = useState(""); // for radio
-  const [loading, setLoading] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("");
 
   const { singleOrder, isLoading } = useSelector((state) => state?.app);
   const loc = useLocation();
@@ -188,6 +189,10 @@ export default function OrderTrackDetail() {
     } catch (error) {
       ErrorToast(error?.message);
     }
+  };
+  const handleChatWithRider = async (rider) => {
+    await dispatch(OpenRiderChat(rider?._id)).unwrap();
+    navigate("/app/chat");
   };
   return (
     <>
@@ -390,11 +395,17 @@ export default function OrderTrackDetail() {
                     <div className="py-4 flex items-center justify-between">
                       <p className="text-[#000000] flex items-center gap-3 font-[600] text-[14px]">
                         <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
-                          <img src={singleOrder?.rider?.profilePicture} className="h-full w-full rounded-full" alt="person" />
+                          <img
+                            src={singleOrder?.rider?.profilePicture}
+                            className="h-full w-full rounded-full"
+                            alt="person"
+                          />
                         </div>
-                      {singleOrder?.rider?.name}
+                        {singleOrder?.rider?.name}
                       </p>
-                      <button onClick={() => navigate("/app/chat")}>
+                      <button
+                        onClick={() => handleChatWithRider(singleOrder?.rider)}
+                      >
                         <img
                           src={ChatBtnIcon}
                           className="w-[34px] h-[34px]"
@@ -414,7 +425,7 @@ export default function OrderTrackDetail() {
                         Contact Number
                       </p>
                       <p className="text-[#464646] font-[500] text-[12px]">
-                       {singleOrder?.rider?.phone}
+                        {singleOrder?.rider?.phone}
                       </p>
                     </div>
 

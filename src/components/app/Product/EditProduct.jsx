@@ -120,7 +120,6 @@ export default function EditProduct() {
     },
     validationSchema: ProductSchema,
     onSubmit: async (values) => {
-      console.log(values, "formData---->");
       const form = new FormData();
       // 🔸 Append images
       oldImages.forEach((file) => form.append("images[]", file));
@@ -267,8 +266,8 @@ export default function EditProduct() {
                     </option>
                   ))}
                 </select>
-              </div>
-
+              </div> 
+               
               <div className="w-full">
                 <label htmlFor="subCategory" className="font-[500] text-[14px]">
                   Sub Category
