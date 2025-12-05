@@ -2,10 +2,12 @@ import axios from "axios";
 import { ErrorToast } from "./components/global/Toaster";
 import Cookies from "js-cookie";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { useDispatch } from "react-redux";
+import { logout } from "./redux/slices/authSlice";
 
 export const baseUrl = "https://api.rightawayapp.com/";
 // export const baseUrl = "http://192.168.9.56:8080/";
-
+const dispatch=useDispatch()
 let cachedDeviceId = null;
 
 async function getDeviceFingerprint() {
@@ -54,9 +56,10 @@ instance.interceptors.response.use(
 
     if (error.response && error.response.status === 401) {
       Cookies.remove("token");
-      Cookies.remove("user");      
+      Cookies.remove("user");
+      dispatch(logout())
       ErrorToast("Session expired. Please relogin");
-      // window.location.href = "/auth/login";
+      window.location.href = "/auth/login";
     }
 
     return Promise.reject(error);
