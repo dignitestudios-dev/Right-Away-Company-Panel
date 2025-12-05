@@ -13,17 +13,22 @@ import { signInSchema } from "../../schema/authentication/dummyLoginSchema";
 import { useDispatch, useSelector } from "react-redux";
 import {
   CompanyLogin,
+  logout,
   SendOtpFa,
   SocialLogin,
 } from "../../redux/slices/authSlice";
 import { signInWithPopup } from "firebase/auth";
 import { appleProvider, auth, googleProvider } from "../../firebase/firebase";
 import getFCMToken from "../../firebase/getFcmToken";
+import { useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate("");
   const dispatch = useDispatch();
   const { isLoading } = useSelector((state) => state?.auth);
+  useEffect(() => {
+    dispatch(logout());
+  }, []);
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
       initialValues: loginValues,
