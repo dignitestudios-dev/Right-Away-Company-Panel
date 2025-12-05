@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ErrorToast, SuccessToast } from "../../components/global/Toaster";
-import axios from "../../axios";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
 import Cookies from "js-cookie";
+import instance from "../../axios";
 const initialState = {
   isLoading: false,
   isResendLoading: false,
@@ -46,7 +46,7 @@ export const Register = createAsyncThunk(
       };
 
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/signUp/company", finalPayload);
+      const response = await instance.post("/auth/signUp/company", finalPayload);
       console.log(response);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       SuccessToast(response?.data?.message || "Registration successful!");
@@ -65,7 +65,7 @@ export const CompanyLogin = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/signIn", payload);
+      const response = await instance.post("/auth/signIn", payload);
       SuccessToast(response?.data?.message || "CompanyLogin successful!");
       return response?.data;
     } catch (error) {
@@ -82,7 +82,7 @@ export const SocialLogin = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/socialRegister", payload);
+      const response = await instance.post("/auth/socialRegister", payload);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       SuccessToast(response?.data?.message || "Company Login successful!");
       return response?.data;
@@ -101,7 +101,7 @@ export const SendOtpFa = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/resendLoginOTP", payload);
+      const response = await instance.post("/auth/resendLoginOTP", payload);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -118,7 +118,7 @@ export const VerifyLoginOtp = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/verifyOTP", payload);
+      const response = await instance.post("/auth/verifyOTP", payload);
       SuccessToast(response?.data?.message);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       return response?.data;
@@ -135,7 +135,7 @@ export const ReSendOtpFa = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/resendLoginOTP", payload);
+      const response = await instance.post("/auth/resendLoginOTP", payload);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -153,7 +153,7 @@ export const forgetPassword = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/resendLoginOTP", payload);
+      const response = await instance.post("/auth/resendLoginOTP", payload);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       SuccessToast(response?.data?.message || "Forget password successful!");
       return response?.data;
@@ -173,7 +173,7 @@ export const ResendForgetOtp = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/resendLoginOTP", payload);
+      const response = await instance.post("/auth/resendLoginOTP", payload);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       SuccessToast(response?.data?.message || "Forget password successful!");
       return response?.data;
@@ -194,7 +194,7 @@ export const SendOtpAccountVerification = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/emailVerificationOTP");
+      const response = await instance.post("/auth/emailVerificationOTP");
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -211,7 +211,7 @@ export const ReSendOtpAccountVerification = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/emailVerificationOTP");
+      const response = await instance.post("/auth/emailVerificationOTP");
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -229,7 +229,7 @@ export const VerifyEmail = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/verifyEmail", payload);
+      const response = await instance.post("/auth/verifyEmail", payload);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -245,7 +245,7 @@ export const VerifyForgotPassword = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/verifyOTP", payload);
+      const response = await instance.post("/auth/verifyOTP", payload);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       SuccessToast(response?.data?.message);
       return response?.data;
@@ -261,7 +261,7 @@ export const updateForgotPassword = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/updatePassword", payload);
+      const response = await instance.post("/auth/updatePassword", payload);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -277,7 +277,7 @@ export const UploadCompanyDocuments = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/company/documents", payload);
+      const response = await instance.post("/company/documents", payload);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -293,7 +293,7 @@ export const CompleteCompanyProfile = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/company/profile/complete", payload);
+      const response = await instance.post("/company/profile/complete", payload);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -308,7 +308,7 @@ export const UpdateCompanyProfile = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/company/profile/complete", payload);
+      const response = await instance.post("/company/profile/complete", payload);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -323,7 +323,7 @@ export const CreateStore = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/company/store", payload);
+      const response = await instance.post("/company/store", payload);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -339,7 +339,7 @@ export const EditStore = createAsyncThunk(
     try {
       console.log(payload, "payload");
       // 4️⃣ Send request to backend
-      const response = await axios.put(
+      const response = await instance.put(
         `/company/store/${payload?.id}`,
         payload?.data
       );
@@ -357,7 +357,7 @@ export const getStore = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.get("/company/store");
+      const response = await instance.get("/company/store");
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -371,7 +371,7 @@ export const deleteStore = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.delete(`company/store/${payload}`);
+      const response = await instance.delete(`company/store/${payload}`);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -387,7 +387,7 @@ export const CreateBank = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/company/bank", payload);
+      const response = await instance.post("/company/bank", payload);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -402,7 +402,7 @@ export const GetBanks = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.get("/company/bank");
+      const response = await instance.get("/company/bank");
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -416,7 +416,7 @@ export const EditBank = createAsyncThunk(
   async ({ data, bankId }, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.put(`/company/bank/${bankId}`, data);
+      const response = await instance.put(`/company/bank/${bankId}`, data);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -430,7 +430,7 @@ export const DeleteBank = createAsyncThunk(
   "delete/company/bank",
   async (bankId, thunkAPI) => {
     try {
-      const response = await axios.delete(`/company/bank/${bankId}`);
+      const response = await instance.delete(`/company/bank/${bankId}`);
       SuccessToast(response?.data?.message || "Bank deleted successfully");
       return bankId; // returning bankId so reducer can remove it from state
     } catch (error) {
@@ -444,7 +444,7 @@ export const ConectStripeAccount = createAsyncThunk(
   "/company/account/link",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.get("/company/account/link", payload);
+      const response = await instance.get("/company/account/link", payload);
       SuccessToast(response?.data?.message);
 
       const url = response?.data?.data?.url;
@@ -469,7 +469,7 @@ export const ChangePassword = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/auth/changePassword", payload);
+      const response = await instance.post("/auth/changePassword", payload);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {

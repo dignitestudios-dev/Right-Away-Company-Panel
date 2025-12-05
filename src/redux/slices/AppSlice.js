@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ErrorToast, SuccessToast } from "../../components/global/Toaster";
-import axios from "../../axios";
+import instance from "../../axios";
 const initialState = {
   isLoading: false,
   products: null,
@@ -22,7 +22,7 @@ export const CreateProduct = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.post("/company/product", payload, {
+      const response = await instance.post("/company/product", payload, {
         "Content-Type": "multipart/form-data",
       });
       SuccessToast(response?.data?.message);
@@ -39,7 +39,7 @@ export const updateProduct = createAsyncThunk(
   async ({ id, form }, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.put(`/company/product/${id}`, form);
+      const response = await instance.put(`/company/product/${id}`, form);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -64,7 +64,7 @@ export const getProducts = createAsyncThunk(
         ...(endDate && { endDate }),
       });
 
-      const response = await axios.get(`company/product?${params.toString()}`);
+      const response = await instance.get(`company/product?${params.toString()}`);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -78,7 +78,7 @@ export const getProductsById = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.get(`/company/product/${payload}`);
+      const response = await instance.get(`/company/product/${payload}`);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -92,7 +92,7 @@ export const deleteProducts = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.delete(`company/product/${payload}`);
+      const response = await instance.delete(`company/product/${payload}`);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -132,7 +132,7 @@ export const getOrders = createAsyncThunk(
       // Convert to URLSearchParams
       const params = new URLSearchParams(query).toString();
 
-      const response = await axios.get(`/company/order?${params}`);
+      const response = await instance.get(`/company/order?${params}`);
 
       return response?.data;
     } catch (error) {
@@ -148,7 +148,7 @@ export const getOrderById = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.get(`/company/order/${payload}`);
+      const response = await instance.get(`/company/order/${payload}`);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -162,7 +162,7 @@ export const cancelOrder = createAsyncThunk(
   async ({ id, form }, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.put(`/company/order/${id}/cancel`, form);
+      const response = await instance.put(`/company/order/${id}/cancel`, form);
       SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -190,7 +190,7 @@ export const getCustomers = createAsyncThunk(
 
       const params = new URLSearchParams(query).toString();
 
-      const response = await axios.get(`/company/user?${params}`);
+      const response = await instance.get(`/company/user?${params}`);
 
       return response?.data;
     } catch (error) {
@@ -205,7 +205,7 @@ export const getCustomerOrders = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await axios.get(
+      const response = await instance.get(
         `/company/user/${payload}/order?search=""&page=${1}&limit=${10}`
       );
       return response?.data;
@@ -234,7 +234,7 @@ export const getProductReview = createAsyncThunk(
 
       const params = new URLSearchParams(query).toString();
 
-      const response = await axios.get(`/company/products/reviews?${params}`);
+      const response = await instance.get(`/company/products/reviews?${params}`);
 
       return response?.data;
     } catch (error) {
@@ -247,7 +247,7 @@ export const getProductReviewByID = createAsyncThunk(
   "/company/products/:id/reviews",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.get(`/company/products/${payload}/reviews`);
+      const response = await instance.get(`/company/products/${payload}/reviews`);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -260,7 +260,7 @@ export const ProductReviewReply = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       console.log(payload, "payload");
-      const response = await axios.put(
+      const response = await instance.put(
         `company/products/reviews/${payload?.id}`,
         payload?.data
       );
@@ -275,7 +275,7 @@ export const Reported = createAsyncThunk(
   "/company/report/",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.post(`/company/report`, payload);
+      const response = await instance.post(`/company/report`, payload);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -288,7 +288,7 @@ export const getWallet = createAsyncThunk(
   "/company/wallet",
   async (payload = {}, thunkAPI) => {
     try {
-      const response = await axios.get(`/company/wallet`);
+      const response = await instance.get(`/company/wallet`);
 
       return response?.data;
     } catch (error) {
@@ -314,7 +314,7 @@ export const getWalletTransactions = createAsyncThunk(
 
       const params = new URLSearchParams(query).toString();
 
-      const response = await axios.get(`/company/wallet/transaction?${params}`);
+      const response = await instance.get(`/company/wallet/transaction?${params}`);
 
       return response?.data;
     } catch (error) {

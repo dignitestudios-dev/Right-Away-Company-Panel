@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
-import { baseUrl } from "./src/axios";
 import Cookies from "js-cookie";
+import { baseUrl } from "./src/axios";
 
 const token = Cookies.get("token");
 

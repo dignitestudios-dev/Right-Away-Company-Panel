@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "../../axios";
+import instance from "../../axios";
 const initialState = {
   isLoading: false,
   selectedChat: null,
@@ -11,7 +11,7 @@ export const OpenRiderChat = createAsyncThunk(
   "/chat/:id",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.post(`chat/${payload}`);
+      const response = await instance.post(`chat/${payload}`);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -30,7 +30,7 @@ export const getChatRooms = createAsyncThunk(
         type,
       });
 
-      const response = await axios.get(`chat?${params.toString()}`);
+      const response = await instance.get(`chat?${params.toString()}`);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -48,7 +48,7 @@ export const getMessages = createAsyncThunk(
         type,
       });
 
-      const response = await axios.get(
+      const response = await instance.get(
         `chat/messages/${roomId}?${params.toString()}`
       );
       return response?.data;
