@@ -2,8 +2,8 @@ import axios from "axios";
 import { ErrorToast } from "./components/global/Toaster";
 import Cookies from "js-cookie";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { useDispatch } from "react-redux";
 import { logout } from "./redux/slices/authSlice";
+import { store } from "./redux/store/store";
 
 export const baseUrl = "https://api.rightawayapp.com/";
 // export const baseUrl = "http://192.168.9.56:8080/";
@@ -49,7 +49,7 @@ instance.interceptors.request.use(async (request) => {
 
 instance.interceptors.response.use(
   (response) => response,
-  async (error) => {
+  (error) => {
     if (error.code === "ECONNABORTED") {
       ErrorToast("Your internet connection is slow. Please try again.");
     }
@@ -57,7 +57,7 @@ instance.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       Cookies.remove("token");
       Cookies.remove("user");
-      await dispatch(logout()).unwrap();
+      store.dispatch(logout());
       ErrorToast("Session expired. Please relogin");
       window.location.href = "/auth/login";
     }
