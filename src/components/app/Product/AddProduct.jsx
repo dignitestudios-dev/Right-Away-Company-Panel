@@ -56,7 +56,6 @@ export default function AddNewProduct() {
   const navigate = useNavigate("");
   const [uploadError, setUploadError] = useState({
     images: "",
-    docs: "",
     inventories: "",
   });
 
@@ -196,11 +195,7 @@ export default function AddNewProduct() {
         ErrorToast("At least one inventory is required");
         return;
       }
-      if (productDocs.length === 0) {
-        setUploadError({ docs: "At least one PDF document is required" });
-        ErrorToast("At least one PDF document is required");
-        return;
-      }
+  
       const invalidDocs = productDocs.filter(
         (file) => file.type !== "application/pdf"
       );

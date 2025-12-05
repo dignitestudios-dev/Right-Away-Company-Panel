@@ -7,6 +7,7 @@ import {
   MessageIcon,
   MilkPackImg,
   Person1,
+  PersonImage,
   ReplyComment,
   SubTitleIcon,
   TruckIcon,
@@ -446,93 +447,100 @@ export default function OrderDetail() {
                   </div>
                 </div>
               )}
-              {(orderStatus === "processing" ||
-                orderStatus === "completed") && (
-                <div className="bg-[#FFFFFF] p-4 mt-4 drop-shadow-sm rounded-[14px]">
-                  <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
-                    Rider Information
-                  </h3>
+              {(orderStatus === "processing" || orderStatus === "completed") &&
+                singleOrder?.rider && (
+                  <div className="bg-[#FFFFFF] p-4 mt-4 drop-shadow-sm rounded-[14px]">
+                    <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
+                      Rider Information
+                    </h3>
 
-                  <div className="col-span-6">
-                    {/* Rider Header */}
-                    <div className="py-4 flex items-center justify-between">
-                      <p className="text-[#000000] flex items-center gap-3 font-[600] text-[14px]">
-                        <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
-                          <img src={Person1} alt="person" />
-                        </div>
-                        John Doe
-                      </p>
-                      <button onClick={() => navigate("/app/chat")}>
-                        <img
-                          src={ChatBtnIcon}
-                          className="w-[34px] h-[34px]"
-                          alt="chat"
-                        />
-                      </button>
-                    </div>
+                    <div className="col-span-6">
+                      {/* Rider Header */}
+                      <div className="py-4 flex items-center justify-between">
+                        <p className="text-[#000000] flex items-center gap-3 font-[600] text-[14px]">
+                          <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
+                            <img
+                              src={
+                                singleOrder?.rider?.profilePicture
+                                  ? singleOrder?.rider?.profilePicture
+                                  : PersonImage
+                              }
+                              alt="person"
+                            />
+                          </div>
+                          {singleOrder?.rider?.name}
+                        </p>
+                        <button onClick={() => navigate("/app/chat")}>
+                          <img
+                            src={ChatBtnIcon}
+                            className="w-[34px] h-[34px]"
+                            alt="chat"
+                          />
+                        </button>
+                      </div>
 
-                    {/* Contact Number */}
-                    <div className="py-1 flex items-center justify-between">
-                      <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
-                        <img
-                          src={CallIcon}
-                          className="w-[18px] h-[14px]"
-                          alt="call"
-                        />
-                        Contact Number
-                      </p>
-                      <p className="text-[#464646] font-[500] text-[12px]">
-                        +1 234 567 890
-                      </p>
-                    </div>
+                      {/* Contact Number */}
+                      <div className="py-1 flex items-center justify-between">
+                        <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
+                          <img
+                            src={CallIcon}
+                            className="w-[18px] h-[14px]"
+                            alt="call"
+                          />
+                          Contact Number
+                        </p>
+                        <p className="text-[#464646] font-[500] text-[12px]">
+                          {singleOrder?.rider?.phone}
+                        </p>
+                      </div>
 
-                    {/* Email */}
-                    <div className="py-1 flex items-center justify-between">
-                      <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
-                        <img
-                          src={MessageIcon}
-                          className="w-[18px] h-[14px]"
-                          alt="email"
-                        />
-                        Email Address
-                      </p>
-                      <p className="text-[#464646] font-[500] text-[12px]">
-                        johndoe@email.com
-                      </p>
-                    </div>
+                      {/* Email */}
+                      <div className="py-1 flex items-center justify-between">
+                        <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
+                          <img
+                            src={MessageIcon}
+                            className="w-[18px] h-[14px]"
+                            alt="email"
+                          />
+                          Email Address
+                        </p>
+                        <p className="text-[#464646] font-[500] text-[12px]">
+                          {singleOrder?.rider?.email}
+                        </p>
+                      </div>
 
-                    {/* Vehicle Type */}
-                    <div className="py-1 flex items-center justify-between">
-                      <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
-                        <img
-                          src={TruckIcon}
-                          className="w-[18px] h-[14px]"
-                          alt="truck"
-                        />
-                        Vehicle Type
-                      </p>
-                      <p className="text-[#464646] font-[500] text-[12px]">
-                        Truck
-                      </p>
-                    </div>
+                      {/* Vehicle Type */}
+                      <div className="py-1 flex items-center justify-between">
+                        <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
+                          <img
+                            src={TruckIcon}
+                            className="w-[18px] h-[14px]"
+                            alt="truck"
+                          />
+                          Vehicle Type
+                        </p>
+                        <p className="text-[#464646] font-[500] text-[12px]">
+                          {singleOrder?.vehicle?.vehicle}
+                        </p>
+                      </div>
 
-                    {/* Vehicle Number */}
-                    <div className="py-1 flex items-center justify-between">
-                      <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
-                        <img
-                          src={SubTitleIcon}
-                          className="w-[18px] h-[14px]"
-                          alt="icon"
-                        />
-                        Vehicle Number
-                      </p>
-                      <p className="text-[#464646] font-[500] text-[12px]">
-                        ABC-1234
-                      </p>
+                      {/* Vehicle Number */}
+                      <div className="py-1 flex items-center justify-between">
+                        <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
+                          <img
+                            src={SubTitleIcon}
+                            className="w-[18px] h-[14px]"
+                            alt="icon"
+                          />
+                          Vehicle Number
+                        </p>
+                        <p className="text-[#464646] font-[500] text-[12px]">
+                             {singleOrder?.vehicle?.registrationNumber}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {orderStatus == "Completed" && <CustomerReviewCard />}
               {orderStatus == "processing" && (

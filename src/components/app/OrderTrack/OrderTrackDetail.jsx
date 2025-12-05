@@ -384,7 +384,7 @@ export default function OrderTrackDetail() {
               )}
               {(statusMap[orderStatus] === "Out for Delivery" ||
                 statusMap[orderStatus] === "Ready For Pickup" ||
-                statusMap[orderStatus] === "Delivered") && (
+                statusMap[orderStatus] === "Delivered") && singleOrder?.rider && (
                 <div className="bg-[#FFFFFF] p-4 mt-4 drop-shadow-sm rounded-[14px]">
                   <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
                     Rider Information
