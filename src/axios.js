@@ -7,7 +7,7 @@ import { logout } from "./redux/slices/authSlice";
 
 export const baseUrl = "https://api.rightawayapp.com/";
 // export const baseUrl = "http://192.168.9.56:8080/";
-const dispatch=useDispatch()
+const dispatch = useDispatch();
 let cachedDeviceId = null;
 
 async function getDeviceFingerprint() {
@@ -49,7 +49,7 @@ instance.interceptors.request.use(async (request) => {
 
 instance.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.code === "ECONNABORTED") {
       ErrorToast("Your internet connection is slow. Please try again.");
     }
@@ -57,7 +57,7 @@ instance.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       Cookies.remove("token");
       Cookies.remove("user");
-      dispatch(logout())
+      await dispatch(logout()).unwrap();
       ErrorToast("Session expired. Please relogin");
       window.location.href = "/auth/login";
     }
