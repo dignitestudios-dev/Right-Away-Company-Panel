@@ -1,7 +1,7 @@
 // src/routes/ProtectedRoute.jsx
 import { Navigate, useLocation } from "react-router";
 import { useSelector } from "react-redux";
-
+import Cookie from "js-cookie"
 export function ProtectedRoute({ children }) {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
@@ -15,13 +15,14 @@ export function ProtectedRoute({ children }) {
 }
 
 export function PublicRoute({ children }) {
-  const { isAuthenticated, isOnboardingStep } = useSelector(
+  const {  isOnboardingStep } = useSelector(
     (state) => state.auth
   );
+  const isToken=Cookie.get("token");
   const location = useLocation();
 
   // If user is already authenticated, send them to dashboard
-  if (isAuthenticated && location?.pathname !== "/auth/signup") {
+  if (isToken && location?.pathname !== "/auth/signup") {
     return <Navigate to="/app/dashboard" replace />;
   }
 
