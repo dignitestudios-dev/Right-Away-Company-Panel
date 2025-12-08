@@ -26,7 +26,7 @@ import { formatDate } from "../../../lib/helpers";
 import { socket } from "../../../../socket";
 import { ErrorToast, SuccessToast } from "../../global/Toaster";
 import OrderDetailSkeleton from "../../global/DetailSkeliton";
-
+import QRCode from "react-qr-code";
 const CustomerReviewCard = () => {
   return (
     <div className="w-full mt-4  bg-white rounded-2xl shadow-[0_4px_25px_rgba(0,0,0,0.1)] p-4">
@@ -402,7 +402,7 @@ export default function OrderDetail() {
                   <h3 className="text-[20px] font-[600] mb-4 text-[#000000]">
                     Delivery Options
                   </h3>
-
+                  
                   <div className="col-span-6">
                     <label className="flex items-center gap-2 cursor-pointer font-[500] text-[16px] text-[#262626]">
                       <input
@@ -465,6 +465,7 @@ export default function OrderDetail() {
                                   ? singleOrder?.rider?.profilePicture
                                   : PersonImage
                               }
+                              className="w-full h-full rounded-full"
                               alt="person"
                             />
                           </div>
@@ -535,7 +536,7 @@ export default function OrderDetail() {
                           Vehicle Number
                         </p>
                         <p className="text-[#464646] font-[500] text-[12px]">
-                             {singleOrder?.vehicle?.registrationNumber}
+                          {singleOrder?.vehicle?.registrationNumber}
                         </p>
                       </div>
                     </div>

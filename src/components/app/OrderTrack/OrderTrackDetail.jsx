@@ -23,6 +23,7 @@ import OrderDetailSkeleton from "../../global/DetailSkeliton";
 import { ErrorToast, SuccessToast } from "../../global/Toaster";
 import ReportModal from "../Customer/ReportReasonModal";
 import { OpenRiderChat } from "../../../redux/slices/ChatSlice";
+import QRCode from "react-qr-code";
 
 const CustomerReviewCard = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -194,6 +195,7 @@ export default function OrderTrackDetail() {
     await dispatch(OpenRiderChat(rider?._id)).unwrap();
     navigate("/app/chat");
   };
+  console.log(singleOrder?.deliveryMethod, "deliverMethods");
   return (
     <>
       {isLoading ? (
@@ -225,8 +227,8 @@ export default function OrderTrackDetail() {
                 ))}
             </div>
           </div>
-          <div className="grid lg:grid-cols-12 gap-4  mt-4">
-            <div className="border col-span-12 lg:col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
+          <div className="grid lg:grid-cols-12 items-start gap-4  mt-4">
+            <div className="border col-span-12  lg:col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
               <div className="flex justify-between items-center">
                 <h3 className="text-[20px] font-[600]">Order Items</h3>
                 <div
@@ -236,7 +238,7 @@ export default function OrderTrackDetail() {
                 </div>
               </div>
               {singleOrder?.item?.map((item, i) => (
-                <div key={i} className="flex  py-2 mb-2 justify-between">
+                <div key={i} className="flex  py-1 justify-between">
                   <div className="flex gap-4 items-center">
                     <div className="w-[84px] flex items-center justify-center h-[84px] bg-[#F2FBF7] rounded-[15px]">
                       <img
@@ -355,6 +357,48 @@ export default function OrderTrackDetail() {
               </div>
             </div>
             <div className="lg:col-span-4 col-span-12 ">
+              <div className="bg-[#FFFFFF] p-4   drop-shadow-sm rounded-[14px]">
+                <h3 className="text-[20px] font-[600] mb-4 text-[#000000] ">
+                  Payment Details
+                </h3>
+                {singleOrder?.item?.map((item, i) => (
+                  <div
+                    key={i}
+                    className="border-b border-t py-3 flex items-center justify-between border-[#D4D4D4]"
+                  >
+                    <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                      {item?.products?.name}
+                    </p>
+                    <p className="text-[#000000] font-[400] text-[16px]">
+                      ${Number(item?.products?.unitPrice || 0).toFixed(2)}
+                    </p>
+                  </div>
+                ))}
+                <div className="border-b border-t py-3 flex items-center justify-between border-[#D4D4D4]">
+                  <p className="text-[#000000]  font-[600] text-[16px]">
+                    subtotal
+                  </p>
+                  <p className="text-[#000000] font-[400] text-[16px]">
+                    ${Number(singleOrder?.subTotal || 0).toFixed(2)}
+                  </p>
+                </div>
+                <div className="border-b  py-3 flex items-center justify-between border-[#D4D4D4]">
+                  <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                    Total Items
+                  </p>
+                  <p className="text-[#000000]  font-[400] text-[16px]">
+                    {singleOrder?.item?.length}
+                  </p>
+                </div>
+                <div className=" py-3 flex items-center justify-between border-[#D4D4D4]">
+                  <p className="text-[#202224]  font-[600] text-[16px]">
+                    Total Amount
+                  </p>
+                  <p className="gradient-text  font-[700] text-[16px]">
+                    ${Number(singleOrder?.total || 0).toFixed(2)}
+                  </p>
+                </div>
+              </div>
               {statusMap[orderStatus] === "Delivered" && (
                 <div className="bg-[#FFFFFF] p-4  drop-shadow-sm rounded-[14px]">
                   <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
@@ -384,103 +428,118 @@ export default function OrderTrackDetail() {
               )}
               {(statusMap[orderStatus] === "Out for Delivery" ||
                 statusMap[orderStatus] === "Ready For Pickup" ||
-                statusMap[orderStatus] === "Delivered") && singleOrder?.rider && (
-                <div className="bg-[#FFFFFF] p-4 mt-4 drop-shadow-sm rounded-[14px]">
-                  <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
-                    Rider Information
-                  </h3>
+                statusMap[orderStatus] === "Delivered") &&
+                singleOrder?.rider && (
+                  <div className="bg-[#FFFFFF] p-4 mt-4 drop-shadow-sm rounded-[14px]">
+                    <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
+                      Rider Information
+                    </h3>
 
-                  <div className="col-span-6">
-                    {/* Rider Header */}
-                    <div className="py-4 flex items-center justify-between">
-                      <p className="text-[#000000] flex items-center gap-3 font-[600] text-[14px]">
-                        <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
+                    <div className="col-span-6">
+                      {/* Rider Header */}
+                      <div className="py-4 flex items-center justify-between">
+                        <p className="text-[#000000] flex items-center gap-3 font-[600] text-[14px]">
+                          <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
+                            <img
+                              src={singleOrder?.rider?.profilePicture}
+                              className="h-full w-full rounded-full"
+                              alt="person"
+                            />
+                          </div>
+                          {singleOrder?.rider?.name}
+                        </p>
+                        <button
+                          onClick={() =>
+                            handleChatWithRider(singleOrder?.rider)
+                          }
+                        >
                           <img
-                            src={singleOrder?.rider?.profilePicture}
-                            className="h-full w-full rounded-full"
-                            alt="person"
+                            src={ChatBtnIcon}
+                            className="w-[34px] h-[34px]"
+                            alt="chat"
                           />
-                        </div>
-                        {singleOrder?.rider?.name}
-                      </p>
-                      <button
-                        onClick={() => handleChatWithRider(singleOrder?.rider)}
-                      >
-                        <img
-                          src={ChatBtnIcon}
-                          className="w-[34px] h-[34px]"
-                          alt="chat"
-                        />
-                      </button>
-                    </div>
+                        </button>
+                      </div>
 
-                    {/* Contact Number */}
-                    <div className="py-1 flex items-center justify-between">
-                      <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
-                        <img
-                          src={CallIcon}
-                          className="w-[18px] h-[14px]"
-                          alt="call"
-                        />
-                        Contact Number
-                      </p>
-                      <p className="text-[#464646] font-[500] text-[12px]">
-                        {singleOrder?.rider?.phone}
-                      </p>
-                    </div>
+                      {/* Contact Number */}
+                      <div className="py-1 flex items-center justify-between">
+                        <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
+                          <img
+                            src={CallIcon}
+                            className="w-[18px] h-[14px]"
+                            alt="call"
+                          />
+                          Contact Number
+                        </p>
+                        <p className="text-[#464646] font-[500] text-[12px]">
+                          {singleOrder?.rider?.phone}
+                        </p>
+                      </div>
 
-                    {/* Email */}
-                    <div className="py-1 flex items-center justify-between">
-                      <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
-                        <img
-                          src={MessageIcon}
-                          className="w-[18px] h-[14px]"
-                          alt="email"
-                        />
-                        Email Address
-                      </p>
-                      <p className="text-[#464646] font-[500] text-[12px]">
-                        {singleOrder?.rider?.email}
-                      </p>
-                    </div>
+                      {/* Email */}
+                      <div className="py-1 flex items-center justify-between">
+                        <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
+                          <img
+                            src={MessageIcon}
+                            className="w-[18px] h-[14px]"
+                            alt="email"
+                          />
+                          Email Address
+                        </p>
+                        <p className="text-[#464646] font-[500] text-[12px]">
+                          {singleOrder?.rider?.email}
+                        </p>
+                      </div>
 
-                    {/* Vehicle Type */}
-                    <div className="py-1 flex items-center justify-between">
-                      <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
-                        <img
-                          src={TruckIcon}
-                          className="w-[18px] h-[14px]"
-                          alt="truck"
-                        />
-                        Vehicle Type
-                      </p>
-                      <p className="text-[#464646] font-[500] text-[12px]">
-                        Truck
-                      </p>
-                    </div>
+                      {/* Vehicle Type */}
+                      <div className="py-1 flex items-center justify-between">
+                        <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
+                          <img
+                            src={TruckIcon}
+                            className="w-[18px] h-[14px]"
+                            alt="truck"
+                          />
+                          Vehicle Type
+                        </p>
+                        <p className="text-[#464646] font-[500] text-[12px]">
+                          Truck
+                        </p>
+                      </div>
 
-                    {/* Vehicle Number */}
-                    <div className="py-1 flex items-center justify-between">
-                      <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
-                        <img
-                          src={SubTitleIcon}
-                          className="w-[18px] h-[14px]"
-                          alt="icon"
-                        />
-                        Vehicle Number
-                      </p>
-                      <p className="text-[#464646] font-[500] text-[12px]">
-                        ABC-1234
-                      </p>
+                      {/* Vehicle Number */}
+                      <div className="py-1 flex items-center justify-between">
+                        <p className="text-[#464646] flex items-center gap-2 font-[500] text-[12px]">
+                          <img
+                            src={SubTitleIcon}
+                            className="w-[18px] h-[14px]"
+                            alt="icon"
+                          />
+                          Vehicle Number
+                        </p>
+                        <p className="text-[#464646] font-[500] text-[12px]">
+                          ABC-1234
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
               {statusMap[orderStatus] != "Delivered" && (
                 <ShippingActivity
                   orderStatus={statusMap[orderStatus]}
                   setOrderStatus={handleStartPreparingClick}
                 />
+              )}
+              {singleOrder?.deliveryMethod?.trim().toLowerCase() == "store" && (
+                <div className="bg-[#FFFFFF] px-6 p-4 mt-4 drop-shadow-sm rounded-[14px]">
+                  <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
+                    QR Code
+                  </h3>
+                  <QRCode
+                    value={singleOrder?._id || ""}
+                    className="mt-2"
+                    size={306}
+                  />
+                </div>
               )}
 
               {statusMap[orderStatus] == "Delivered" && <CustomerReviewCard />}
