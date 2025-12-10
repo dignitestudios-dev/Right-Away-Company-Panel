@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "./redux/slices/authSlice";
 
 // export const baseUrl = "https://api.rightawayapp.com/";
-export const baseUrl = "http://192.168.9.56:8080/";
+export const baseUrl = "https://toneless-aprioristically-sacha.ngrok-free.dev/";
 
 // ❌ remove — cannot use useDispatch outside React component
 // const dispatch = useDispatch();
