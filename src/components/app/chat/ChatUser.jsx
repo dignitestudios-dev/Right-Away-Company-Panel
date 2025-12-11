@@ -1,9 +1,10 @@
 import { CiSearch } from "react-icons/ci";
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getChatRooms, getMessages } from "../../../redux/slices/ChatSlice";
 import { PersonImage } from "../../../assets/export";
 import { formatTime } from "../../../lib/helpers";
+import { socket } from "../../../../socket";
 
 export default function ChatUser({
   searchQuery,
@@ -14,10 +15,30 @@ export default function ChatUser({
   const [tabs, setTabs] = useState("rider-company");
   const dispatch = useDispatch();
   const { chatRooms } = useSelector((state) => state?.chat);
+
+  useEffect(() => {
+    // Error sending message
+    socket.on("chat:read:error", (err) => {
+      console.error("Send Error:", err);
+    });
+
+    // Unread count event
+    socket.on("chat:receive:updated", (data) => {
+      console.log("Unread Count:", data);
+    });
+    // Unread count event
+
+    return () => {
+      socket.off("chat:read:error");
+      socket.off("chat:receive:updated");
+    };
+  }, []);
+
   useEffect(() => {
     dispatch(getChatRooms({ page: 1, limit: 20, type: tabs }));
   }, [tabs]);
   const handleGetMessages = (roomId) => {
+    socket.emit("chat:read", { roomId: roomId });
     dispatch(getMessages({ page: 1, limit: 20, roomId }));
   };
   return (
@@ -63,7 +84,7 @@ export default function ChatUser({
               </div>
             </div>
             <div className="">
-              {chatRooms.map((user) => (
+              {chatRooms?.map((user) => (
                 <div
                   key={user.id}
                   className={`flex items-center p-3 px-8 mt-2 cursor-pointer   ${
@@ -72,7 +93,7 @@ export default function ChatUser({
                       : ""
                   }`}
                   onClick={() => {
-                    setActiveChat(user);
+                    dispatch(setActiveChat(user));
                     handleGetMessages(user.id);
                   }}
                 >

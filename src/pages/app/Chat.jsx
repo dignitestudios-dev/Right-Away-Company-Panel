@@ -9,11 +9,10 @@ import ReportModal from "../../components/app/Customer/ReportReasonModal";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../../socket";
 import { formatTime } from "../../lib/helpers";
-import { addMessage } from "../../redux/slices/ChatSlice";
+import { addMessage, setSelectedChat } from "../../redux/slices/ChatSlice";
 // import { RiArrowGoBackFill } from "react-icons/ri";
 const Chat = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeChat, setActiveChat] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate("");
   const [newMessage, setNewMessage] = useState("");
@@ -36,7 +35,8 @@ const Chat = () => {
     socket.on("chat:unread:count", (data) => {
       console.log("Unread Count:", data);
     });
-
+    // Unread count event
+   
     return () => {
       socket.off("chat:receive");
       socket.off("chat:send:error");
@@ -70,8 +70,8 @@ const Chat = () => {
 
         <div className={`col-span-12 md:col-span-4 `}>
           <ChatUser
-            activeChat={activeChat}
-            setActiveChat={setActiveChat}
+            activeChat={selectedChat}
+            setActiveChat={setSelectedChat}
             setSearchQuery={setSearchQuery}
             searchQuery={searchQuery}
           />{" "}
@@ -81,7 +81,7 @@ const Chat = () => {
         <div
           className={` bg-[#F9FAFA] backdrop-blur-[50px] rounded-[24px] p-2 col-span-12 md:col-span-8 md:flex  flex-1  flex-col shadow-sm overflow-hidden`}
         >
-          {activeChat ? (
+          {selectedChat ? (
             <>
               {/* Chat Header */}
               <div className="p-4 flex justify-between items-center bg-gradient rounded-[24px] backdrop-blur-[50px] ">
