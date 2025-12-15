@@ -529,7 +529,7 @@ export default function OrderTrackDetail() {
                   setOrderStatus={handleStartPreparingClick}
                 />
               )}
-              {singleOrder?.deliveryMethod?.trim().toLowerCase() == "store" && (
+              {singleOrder?.deliveryMethod?.trim().toLowerCase() != "store" && (
                 <div className="bg-[#FFFFFF] px-6 p-4 mt-4 drop-shadow-sm rounded-[14px]">
                   <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
                     QR Code
