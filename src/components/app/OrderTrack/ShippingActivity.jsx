@@ -3,7 +3,7 @@ import { FaCheck } from "react-icons/fa";
 import RiderArivedModal from "./RiderArrivedModal";
 import OrderSuccessfullyDelivered from "./OrderSuccessfullyDelivered";
 
-const ShippingActivity = ({ setOrderStatus, orderStatus }) => {
+const ShippingActivity = ({ setOrderStatus, orderStatus, rider }) => {
   const [steps, setSteps] = useState([
     {
       label: "Order Placed - Thursday, January (Pending)",
@@ -66,6 +66,7 @@ const ShippingActivity = ({ setOrderStatus, orderStatus }) => {
             onClick={() =>
               !step.completed &&
               ((step.label === "Picked by the Rider" &&
+                rider &&
                 handlePickedClick(index)) ||
                 (step.label === "Delivered" && handleDeliveredClick(index)))
             }
