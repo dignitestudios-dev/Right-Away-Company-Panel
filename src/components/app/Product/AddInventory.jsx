@@ -17,19 +17,26 @@ const AddInventory = ({
 }) => {
   const { stores } = useSelector((state) => state?.auth);
 
-  const { values, handleBlur, handleChange, handleSubmit, errors, touched,resetForm } =
-    useFormik({
-      initialValues: AddInventoryValues,
-      validationSchema: AddInventorySchema,
-      validateOnChange: true,
-      validateOnBlur: true,
-      onSubmit: async (values, action) => {
-        setInventories((prev) => [...prev, values]);
-        setIsOpen(!isOpen);
-        resetForm();
-        setUploadError({ ...uploadError, inventories: "" });
-      },
-    });
+  const {
+    values,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    errors,
+    touched,
+    resetForm,
+  } = useFormik({
+    initialValues: AddInventoryValues,
+    validationSchema: AddInventorySchema,
+    validateOnChange: true,
+    validateOnBlur: true,
+    onSubmit: async (values, action) => {
+      setInventories((prev) => [...prev, values]);
+      setIsOpen(!isOpen);
+      resetForm();
+      setUploadError({ ...uploadError, inventories: "" });
+    },
+  });
   return (
     <Modal
       isOpen={isOpen}
@@ -95,58 +102,6 @@ const AddInventory = ({
                     e.preventDefault();
                   }
                 }}
-                min="1"
-                max="1000"
-              />
-            </div>
-
-            {/* Min Quantity */}
-            <div className="col-span-6">
-              <Input
-                text="Minimum Order Quantity"
-                holder="Type here"
-                type="number"
-                touched={touched.minOrder}
-                handleChange={(e) => {
-                  const value = e.target.value;
-
-                  if (
-                    value === "" ||
-                    (Number(value) > 0 && Number(value) <= 1000)
-                  ) {
-                    handleChange(e);
-                  }
-                }}
-                name="minOrder"
-                error={errors.minOrder}
-                handleBlur={handleBlur}
-                value={values.minOrder}
-                min="1"
-                max="1000"
-              />
-            </div>
-
-            {/* Maximum Quantity */}
-            <div className="col-span-6">
-              <Input
-                text="Maximum Order Quantity"
-                holder="Type here"
-                type="number"
-                touched={touched.maxOrder}
-                handleChange={(e) => {
-                  const value = e.target.value;
-
-                  if (
-                    value === "" ||
-                    (Number(value) > 0 && Number(value) <= 1000)
-                  ) {
-                    handleChange(e);
-                  }
-                }}
-                name="maxOrder"
-                error={errors.maxOrder}
-                handleBlur={handleBlur}
-                value={values.maxOrder}
                 min="1"
                 max="1000"
               />

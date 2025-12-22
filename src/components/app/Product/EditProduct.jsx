@@ -90,6 +90,8 @@ export default function EditProduct() {
     "unitMessurement",
     "delivery",
     "instructions",
+    "maxOrder",
+    "minOrder",
   ];
   // 🧩 Load product data
 
@@ -126,7 +128,12 @@ export default function EditProduct() {
       newImages.forEach((file) => form.append("updateImages", file));
 
       // 🔸 Append documents
-      oldDocs.forEach((file) => form.append("productDoc[]", file));
+      // 🔸 Append documents
+      if (oldDocs.length > 0) {
+        oldDocs.forEach((file) => form.append("productDoc[]", file));
+      } else {
+        form.append("productDoc[]", ""); // 👈 empty key
+      }
       newDocs.forEach((file) => form.append("updateProductDoc[]", file));
 
       // ✅ Add only allowed fields from values
@@ -139,8 +146,6 @@ export default function EditProduct() {
       inventories.forEach((inv, i) => {
         form.append(`inventories[${i}][storeRecord]`, inv.storeName || inv._id);
         form.append(`inventories[${i}][stock]`, inv.stock);
-        form.append(`inventories[${i}][minOrder]`, inv.minOrder);
-        form.append(`inventories[${i}][maxOrder]`, inv.maxOrder);
       });
 
       try {
@@ -266,8 +271,8 @@ export default function EditProduct() {
                     </option>
                   ))}
                 </select>
-              </div> 
-               
+              </div>
+
               <div className="w-full">
                 <label htmlFor="subCategory" className="font-[500] text-[14px]">
                   Sub Category
@@ -551,6 +556,53 @@ export default function EditProduct() {
                 handleBlur={handleBlur}
                 error={errors.unitMessurement}
                 touched={touched.unitMessurement}
+              />
+
+              {/* Min Quantity */}
+              <Input
+                text="Minimum Order Quantity"
+                holder="Type here"
+                type="number"
+                touched={touched.minOrder}
+                handleChange={(e) => {
+                  const value = e.target.value;
+
+                  if (
+                    value === "" ||
+                    (Number(value) > 0 && Number(value) <= 1000)
+                  ) {
+                    handleChange(e);
+                  }
+                }}
+                name="minOrder"
+                error={errors.minOrder}
+                handleBlur={handleBlur}
+                value={values.minOrder}
+                min="1"
+                max="1000"
+              />
+
+              <Input
+                text="Maximum Order Quantity"
+                holder="Type here"
+                type="number"
+                touched={touched.maxOrder}
+                handleChange={(e) => {
+                  const value = e.target.value;
+
+                  if (
+                    value === "" ||
+                    (Number(value) > 0 && Number(value) <= 1000)
+                  ) {
+                    handleChange(e);
+                  }
+                }}
+                name="maxOrder"
+                error={errors.maxOrder}
+                handleBlur={handleBlur}
+                value={values.maxOrder}
+                min="1"
+                max="1000"
               />
             </div>
 

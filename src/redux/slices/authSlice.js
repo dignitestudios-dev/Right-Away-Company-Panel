@@ -49,7 +49,7 @@ export const Register = createAsyncThunk(
       const response = await instance.post("/auth/signUp/company", finalPayload);
       console.log(response);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
-      SuccessToast(response?.data?.message || "Registration successful!");
+      // SuccessToast(response?.data?.message || "Registration successful!");
       return response?.data;
     } catch (error) {
       console.error("Registration error:", error);
@@ -66,7 +66,7 @@ export const CompanyLogin = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/signIn", payload);
-      SuccessToast(response?.data?.message || "CompanyLogin successful!");
+      // SuccessToast(response?.data?.message || "CompanyLogin successful!");
       return response?.data;
     } catch (error) {
       console.error("CompanyLogin error:", error);
@@ -84,7 +84,7 @@ export const SocialLogin = createAsyncThunk(
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/socialRegister", payload);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
-      SuccessToast(response?.data?.message || "Company Login successful!");
+      // SuccessToast(response?.data?.message || "Company Login successful!");
       return response?.data;
     } catch (error) {
       console.error("CompanyLogin error:", error);
@@ -102,7 +102,7 @@ export const SendOtpFa = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/resendLoginOTP", payload);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       console.error("Registration error:", error);
@@ -119,7 +119,7 @@ export const VerifyLoginOtp = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/verifyOTP", payload);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       return response?.data;
     } catch (error) {
@@ -136,7 +136,7 @@ export const ReSendOtpFa = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/resendLoginOTP", payload);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       console.error("Registration error:", error);
@@ -155,7 +155,7 @@ export const forgetPassword = createAsyncThunk(
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/resendLoginOTP", payload);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
-      SuccessToast(response?.data?.message || "Forget password successful!");
+      // SuccessToast(response?.data?.message || "Forget password successful!");
       return response?.data;
     } catch (error) {
       console.error("Forget password error:", error);
@@ -175,7 +175,7 @@ export const ResendForgetOtp = createAsyncThunk(
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/resendLoginOTP", payload);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
-      SuccessToast(response?.data?.message || "Forget password successful!");
+      // SuccessToast(response?.data?.message || "Forget password successful!");
       return response?.data;
     } catch (error) {
       console.error("Forget password error:", error);
@@ -195,7 +195,7 @@ export const SendOtpAccountVerification = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/emailVerificationOTP");
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       console.error("Registration error:", error);
@@ -212,7 +212,7 @@ export const ReSendOtpAccountVerification = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/emailVerificationOTP");
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       console.error("Registration error:", error);
@@ -230,7 +230,7 @@ export const VerifyEmail = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/verifyEmail", payload);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -247,7 +247,7 @@ export const VerifyForgotPassword = createAsyncThunk(
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/verifyOTP", payload);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -262,7 +262,7 @@ export const updateForgotPassword = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/updatePassword", payload);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -278,7 +278,7 @@ export const UploadCompanyDocuments = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/company/documents", payload);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -294,7 +294,7 @@ export const CompleteCompanyProfile = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/company/profile/complete", payload);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -309,7 +309,7 @@ export const UpdateCompanyProfile = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/company/profile/complete", payload);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -324,7 +324,7 @@ export const CreateStore = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/company/store", payload);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -343,7 +343,7 @@ export const EditStore = createAsyncThunk(
         `/company/store/${payload?.id}`,
         payload?.data
       );
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -372,7 +372,7 @@ export const deleteStore = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.delete(`company/store/${payload}`);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -388,7 +388,7 @@ export const CreateBank = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/company/bank", payload);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -417,7 +417,7 @@ export const EditBank = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.put(`/company/bank/${bankId}`, data);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -431,7 +431,7 @@ export const DeleteBank = createAsyncThunk(
   async (bankId, thunkAPI) => {
     try {
       const response = await instance.delete(`/company/bank/${bankId}`);
-      SuccessToast(response?.data?.message || "Bank deleted successfully");
+      // SuccessToast(response?.data?.message || "Bank deleted successfully");
       return bankId; // returning bankId so reducer can remove it from state
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -445,7 +445,7 @@ export const ConectStripeAccount = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       const response = await instance.get("/company/account/link", payload);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
 
       const url = response?.data?.data?.url;
       if (url) {
@@ -470,7 +470,7 @@ export const ChangePassword = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/changePassword", payload);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;

@@ -10,7 +10,7 @@ export default function ChatMessage({ sender, content, time, avatar, name }) {
       >
         {!sender && (
           <div className="h-8 w-8 mt-1 border rounded-full border-[#03958A]">
-            <img src={avatar} alt={name} className="rounded-full" />
+            <img src={avatar} alt={name} className="rounded-full w-full h-full" />
           </div>
         )}
         <div className={`mx-2 ${sender ? "items-end" : "items-start"}`}>

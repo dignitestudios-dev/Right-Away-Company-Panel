@@ -94,4 +94,29 @@ function formatDate(dateString) {
   return date.toLocaleString("en-US", options).replace(",", ",");
 }
 
-export { formatDays, formatTime, formatOperatingDays, formatDate };
+export const EpocformatDate = (epoch) => {
+  if (!epoch) return "";
+
+  let time = Number(epoch);
+
+  // 🔥 If value looks like seconds, convert to milliseconds
+  if (time < 1000000000000) {
+    time = time * 1000;
+  }
+
+  return new Date(time).toLocaleString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+};
+
+export {
+  formatDays,
+  formatTime,
+  formatOperatingDays,
+  formatDate,
+};

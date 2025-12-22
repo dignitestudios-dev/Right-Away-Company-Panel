@@ -41,7 +41,7 @@ export default function ProductsData() {
         <div>
           <p className="font-medium">
             {item?.name}
-            {!item?.inStock && (
+            {!item?.isStock && (
               <span className="ml-2 text-[11px] font-[400] text-[#EE3131] bg-[#EE313126] px-2 py-[2px] rounded-full">
                 Out Of Stock
               </span>

@@ -18,8 +18,6 @@ const EditInventory = ({
   const inventoryToEdit = inventories[editIndex] || {
     storeName: "",
     stock: "",
-    minOrder: "",
-    maxOrder: "",
   };
 
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
@@ -109,53 +107,7 @@ const EditInventory = ({
               />
             </div>
 
-            {/* Minimum Order */}
-            <div className="col-span-6">
-              <Input
-                text="Minimum Order Quantity"
-                holder="Type here"
-                type="number"
-                touched={touched.minOrder}
-                handleChange={(e) => {
-                  const value = e.target.value;
-
-                  if (
-                    value === "" ||
-                    (Number(value) > 0 && Number(value) <= 1000)
-                  ) {
-                    handleChange(e);
-                  }
-                }}
-                name="minOrder"
-                error={errors.minOrder}
-                handleBlur={handleBlur}
-                value={values.minOrder}
-              />
-            </div>
-
-            {/* Maximum Order */}
-            <div className="col-span-6">
-              <Input
-                text="Maximum Order Quantity"
-                holder="Type here"
-                type="number"
-                touched={touched.maxOrder}
-                handleChange={(e) => {
-                  const value = e.target.value;
-
-                  if (
-                    value === "" ||
-                    (Number(value) > 0 && Number(value) <= 1000)
-                  ) {
-                    handleChange(e);
-                  }
-                }}
-                name="maxOrder"
-                error={errors.maxOrder}
-                handleBlur={handleBlur}
-                value={values.maxOrder}
-              />
-            </div>
+      
           </div>
 
           <Button

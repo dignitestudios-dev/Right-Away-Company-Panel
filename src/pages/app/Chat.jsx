@@ -9,40 +9,53 @@ import ReportModal from "../../components/app/Customer/ReportReasonModal";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../../socket";
 import { formatTime } from "../../lib/helpers";
-import { addMessage, setSelectedChat } from "../../redux/slices/ChatSlice";
-// import { RiArrowGoBackFill } from "react-icons/ri";
+import {
+  addMessage,
+  getChatRooms,
+  setSelectedChat,
+} from "../../redux/slices/ChatSlice";
+
 const Chat = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate("");
   const [newMessage, setNewMessage] = useState("");
- const dispatch = useDispatch();
+  const [isActiveTab, setIsActiveTab] = useState("");
+  const dispatch = useDispatch();
+
   const { selectedChat, messages } = useSelector((state) => state.chat);
 
   useEffect(() => {
-    // Receive new messages from rider
-    socket.on("chat:receive", (data) => {
-      console.log(data?.data?.message, "New Message Received");
+    if (!socket) return;
 
-      dispatch(addMessage(data?.data?.message)); // 👈 THIS WILL FIX IT
-    });
-    // Error sending message
-    socket.on("chat:send:error", (err) => {
-      console.error("Send Error:", err);
-    });
-
-    // Unread count event
-    socket.on("chat:unread:count", (data) => {
-      console.log("Unread Count:", data);
-    });
-    // Unread count event
-   
-    return () => {
-      socket.off("chat:receive");
-      socket.off("chat:send:error");
-      socket.off("chat:unread:count");
+    // Handler functions
+    const handleReceiveMessage = (data) => {
+      console.log("New Message:", data?.data?.message);
+      dispatch(addMessage(data?.data?.message));
+      dispatch(getChatRooms({ page: 1, limit: 20, type: tabs }));
     };
-  }, []);
+
+    const handleSendError = (error) => {
+      console.error("Send Error:", error);
+    };
+
+    const handleUnreadCount = (data) => {
+      console.log("Unread Count:", data);
+      dispatch(getChatRooms({ page: 1, limit: 20, type: tabs }));
+    };
+
+    // Attach listeners
+    socket.on("chat:receive", handleReceiveMessage);
+    socket.on("chat:send:error", handleSendError);
+    socket.on("chat:unread:count", handleUnreadCount);
+
+    return () => {
+      // Clean up listeners
+      socket.off("chat:receive", handleReceiveMessage);
+      socket.off("chat:send:error", handleSendError);
+      socket.off("chat:unread:count", handleUnreadCount);
+    };
+  }, [dispatch]); // ✅ Changed dependency
 
   const sendMessage = () => {
     if (!newMessage.trim()) return;
@@ -55,6 +68,14 @@ const Chat = () => {
     setNewMessage("");
   };
 
+  // Handle Enter key press
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+  console.log(messages,selectedChat, "selectedRider");
   return (
     <div className="h-[calc(100%-4.5rem)]">
       <div className="flex items-center gap-4">
@@ -62,19 +83,19 @@ const Chat = () => {
           onClick={() => navigate(-1)}
           className="text-[#03958A] cursor-pointer "
           size={21}
-        />{" "}
+        />
         <h3 className="font-[600] text-[32px] text-[#202224]">Messages</h3>
       </div>
       <div className="grid grid-cols-12 h-full gap-5 mt-3">
         {/* Left Sidebar */}
-
         <div className={`col-span-12 md:col-span-4 `}>
           <ChatUser
+            setIsActiveTab={setIsActiveTab}
             activeChat={selectedChat}
             setActiveChat={setSelectedChat}
             setSearchQuery={setSearchQuery}
             searchQuery={searchQuery}
-          />{" "}
+          />
         </div>
 
         {/* Right Chat Area */}
@@ -85,24 +106,46 @@ const Chat = () => {
             <>
               {/* Chat Header */}
               <div className="p-4 flex justify-between items-center bg-gradient rounded-[24px] backdrop-blur-[50px] ">
-                <div className="flex items-center">
-                  <div className="h-12 w-12 bg-[#FFFFFF] flex justify-center items-center rounded-full">
-                    <img
-                      src={
-                        selectedChat?.rider?.profilePicture
-                          ? selectedChat?.rider?.profilePicture
-                          : PersonImage
-                      }
-                      alt={selectedChat?.rider?.profilePicture}
-                      className="w-5 h-5 "
-                    />
+                {selectedChat?.rider ? (
+                  <div className="flex items-center">
+                    <div className="h-12 w-12 bg-[#FFFFFF] flex justify-center items-center rounded-full">
+                      <img
+                        src={
+                          selectedChat?.rider?.profilePicture
+                            ? selectedChat?.rider?.profilePicture
+                            : PersonImage
+                        }
+                        alt={selectedChat?.rider?.profilePicture}
+                        className="h-full overflow-hidden w-full "
+                      />
+                    </div>
+                    <div className="ml-2">
+                      <h3 className="font-medium capitalize text-lg text-white">
+                        {selectedChat?.rider?.name}
+                      </h3>
+                    </div>
                   </div>
-                  <div className="ml-2">
-                    <h3 className="font-medium capitalize text-lg text-white">
-                      {selectedChat?.rider?.name}
-                    </h3>
+                ) : (
+                  <div className="flex items-center">
+                    <div className="h-12 w-12 bg-[#FFFFFF] overflow-hidden flex justify-center items-center rounded-full">
+                      <img
+                        src={
+                          selectedChat?.user?.profilePicture
+                            ? selectedChat?.user?.profilePicture
+                            : PersonImage
+                        }
+                        alt={selectedChat?.user?.profilePicture}
+                        className="h-full w-full "
+                      />
+                    </div>
+                    <div className="ml-2">
+                      <h3 className="font-medium capitalize text-lg text-white">
+                        {selectedChat?.user?.name}
+                      </h3>
+                    </div>
                   </div>
-                </div>
+                )}
+
                 <div>
                   <button
                     onClick={() => setIsOpen(true)}
@@ -117,17 +160,33 @@ const Chat = () => {
               </div>
               {/* Chat Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {messages?.map((msg) => (
-                  <ChatMessage
-                    sender={
-                      msg?.sender == selectedChat?.rider?._id ? false : true
-                    }
-                    content={msg?.content}
-                    time={formatTime(msg?.createdAt)}
-                    avatar={Person2}
-                    name={selectedChat?.rider?.name}
-                  />
-                ))}
+                {selectedChat?.rider
+                  ? messages?.map((msg) => (
+                      <ChatMessage
+                        key={msg?._id}
+                        sender={
+                          msg?.sender === selectedChat?.rider?._id
+                            ? false
+                            : true
+                        }
+                        content={msg?.content}
+                        time={formatTime(msg?.createdAt)}
+                        avatar={selectedChat?.rider?.profilePicture}
+                        name={selectedChat?.rider?.name}
+                      />
+                    ))
+                  : messages?.map((msg) => (
+                      <ChatMessage
+                        key={msg?._id}
+                        sender={
+                          msg?.sender == selectedChat?.user?._id ? false :true
+                        }
+                        content={msg?.content}
+                        time={formatTime(msg?.createdAt)}
+                        avatar={selectedChat?.user?.profilePicture}
+                        name={selectedChat?.user?.name}
+                      />
+                    ))}
               </div>
 
               {/* Message Input */}
@@ -138,6 +197,7 @@ const Chat = () => {
                     placeholder="Type Message "
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyPress={handleKeyPress}
                     className="flex-1 border focus:outline-none w-full px-4 text-[16px] font-[400] text-[#18181880] border-[#EEEEEE] h-[40px] rounded-[14px] bg-transparent"
                   />
                   <button

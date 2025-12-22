@@ -22,7 +22,7 @@ import {
   getOrderById,
   setSingleOrder,
 } from "../../../redux/slices/AppSlice";
-import { formatDate } from "../../../lib/helpers";
+import { EpocformatDate, formatDate } from "../../../lib/helpers";
 import { socket } from "../../../../socket";
 import { ErrorToast, SuccessToast } from "../../global/Toaster";
 import OrderDetailSkeleton from "../../global/DetailSkeliton";
@@ -280,13 +280,13 @@ export default function OrderDetail() {
                   {formatDate(singleOrder?.createdAt)}
                 </p>
               </div>
-              {singleOrder?.type == "Scheduled" && (
+              {singleOrder?.type == "scheduled" && (
                 <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
                   <p className="text-[#7C7C7C]  font-[400] text-[16px]">
                     Scheduled Date
                   </p>
                   <p className="text-[#000000]  font-[400] text-[16px]">
-                    {formatDate(singleOrder?.createdAt)}
+                    {EpocformatDate(singleOrder?.scheduledDateTime)}
                   </p>
                 </div>
               )}
@@ -302,7 +302,7 @@ export default function OrderDetail() {
                 <p className="text-[#7C7C7C]  font-[400] text-[16px]">
                   Delivery Type
                 </p>
-                <p className="text-[#000000]  font-[400] text-[16px]">
+                <p className="text-[#000000] capitalize  font-[400] text-[16px]">
                   {" "}
                   {singleOrder?.type}
                 </p>
@@ -311,8 +311,8 @@ export default function OrderDetail() {
                 <p className="text-[#7C7C7C]  font-[400] text-[16px]">
                   Special Instructions
                 </p>
-                <p className="text-[#000000]  font-[400] text-[16px]">
-                  {singleOrder?.instruction}
+                <p className="text-[#000000] text-end  text-justify  font-[400] text-[16px]">
+                  {singleOrder?.instruction ? singleOrder?.instruction : "-"}
                 </p>
               </div>
               <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
@@ -402,7 +402,7 @@ export default function OrderDetail() {
                   <h3 className="text-[20px] font-[600] mb-4 text-[#000000]">
                     Delivery Options
                   </h3>
-                  
+
                   <div className="col-span-6">
                     <label className="flex items-center gap-2 cursor-pointer font-[500] text-[16px] text-[#262626]">
                       <input

@@ -25,7 +25,7 @@ export const CreateProduct = createAsyncThunk(
       const response = await instance.post("/company/product", payload, {
         "Content-Type": "multipart/form-data",
       });
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -40,7 +40,7 @@ export const updateProduct = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.put(`/company/product/${id}`, form);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -93,7 +93,7 @@ export const deleteProducts = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.delete(`company/product/${payload}`);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -163,7 +163,7 @@ export const cancelOrder = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.put(`/company/order/${id}/cancel`, form);
-      SuccessToast(response?.data?.message);
+      // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -206,7 +206,7 @@ export const getCustomerOrders = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.get(
-        `/company/user/${payload}/order?search=""&page=${1}&limit=${10}`
+        `/company/user/${payload}/order?search=${""}&page=${1}&limit=${10}`
       );
       return response?.data;
     } catch (error) {

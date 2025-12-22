@@ -7,35 +7,6 @@ export const AddInventorySchema = Yup.object({
     .typeError("Stock must be a number")
     .required("Stock is required")
     .max(1000, "Stock cannot be more than 1000"),
-
-  minOrder: Yup.number()
-    .typeError("Min Order must be a number")
-    .required("Min Order is required")
-    .max(1000, "Min Order cannot be more than 1000"),
-
-  maxOrder: Yup.number()
-    .typeError("Max Order must be a number")
-    .required("Max Order is required")
-    .max(1000, "Max Order cannot be more than 1000")
-    // Condition 1: maxOrder <= stock
-    .test(
-      "maxOrder-less-than-stock",
-      "Maximum Order cannot be greater than Total Stock",
-      function (value) {
-        const { stock } = this.parent;
-        return !value || !stock || value <= stock;
-      }
-    )
-
-    // Condition 2: maxOrder >= minOrder
-    .test(
-      "maxOrder-greater-than-minOrder",
-      "Maximum Order must be greater than Minimum Order",
-      function (value) {
-        const { minOrder } = this.parent;
-        return !value || !minOrder || value >= minOrder;
-      }
-    ),
 });
 
 export const ProductSchema = Yup.object({
@@ -107,6 +78,33 @@ export const ProductSchema = Yup.object({
   instructions: Yup.string()
     .max(300, "Special instructions can't exceed 300 characters")
     .nullable(),
+  minOrder: Yup.number()
+    .typeError("Min Order must be a number")
+    .required("Min Order is required")
+    .max(1000, "Min Order cannot be more than 1000"),
 
+  maxOrder: Yup.number()
+    .typeError("Max Order must be a number")
+    .required("Max Order is required")
+    .max(1000, "Max Order cannot be more than 1000")
+    // Condition 1: maxOrder <= stock
+    .test(
+      "maxOrder-less-than-stock",
+      "Maximum Order cannot be greater than Total Stock",
+      function (value) {
+        const { stock } = this.parent;
+        return !value || !stock || value <= stock;
+      }
+    )
+
+    // Condition 2: maxOrder >= minOrder
+    .test(
+      "maxOrder-greater-than-minOrder",
+      "Maximum Order must be greater than Minimum Order",
+      function (value) {
+        const { minOrder } = this.parent;
+        return !value || !minOrder || value >= minOrder;
+      }
+    ),
   delivery: Yup.boolean().required("Delivery field is required"),
 });

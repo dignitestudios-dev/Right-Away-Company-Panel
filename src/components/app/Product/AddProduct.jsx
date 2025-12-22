@@ -195,7 +195,7 @@ export default function AddNewProduct() {
         ErrorToast("At least one inventory is required");
         return;
       }
-  
+
       const invalidDocs = productDocs.filter(
         (file) => file.type !== "application/pdf"
       );
@@ -220,8 +220,6 @@ export default function AddNewProduct() {
       inventories.forEach((inv, i) => {
         form.append(`inventories[${i}][storeRecord]`, inv.storeName);
         form.append(`inventories[${i}][stock]`, inv.stock);
-        form.append(`inventories[${i}][minOrder]`, inv.minOrder);
-        form.append(`inventories[${i}][maxOrder]`, inv.maxOrder);
       });
 
       try {
@@ -647,6 +645,53 @@ export default function AddNewProduct() {
                   handleBlur={handleBlur}
                   value={values?.unitMessurement}
                   error={errors?.unitMessurement}
+                />
+
+                {/* Min Quantity */}
+                <Input
+                  text="Minimum Order Quantity"
+                  holder="Type here"
+                  type="number"
+                  touched={touched.minOrder}
+                  handleChange={(e) => {
+                    const value = e.target.value;
+
+                    if (
+                      value === "" ||
+                      (Number(value) > 0 && Number(value) <= 1000)
+                    ) {
+                      handleChange(e);
+                    }
+                  }}
+                  name="minOrder"
+                  error={errors.minOrder}
+                  handleBlur={handleBlur}
+                  value={values.minOrder}
+                  min="1"
+                  max="1000"
+                />
+
+                <Input
+                  text="Maximum Order Quantity"
+                  holder="Type here"
+                  type="number"
+                  touched={touched.maxOrder}
+                  handleChange={(e) => {
+                    const value = e.target.value;
+
+                    if (
+                      value === "" ||
+                      (Number(value) > 0 && Number(value) <= 1000)
+                    ) {
+                      handleChange(e);
+                    }
+                  }}
+                  name="maxOrder"
+                  error={errors.maxOrder}
+                  handleBlur={handleBlur}
+                  value={values.maxOrder}
+                  min="1"
+                  max="1000"
                 />
               </div>
               <div className="mt-2 gap-2 grid grid-cols-12">

@@ -15,10 +15,10 @@ export const ProductValues = {
   unitMessurement: "",
   instructions: "",
   delivery: true,
+  maxOrder:"",
+  minOrder:""
 };
 export const AddInventoryValues = {
   storeName: "",
   stock: "",
-  minOrder: "",
-  maxOrder: "",
 };

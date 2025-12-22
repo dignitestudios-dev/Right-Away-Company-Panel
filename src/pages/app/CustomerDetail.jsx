@@ -11,7 +11,7 @@ export default function CustomerDetail() {
   const [isReportOpen, setIsReportOpen] = useState(false);
   const loc = useLocation();
   const customer = loc?.state?.customer;
-
+console.log(customer,"customer name")
   return (
     <div className="py-4">
       <div className="flex justify-between ">
@@ -58,7 +58,7 @@ export default function CustomerDetail() {
             <div className="border-r border-[#BDBDBD]">
               <p className="text-[#959393] text-[16px] font-[400]">Full Name</p>
               <p className="font-[400] text-[16px] text-[#000000]">
-                [{customer?.name}]
+                {customer?.name}
               </p>
             </div>
             <div className="border-r border-[#BDBDBD]">

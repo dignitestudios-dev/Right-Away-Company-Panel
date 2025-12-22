@@ -124,6 +124,7 @@ const OrderCancelConfirmModal = ({
                   </label>
                   <input
                     type="text"
+                    placeholder="Title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     className={`bg-[#F9F9F9] w-full p-2 focus:outline-none rounded-[8px] h-[54px] ${
