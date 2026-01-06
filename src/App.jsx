@@ -21,7 +21,7 @@ import Chat from "./pages/app/Chat";
 import OrderTrack from "./pages/app/OrderTrack";
 import OrderTrackDetail from "./components/app/OrderTrack/OrderTrackDetail";
 import Profile from "./pages/app/Profile";
-import  {ProtectedRoute, PublicRoute } from "./routes/ProtectedRoute";
+import { ProtectedRoute, PublicRoute } from "./routes/ProtectedRoute";
 import CustomerDetail from "./pages/app/CustomerDetail";
 import Wallet from "./pages/app/Wallet";
 import ProductReviews from "./pages/app/ProductReviews";
@@ -31,6 +31,8 @@ import BankDetail from "./components/app/Setting/BankDetail";
 import AddCard from "./components/app/Setting/AddCard";
 import EditCard from "./components/app/Setting/EditCard";
 import { useSelector } from "react-redux";
+import PrivacyPolicy from "./pages/app/PrivacyPolicy";
+import TermsConditions from "./pages/app/TermsConditions";
 
 function App() {
   function DefaultRedirect() {
@@ -46,6 +48,8 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<DefaultRedirect />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/terms-condition" element={<TermsConditions />} />
 
       {/* 🔒 Protected App Routes */}
       <Route
