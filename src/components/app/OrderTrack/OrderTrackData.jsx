@@ -44,7 +44,6 @@ export default function OrderTrackData() {
     "Customer Name",
     "Booking",
     "Delivery Type",
-    "Qty",
     "Amount",
     "Status",
     "Action",
@@ -81,7 +80,7 @@ export default function OrderTrackData() {
 
       <p
         key={`order-${index}-type`}
-        className="text-[#181818] text-[14px] font-[400]"
+        className="text-[#181818] capitalize text-[14px] font-[400]"
       >
         {item.type}
       </p>,

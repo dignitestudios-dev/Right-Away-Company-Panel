@@ -1,4 +1,5 @@
-import  { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   LineChart,
   Line,
@@ -8,41 +9,65 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { getSalesGraph } from "../../../redux/slices/AppSlice";
 
 const SalesOverview = () => {
   const [viewMode, setViewMode] = useState("monthly");
+  const { salesGraph } = useSelector((state) => state.app);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
-  const monthlyData = [
-    { month: "JAN", value: 0 },
-    { month: "FEB", value: 15000 },
-    { month: "MAR", value: 16000 },
-    { month: "APR", value: 8000 },
-    { month: "MAY", value: 2000 },
-    { month: "JUN", value: 3000 },
-    { month: "JUL", value: 25000 },
-    { month: "AUG", value: 60000 },
-    { month: "SEP", value: 45000 },
-    { month: "OCT", value: 20000 },
-    { month: "NOV", value: 8000 },
-    { month: "DEC", value: 12000 },
-  ];
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (!startDate || !endDate) return;
 
+    dispatch(
+      getSalesGraph({
+        type: viewMode === "weekly" ? "week" : "year",
+        startDate,
+        endDate,
+      })
+    );
+  }, [dispatch, viewMode, startDate, endDate]);
+
+  const formatGraphData = (data, type = "week") => {
+    if (!Array.isArray(data)) return [];
+
+    return data.map((item) => {
+      const dateObj = new Date(item.date);
+
+      return {
+        label:
+          type === "week"
+            ? dateObj.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+              })
+            : dateObj.toLocaleDateString("en-US", {
+                month: "short",
+              }),
+        value: Math.round(item.totalRevenue),
+      };
+    });
+  };
+  const graphData = formatGraphData(
+    salesGraph,
+    viewMode === "weekly" ? "week" : "month"
+  );
+  console.log(graphData);
   const [hoveredMonth, setHoveredMonth] = useState("AUG");
 
-  const CustomDot = (props) => {
-    const { cx, cy, payload } = props;
-    if (payload.month === hoveredMonth) {
+  const CustomDot = ({ cx, cy, payload }) => {
+    if (payload?.label === hoveredMonth) {
       return (
-        <g>
-          <circle
-            cx={cx}
-            cy={cy}
-            r={8}
-            fill="#10b981"
-            stroke="#fff"
-            strokeWidth={3}
-          />
-        </g>
+        <circle
+          cx={cx}
+          cy={cy}
+          r={8}
+          fill="#10b981"
+          stroke="#fff"
+          strokeWidth={3}
+        />
       );
     }
     return null;
@@ -50,10 +75,9 @@ const SalesOverview = () => {
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
-      setHoveredMonth(payload[0].payload.month);
       return (
         <div className="bg-emerald-500 text-white px-4 py-2 rounded-lg font-semibold shadow-lg">
-          {(payload[0].value / 1000).toFixed(0)}K
+          {(payload[0].value / 1000).toFixed(1)}K
         </div>
       );
     }
@@ -79,8 +103,18 @@ const SalesOverview = () => {
 
         {/* Date Range Selectors */}
         <div className="flex gap-4 mt-2 lg:mt-0">
-          <input type="date" className="border px-2 rounded-[7px] accent-[#22B573] focus:outline-none border-[#D9D9D9] h-[33px] w-[140px] text-[#838383] " />
-          <input type="date" className="border px-2 rounded-[7px] accent-[#22B573] focus:outline-none border-[#D9D9D9] h-[33px] w-[140px] text-[#838383] " />
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="border px-2 rounded-[7px] accent-[#22B573] focus:outline-none border-[#D9D9D9] h-[33px] w-[140px] text-[#838383] "
+          />
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="border px-2 rounded-[7px] accent-[#22B573] focus:outline-none border-[#D9D9D9] h-[33px] w-[140px] text-[#838383] "
+          />
         </div>
       </div>
 
@@ -127,7 +161,7 @@ const SalesOverview = () => {
       <div className="w-full  h-[200px] lg:h-[250px] mt-2">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            data={monthlyData}
+            data={graphData}
             margin={{ top: 20, right: 0, left: -22, bottom: 20 }}
             onMouseLeave={handleMouseLeave}
           >
@@ -135,17 +169,15 @@ const SalesOverview = () => {
               strokeDasharray="-1"
               stroke="#f0f0f0"
               vertical={true}
-              
-              
-              
             />
             <XAxis
-              dataKey="month"
+              dataKey="label"
               axisLine={false}
               tickLine={false}
               tick={{ fill: "#9ca3af", fontSize: 14 }}
               dy={10}
             />
+
             <YAxis
               axisLine={false}
               tickLine={false}

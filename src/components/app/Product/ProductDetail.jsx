@@ -57,9 +57,8 @@ export default function ProductDetail() {
   }, [id]);
 
   return (
-
     <div className=" min-h-screen p-2">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-8xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-[32px] font-[600] flex items-center gap-2 text-[#202224]">

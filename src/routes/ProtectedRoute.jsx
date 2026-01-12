@@ -1,7 +1,9 @@
 // src/routes/ProtectedRoute.jsx
+import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router";
 import { useSelector } from "react-redux";
-import Cookie from "js-cookie"
+import Cookie from "js-cookie";
+
 export function ProtectedRoute({ children }) {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
@@ -15,34 +17,42 @@ export function ProtectedRoute({ children }) {
 }
 
 export function PublicRoute({ children }) {
-  const {  isOnboardingStep } = useSelector(
+  const { isOnboardingStep, isAuthenticated } = useSelector(
     (state) => state.auth
   );
-  const isToken=Cookie.get("token");
   const location = useLocation();
+  const isToken = Cookie.get("token");
 
-  // If user is already authenticated, send them to dashboard
-  if (isToken && location?.pathname !== "/auth/signup") {
-    return <Navigate to="/app/dashboard" replace />;
+  const [redirectPath, setRedirectPath] = useState(null);
+
+  useEffect(() => {
+    // If user is already authenticated, redirect to dashboard
+    if (isAuthenticated && location?.pathname !== "/auth/signup") {
+      setRedirectPath("/app/dashboard");
+      return;
+    }
+
+    const authPublicPaths = [
+      "/auth/login",
+      "/auth/two-factor-verfication",
+      "/auth/forgot-password",
+      "/auth/otp-verification",
+      "/auth/reset-password",
+      "/auth/password-updated",
+    ];
+
+    const isOnAuthPublicPath = authPublicPaths.some((p) =>
+      location?.pathname?.startsWith(p)
+    );
+
+    if (isOnAuthPublicPath && Number(isOnboardingStep) > 0) {
+      setRedirectPath("/auth/signup");
+    }
+  }, [isToken, location?.pathname, isOnboardingStep]);
+
+  if (redirectPath) {
+    return <Navigate to={redirectPath} replace />;
   }
 
-  const authPublicPaths = [
-    "/auth/login",
-    "/auth/two-factor-verfication",
-    "/auth/forgot-password",
-    "/auth/otp-verification",
-    "/auth/reset-password",
-    "/auth/password-updated",
-  ];
-
-  const isOnAuthPublicPath = authPublicPaths.some((p) =>
-    location?.pathname?.startsWith(p)
-  );
-
-  if (isOnAuthPublicPath && Number(isOnboardingStep) > 0) {
-    return <Navigate to="/auth/signup" replace />;
-  }
-
-  // Otherwise, render the public content (login/signup)
   return children;
 }

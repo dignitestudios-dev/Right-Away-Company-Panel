@@ -1,4 +1,15 @@
 import * as Yup from "yup";
+const passwordRules = Yup.string()
+  .min(8, "Password must be at least 8 characters long")
+  .max(35, "Password must be at most 35 characters long")
+  .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+  .matches(/[0-9]/, "Password must contain at least one number")
+  .matches(
+    /[@$!%*?&#^()_\-+=<>.,{}[\]|/~]/,
+    "Password must contain at least one special character"
+  )
+  .required("Password is required");
 
 export const signInSchema = Yup.object({
   email: Yup.string()
@@ -28,59 +39,18 @@ export const forgetPasswordSchema = Yup.object({
 });
 
 export const resetPasswordSchema = Yup.object({
-  password: Yup.string()
-    .min(8, "Password must be at least 8 characters long")
-    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-    .matches(/[0-9]/, "Password must contain at least one number")
-    .matches(
-      /[@$!%*?&#^()_\-+=<>.,{}[\]|/~]/,
-      "Password must contain at least one special character"
-    )
-    .required("Password is required"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password")], "Passwords must match")
-    .matches(
-      /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
-      "Password must contain at least one special character"
-    )
-    .required("Please confirm your password"),
+  password: passwordRules,
+  confirmPassword: passwordRules.label("Confirm Password"),
 });
 
 export const changedPasswordSchema = Yup.object().shape({
-  password: Yup.string()
-    .min(8, "Password must be at least 8 characters long")
-    .max(38, "Password must be at least 38 characters long")
-    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-    .matches(/[0-9]/, "Password must contain at least one number")
-    .matches(
-      /[@$!%*?&#^()_\-+=<>.,{}[\]|/~]/,
-      "Password must contain at least one special character"
-    )
-    .required("Password is required"),
+  password: passwordRules,
 
-  newPassword: Yup.string()
-    .min(8, "New Password must be at least 8 characters long")
-    .max(38, "Password must be at least 38 characters long")
-    .matches(/[A-Z]/, "New Password must contain at least one uppercase letter")
-    .matches(/[a-z]/, "New Password must contain at least one lowercase letter")
-    .matches(/[0-9]/, "New Password must contain at least one number")
-    .matches(
-      /[@$!%*?&#^()_\-+=<>.,{}[\]|/~]/,
-      "New Password must contain at least one special character"
-    )
-    .required("New Password is required"),
+  newPassword: passwordRules.label("New Password"),
 
-  confirmPassword: Yup.string()
-    .trim()
-    .oneOf([Yup.ref("newPassword")], "Passwords must match")
-    .matches(
-      /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
-      "Password must contain at least one special character"
-    )
-    .required("Confirm Password is required"),
+  confirmPassword: passwordRules.label("Confirm Password"),
 });
+
 export const RegisterSchema = Yup.object({
   businessName: Yup.string()
     .trim()
@@ -108,21 +78,11 @@ export const RegisterSchema = Yup.object({
     .min(5, "Address must be at least 5 characters long")
     .required("Business address is required"),
 
-  password: Yup.string()
-    .min(8, "Password must be at least 8 characters long")
-    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-    .matches(/[0-9]/, "Password must contain at least one number")
-    .matches(
-      /[@$!%*?&#^()_\-+=<>.,{}[\]|/~]/,
-      "Password must contain at least one special character"
-    )
-    .required("Password is required"),
+  password: passwordRules,
 
-  reTypePassword: Yup.string()
-    .oneOf([Yup.ref("password"), null], "Passwords must match")
-    .required("Please confirm your password"),
+  reTypePassword: passwordRules.label("Confirm Password"),
 });
+
 export const CompleteProfileSchema = Yup.object({
   profilePic: Yup.mixed()
     .required("Profile picture is required")

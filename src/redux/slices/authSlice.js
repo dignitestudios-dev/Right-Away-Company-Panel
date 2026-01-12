@@ -46,7 +46,10 @@ export const Register = createAsyncThunk(
       };
 
       // 4️⃣ Send request to backend
-      const response = await instance.post("/auth/signUp/company", finalPayload);
+      const response = await instance.post(
+        "/auth/signUp/company",
+        finalPayload
+      );
       console.log(response);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       // SuccessToast(response?.data?.message || "Registration successful!");
@@ -154,7 +157,6 @@ export const forgetPassword = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/resendLoginOTP", payload);
-      Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       // SuccessToast(response?.data?.message || "Forget password successful!");
       return response?.data;
     } catch (error) {
@@ -174,7 +176,6 @@ export const ResendForgetOtp = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/resendLoginOTP", payload);
-      Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       // SuccessToast(response?.data?.message || "Forget password successful!");
       return response?.data;
     } catch (error) {
@@ -246,8 +247,8 @@ export const VerifyForgotPassword = createAsyncThunk(
     try {
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/verifyOTP", payload);
-      Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       // SuccessToast(response?.data?.message);
+      Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -293,7 +294,10 @@ export const CompleteCompanyProfile = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await instance.post("/company/profile/complete", payload);
+      const response = await instance.post(
+        "/company/profile/complete",
+        payload
+      );
       // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -308,7 +312,10 @@ export const UpdateCompanyProfile = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       // 4️⃣ Send request to backend
-      const response = await instance.post("/company/profile/complete", payload);
+      const response = await instance.post(
+        "/company/profile/complete",
+        payload
+      );
       // SuccessToast(response?.data?.message);
       return response?.data;
     } catch (error) {
@@ -538,9 +545,9 @@ const authSlice = createSlice({
       })
       .addCase(VerifyForgotPassword.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.company = action.payload?.data?.company;
-        state.token = action.payload?.data?.token;
-        state.isAuthenticated = true;
+        // state.company = action.payload?.data?.company;
+        // state.token = action.payload?.data?.token;
+        // state.isAuthenticated = true;
       })
       .addCase(VerifyForgotPassword.rejected, (state, action) => {
         state.isLoading = false;

@@ -11,7 +11,7 @@ export default function CustomerDetail() {
   const [isReportOpen, setIsReportOpen] = useState(false);
   const loc = useLocation();
   const customer = loc?.state?.customer;
-console.log(customer,"customer name")
+  console.log(customer, "customer name");
   return (
     <div className="py-4">
       <div className="flex justify-between ">
@@ -34,7 +34,7 @@ console.log(customer,"customer name")
       </div>
       <div className="mt-4 bg-white rounded-[15px] shadow-[6px_6px_54px_0px_#0000000D] p-6 flex-wrap  lg:flex  items-center gap-6 mx-auto">
         {/* Left Side: Profile */}
-        <div className="flex items-center gap-4 w-full md:w-1/3 lg:border-r pr-6">
+        <div className="flex items-center gap-4 w-full pr-6">
           <div className="relative">
             <img
               src={customer?.profilePicture}
@@ -49,56 +49,39 @@ console.log(customer,"customer name")
             <p className="text-[#959393] font-[400] text-[16px]">
               {customer?.email}
             </p>
+            <p className="text-[#959393] font-[400] text-[16px]">
+              {customer?.phone}
+            </p>
           </div>
         </div>
 
         {/* Right Side: Details */}
-        <div className="mt-5 lg:mt-0">
-          <div className="flex-1 grid grid-cols-3 gap-y-4 gap-x-8 text-sm text-gray-700">
-            <div className="border-r border-[#BDBDBD]">
-              <p className="text-[#959393] text-[16px] font-[400]">Full Name</p>
-              <p className="font-[400] text-[16px] text-[#000000]">
-                {customer?.name}
-              </p>
-            </div>
-            <div className="border-r border-[#BDBDBD]">
-              <p className="text-[#959393] text-[16px] font-[400]">
-                Email Address
-              </p>
-              <p className="font-[400] text-[16px] text-[#000000]">
-                {customer?.email}
-              </p>
-            </div>
-            <div>
-              <p className="text-[#959393] text-[16px] font-[400]">
-                Phone Number
-              </p>
-              <p className="font-[400] text-[16px] text-[#000000]">
-                {customer?.phone}
-              </p>
-            </div>
-          </div>
-          <div className="flex-1 mt-3 py-3 border-t grid grid-cols-3 gap-y-4 gap-x-8 text-sm text-gray-700">
+        <div className="mt-5 lg:mt-0">      
+          <div className="flex-1 mt-3 py-3 border-t grid-cols-1 grid lg:grid-cols-3 gap-y-4 gap-x-8 text-sm text-gray-700">
             <div className="border-r  border-[#BDBDBD]">
               <p className="text-[#959393] text-[16px] font-[400]">Country</p>
-              <p className="font-[400] text-[16px] text-[#000000]">USA</p>
+              <p className="font-[400] text-[16px] text-[#000000]">
+                {customer?.country}
+              </p>
             </div>
             <div className="border-r border-[#BDBDBD]">
               <p className="text-[#959393] text-[16px] font-[400]">City</p>
-              <p className="font-[400] text-[16px] text-[#000000]">New York</p>
+              <p className="font-[400] text-[16px] text-[#000000]">
+                {customer?.city}
+              </p>
             </div>
             <div>
               <p className="text-[#959393] text-[16px] font-[400]">Address</p>
               <p className="font-[400] text-[16px] text-[#000000]">
-                Street 3, Jersey City, NJ 07310,
+                {customer?.address}
               </p>
             </div>
           </div>
         </div>
       </div>
       <div className="flex justify-between mt-10">
-        <h3 className="font-[600] text-[32px] flex items-center gap-2">        
-         Order History
+        <h3 className="font-[600] text-[32px] flex items-center gap-2">
+          Order History
         </h3>
         <div className="flex items-center gap-4">
           <Filter hide={true} dateHide={true} />

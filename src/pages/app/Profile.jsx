@@ -92,7 +92,7 @@ const Profile = () => {
             <p className="text-[16px] font-[400] text-[#181818]">
               Delivery Fulfillment Method
             </p>
-            <p className="text-[16px] font-[400] text-[#959393]">
+            <p className="text-[16px] capitalize font-[400] text-[#959393]">
               {company?.deliveryMethod}
             </p>
           </div>

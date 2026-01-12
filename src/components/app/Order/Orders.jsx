@@ -80,8 +80,8 @@ export default function OrdersData() {
 
       // Delivery Type
       <p
-        key={`order-${index}-type`}
-        className="text-[#181818] text-[14px] font-[400]"
+        key={`order-${index}-type`} 
+        className="text-[#181818] capitalize text-[14px] font-[400]"
       >
         {item.type}
       </p>,
@@ -128,7 +128,7 @@ export default function OrdersData() {
       {/* ✅ Header and Filter */}
       <div className="flex justify-between flex-wrap items-center">
         <h3 className="font-[600] text-[32px]">Order Management</h3>
-        <Filter onFilterChange={setFilters} />
+        <Filter onFilterChange={setFilters} hide={true} />
       </div>
 
       {/* ✅ Tabs + Table */}

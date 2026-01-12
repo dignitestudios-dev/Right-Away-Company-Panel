@@ -152,7 +152,7 @@ export default function CustomersData() {
         <NavLink
           to={"/app/customer-detail"}
           state={{ customer: item }}
-          className="text-[#00C49A] font-[500] border-b border-[#00C49A]"
+          className="text-[#00C49A] text-nowrap font-[500] border-b border-[#00C49A]"
         >
           View Details
         </NavLink>

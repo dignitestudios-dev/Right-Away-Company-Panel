@@ -8,35 +8,37 @@ const StoreCard = ({ setActionType, setIsOpen, item, setEditIndex, index }) => {
       {/* Left Section */}
       <div className="flex justify-between items-center w-[90%]">
         {/* Store Name */}
-        <div className="flex flex-col">
-          <p className="text-[16px] font-[400] text-[#181818]">Store Name</p>
-          <p className="text-[#959393] text-[16px]">
-            {stores?.find((el) => el._id == item?.storeName || item?._id)
-              ?.name || "Unknown Store"}
-          </p>
+        <div className="flex items-center gap-10">
+          <div className="flex flex-col">
+            <p className="text-[16px] font-[400] text-[#181818]">Store Name</p>
+            <p className="text-[#959393] text-[16px]">
+              {stores?.find((el) => el._id == item?.storeName || item?._id)
+                ?.name || "Unknown Store"}
+            </p>
+          </div>
+          <div className="flex flex-col">
+            <p className="text-[16px] font-[400] text-[#181818]">Total Stock</p>
+            <p className="text-[#959393] text-[16px]">{item?.stock} units</p>
+          </div>
         </div>
 
         {/* Total Stock */}
-        <div className="flex flex-col">
-          <p className="text-[16px] font-[400] text-[#181818]">Total Stock</p>
-          <p className="text-[#959393] text-[16px]">{item?.stock} units</p>
-        </div>
 
         {/* Minimum Order Quantity */}
-        <div className="flex flex-col">
+        {/* <div className="flex flex-col">
           <p className="text-[16px] font-[400] text-[#181818]">
             Minimum Order Quantity
           </p>
           <p className="text-[#959393] text-[16px]">{item?.minOrder} units</p>
-        </div>
+        </div> */}
 
         {/* Maximum Order Quantity */}
-        <div className="flex flex-col">
+        {/* <div className="flex flex-col">
           <p className="text-[16px] font-[400] text-[#181818]">
             Maximum Order Quantity
           </p>
           <p className="text-[#959393] text-[16px]">{item?.maxOrder} units</p>
-        </div>
+        </div> */}
       </div>
 
       {/* Icons */}

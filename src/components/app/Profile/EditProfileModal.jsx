@@ -14,11 +14,16 @@ import { CompleteProfileSchema } from "../../../schema/authentication/dummyLogin
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { GoogleMap, Marker } from "@react-google-maps/api";
+import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
 export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
   const [preview, setPreview] = useState(null); // ✅ local preview image
-  const [mapCenter, setMapCenter] = useState({ lat: 38.7946, lng: 106.5348 });
+  const [autocomplete, setAutocomplete] = useState(null);
+
   const { company, isLoading } = useSelector((state) => state?.auth);
+  const [mapCenter, setMapCenter] = useState({
+    lat: company?.coordinates?.[1] || 37.7749,
+    lng: company?.coordinates?.[0] || -122.4194,
+  });
   const dispatch = useDispatch();
   const {
     values,
@@ -43,9 +48,10 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
         const formData = new FormData();
         // Basic info
         formData.append("description", values.description);
-        formData.append("coordinates[0]", -122.4194);
-        formData.append("coordinates[1]", 37.7749);
+        formData.append("coordinates[0]", mapCenter.lng); // longitude
+        formData.append("coordinates[1]", mapCenter.lat); // latitude
         formData.append("type", "Point");
+
         formData.append("store", values?.fulfillmentMethod);
         // Avatar
         if (values.profilePic && typeof values.profilePic !== "string") {
@@ -196,29 +202,55 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
               />
             </div>
             <div className="col-span-12">
-              <Input
-                text={"Store Location"}
-                holder={"Enter address here"}
-                type={"text"}
-                touched={touched.address}
-                handleChange={handleChange}
-                name={"address"}
-                value={values?.address}
-                error={errors.address}
-                handleBlur={handleBlur}
-              />
+              <Autocomplete
+                onLoad={(auto) => setAutocomplete(auto)}
+                onPlaceChanged={() => {
+                  if (!autocomplete) return;
+
+                  const place = autocomplete.getPlace();
+                  if (!place.geometry) return;
+
+                  const lat = place.geometry.location.lat();
+                  const lng = place.geometry.location.lng();
+
+                  setMapCenter({ lat, lng });
+
+                  setFieldValue("address", place.formatted_address);
+                }}
+              >
+                <Input
+                  text={"Store Location"}
+                  holder={"Search store location"}
+                  type={"text"}
+                  name={"address"}
+                  value={values.address}
+                  touched={touched.address}
+                  handleChange={handleChange}
+                  handleBlur={handleBlur}
+                  error={errors.address}
+                />
+              </Autocomplete>
             </div>
             <div className="col-span-12 h-[87px]">
               <GoogleMap
                 center={mapCenter}
-                zoom={10}
+                zoom={14}
                 mapContainerStyle={{
                   width: "100%",
                   height: "100%",
                   borderRadius: "7px",
                 }}
               >
-                <Marker position={mapCenter} />
+                <Marker
+                  position={mapCenter}
+                  draggable
+                  onDragEnd={(e) => {
+                    setMapCenter({
+                      lat: e.latLng.lat(),
+                      lng: e.latLng.lng(),
+                    });
+                  }}
+                />
               </GoogleMap>
             </div>
           </div>

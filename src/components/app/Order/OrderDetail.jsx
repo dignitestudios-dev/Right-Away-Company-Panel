@@ -181,7 +181,7 @@ export default function OrderDetail() {
   // ✅ Always safely select a style (fallback = 'incoming')
   const currentStyle =
     statusStyles[orderStatus?.toLowerCase?.()] || statusStyles["incoming"];
-
+console.log(singleOrder,"order-detail")
   return (
     <>
       {isLoading ? (
@@ -373,8 +373,8 @@ export default function OrderDetail() {
                   </div>
                 ))}
                 <div className="border-b border-t py-5 flex items-center justify-between border-[#D4D4D4]">
-                  <p className="text-[#000000]  font-[600] text-[16px]">
-                    subtotal
+                  <p className="text-[#000000] capitalize font-[600] text-[16px]">
+                    sub total
                   </p>
                   <p className="text-[#000000] font-[400] text-[16px]">
                     ${Number(singleOrder?.subTotal || 0).toFixed(2)}

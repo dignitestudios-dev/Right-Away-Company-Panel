@@ -76,10 +76,15 @@ const ReplyReviewModal = ({ isOpen, setIsOpen, reviewId, apiCallOnReplye }) => {
               value={values.reply}
               onChange={handleChange}
               placeholder="Write a reply"
+              maxLength={500} // <-- limit to 500 characters
               className={`p-3 h-[200px] w-full bg-[#F8F8F8] rounded-[15px] text-[16px] focus:outline-none ${
                 errors.reply && touched.reply ? "border border-red-500" : ""
               }`}
             />
+            {/* Optional character counter */}
+            <p className="text-sm text-gray-400 mt-1">
+              {values.reply.length}/500
+            </p>
 
             {/* Error Message */}
             {errors.reply && touched.reply && (

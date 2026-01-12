@@ -3,6 +3,7 @@ import { ErrorToast, SuccessToast } from "../../components/global/Toaster";
 import instance from "../../axios";
 const initialState = {
   isLoading: false,
+  cancelOrderLoading: false,
   products: null,
   error: null,
   singleProduct: null,
@@ -15,7 +16,73 @@ const initialState = {
   SingleProductReview: null,
   wallet: null,
   walletTransactions: null,
+  dashboardStats: null,
+  popularProducts: null,
+  salesGraph: null,
+  transactionGraph: null,
 };
+
+//👽 ----------- Dashboard Managment -----------👽
+export const getDashboardStats = createAsyncThunk(
+  "/company/dashboard/stats",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await instance.get("/company/dashboard");
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const getPopularProducts = createAsyncThunk(
+  "/company/dashboard/products",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await instance.get("/company/dashboard/products");
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const getSalesGraph = createAsyncThunk(
+  "/company/dashboard/salesGraph",
+  async (params, thunkAPI) => {
+    try {
+      const response = await instance.get(
+        "/company/dashboard/salesGraph",
+        { params } // 👈 query params
+      );
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const getTransactionGraph = createAsyncThunk(
+  "/company/dashboard/TransactionGraph",
+  async (params, thunkAPI) => {
+    try {
+      const response = await instance.get(
+        "/company/dashboard/transaction",
+        { params } // 👈 query params
+      );
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 //👽 ----------- Product Managment-----------👽
 export const CreateProduct = createAsyncThunk(
   "/company/product",
@@ -64,7 +131,9 @@ export const getProducts = createAsyncThunk(
         ...(endDate && { endDate }),
       });
 
-      const response = await instance.get(`company/product?${params.toString()}`);
+      const response = await instance.get(
+        `company/product?${params.toString()}`
+      );
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -234,7 +303,9 @@ export const getProductReview = createAsyncThunk(
 
       const params = new URLSearchParams(query).toString();
 
-      const response = await instance.get(`/company/products/reviews?${params}`);
+      const response = await instance.get(
+        `/company/products/reviews?${params}`
+      );
 
       return response?.data;
     } catch (error) {
@@ -247,7 +318,9 @@ export const getProductReviewByID = createAsyncThunk(
   "/company/products/:id/reviews",
   async (payload, thunkAPI) => {
     try {
-      const response = await instance.get(`/company/products/${payload}/reviews`);
+      const response = await instance.get(
+        `/company/products/${payload}/reviews`
+      );
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -314,7 +387,9 @@ export const getWalletTransactions = createAsyncThunk(
 
       const params = new URLSearchParams(query).toString();
 
-      const response = await instance.get(`/company/wallet/transaction?${params}`);
+      const response = await instance.get(
+        `/company/wallet/transaction?${params}`
+      );
 
       return response?.data;
     } catch (error) {
@@ -351,6 +426,51 @@ const appSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      //👽 ----------- Dashboard Managment -----------👽
+      .addCase(getDashboardStats.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getDashboardStats.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.dashboardStats = action.payload.data;
+      })
+      .addCase(getDashboardStats.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(getPopularProducts.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getPopularProducts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.popularProducts = action.payload.data;
+      })
+      .addCase(getPopularProducts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(getSalesGraph.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getSalesGraph.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.salesGraph = action.payload.data;
+      })
+      .addCase(getSalesGraph.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(getTransactionGraph.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getTransactionGraph.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.transactionGraph = action.payload.data;
+      })
+      .addCase(getTransactionGraph.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
       //👽 ----------- Product Managment-----------👽
       .addCase(CreateProduct.pending, (state, action) => {
         state.isLoading = true;
@@ -429,13 +549,13 @@ const appSlice = createSlice({
         state.error = action.payload.message;
       })
       .addCase(cancelOrder.pending, (state, action) => {
-        state.isLoading = true;
+        state.cancelOrderLoading = true;
       })
       .addCase(cancelOrder.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.cancelOrderLoading = false;
       })
       .addCase(cancelOrder.rejected, (state, action) => {
-        state.isLoading = false;
+        state.cancelOrderLoading = false;
         state.error = action.payload.message;
       })
       //👽 ----------- Customer Managment-----------👽

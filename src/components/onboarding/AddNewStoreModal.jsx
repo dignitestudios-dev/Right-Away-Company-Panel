@@ -5,7 +5,7 @@ import { AddNewStoreValues } from "../../init/authentication/dummyLoginValues";
 import { AddNewStoreSchema } from "../../schema/authentication/dummyLoginSchema";
 import { useState } from "react";
 import Input from "../global/Input";
-import { GoogleMap, Marker } from "@react-google-maps/api";
+import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
 import Button from "../global/Button";
 import { FaPlus } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
@@ -16,7 +16,12 @@ import StoreAddedSuccessfully from "../app/Profile/StoreAddSuccessFully";
 import { ErrorToast } from "../global/Toaster";
 
 const AddNewStoreModal = ({ isOpen, setIsOpen }) => {
-  const [mapCenter, setMapCenter] = useState({ lat: 38.7946, lng: 106.5348 });
+  const [autocomplete, setAutocomplete] = useState(null);
+
+  const [mapCenter, setMapCenter] = useState({
+    lat: 37.7749,
+    lng: -122.4194,
+  });
   const [showModal, setShowModal] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const dispatch = useDispatch();
@@ -47,9 +52,12 @@ const AddNewStoreModal = ({ isOpen, setIsOpen }) => {
           // Build plain JSON object instead of FormData
           const payload = {
             name: values.businessName,
-            coordinates: [-122.4194, 37.7749],
-            address: values?.address,
+            address: values.address, // from input
             type: "Point",
+            coordinates: [
+              mapCenter.lng, // GeoJSON requires [lng, lat]
+              mapCenter.lat,
+            ],
             isOpen: true,
             isActive: true,
           };
@@ -110,21 +118,40 @@ const AddNewStoreModal = ({ isOpen, setIsOpen }) => {
                 />
               </div>
               <div className="col-span-12">
-                <Input
-                  text={"Store Location"}
-                  holder={"Enter address here"}
-                  type={"text"}
-                  touched={touched.address}
-                  handleChange={handleChange}
-                  name={"address"}
-                  error={errors.address}
-                  handleBlur={handleBlur}
-                />
+                <Autocomplete
+                  onLoad={(auto) => setAutocomplete(auto)}
+                  onPlaceChanged={() => {
+                    if (!autocomplete) return;
+
+                    const place = autocomplete.getPlace();
+
+                    if (place.geometry) {
+                      const lat = place.geometry.location.lat();
+                      const lng = place.geometry.location.lng();
+
+                      setMapCenter({ lat, lng });
+
+                      // Update formik address field
+                      values.address = place.formatted_address;
+                    }
+                  }}
+                >
+                  <Input
+                    text={"Store Location"}
+                    holder={"Search location"}
+                    type={"text"}
+                    name={"address"}
+                    touched={touched.address}
+                    handleChange={handleChange}
+                    handleBlur={handleBlur}
+                    error={errors.address}
+                  />
+                </Autocomplete>
               </div>
               <div className="col-span-12 h-[87px]">
                 <GoogleMap
                   center={mapCenter}
-                  zoom={10}
+                  zoom={14}
                   mapContainerStyle={{
                     width: "100%",
                     height: "100%",

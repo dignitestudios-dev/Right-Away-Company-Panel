@@ -1,16 +1,19 @@
-export default function GlobalTable({ columns = [], data = [], onRowClick, loading }) {
-  const renderSkeleton = () => {
-    // Show 5 fake rows while loading
-    return Array.from({ length: 5 }).map((_, rowIndex) => (
+export default function GlobalTable({
+  columns = [],
+  data = [],
+  onRowClick,
+  loading,
+}) {
+  const renderSkeleton = () =>
+    Array.from({ length: 5 }).map((_, rowIndex) => (
       <tr key={rowIndex} className="border-t border-gray-100">
         {columns.map((_, colIndex) => (
-          <td key={colIndex} className="px-6 py-4">
-            <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+          <td key={colIndex} className="px-4 py-3">
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
           </td>
         ))}
       </tr>
     ));
-  };
 
   const renderNoRecord = () => (
     <tr>
@@ -28,10 +31,14 @@ export default function GlobalTable({ columns = [], data = [], onRowClick, loadi
       <tr
         key={i}
         onClick={() => onRowClick && onRowClick(row?._id)}
-        className="border-t cursor-pointer border-gray-100 hover:bg-gray-50 transition"
+        className="border-t border-gray-100 hover:bg-gray-50 transition cursor-pointer"
       >
         {row?.cells?.map((cell, j) => (
-          <td key={j} className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
+          <td
+            key={j}
+            className="px-4 py-3 text-sm text-gray-700 
+                       whitespace-normal break-words"
+          >
             {cell}
           </td>
         ))}
@@ -39,29 +46,33 @@ export default function GlobalTable({ columns = [], data = [], onRowClick, loadi
     ));
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left border-collapse">
-        <thead className="bg-[#D2EFE34D] rounded-[12px]">
-          <tr>
-            {columns.map((col, index) => (
-              <th
-                key={index}
-                className="px-6 py-4 text-[14px] font-[500] text-[#202224] whitespace-nowrap"
-              >
-                {col}
-              </th>
-            ))}
-          </tr>
-        </thead>
+    <div className="relative w-full overflow-x-auto">
+      {/* vertical scroll */}
+      <div className="max-h-[500px]  overflow-y-auto">
+        <table className="border-collapse w-full min-w-[900px]">
+          <thead className="bg-[#d2efe3e4]  sticky top-0 z-10">
+            <tr>
+              {columns.map((col, index) => (
+                <th
+                  key={index}
+                  className="px-4 py-3 text-[14px] font-medium text-[#202224]
+                             whitespace-nowrap text-left"
+                >
+                  {col}
+                </th>
+              ))}
+            </tr>
+          </thead>
 
-        <tbody>
-          {loading
-            ? renderSkeleton()
-            : data?.length > 0
-            ? renderRows()
-            : renderNoRecord()}
-        </tbody>
-      </table>
+          <tbody>
+            {loading
+              ? renderSkeleton()
+              : data?.length > 0
+              ? renderRows()
+              : renderNoRecord()}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

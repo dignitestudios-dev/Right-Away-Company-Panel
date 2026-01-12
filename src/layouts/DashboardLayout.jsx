@@ -40,7 +40,7 @@ const DashboardLayout = () => {
       {/* ===== MAIN CONTENT ===== */}
       <div className="flex flex-col w-full h-full">
         {/* ===== TOP BAR ===== */}
-        <div className="sticky top-0 lg:hidden flex items-center justify-center z-40 flex items-center justify-between px-4 py-4 lg:px-8">
+        <div className="sticky top-0 lg:hidden  z-40 flex items-center justify-between px-4 py-4 lg:px-8">
           {/* Menu Button (Visible only on mobile) */}
           <button
             onClick={toggleSidebar}

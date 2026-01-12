@@ -197,12 +197,12 @@ export default function WalletData() {
       return {
         _id: item._id,
         cells: [
-          <p key={index + "-id"}>{item._id}</p>,
+          <p key={index + "-id"}>{item.id}</p>,
           <p key={index + "-acc"}>{item.accountNumber || "--"}</p>,
           <p key={index + "-amount"}>{item.withdrawalAmount || "--"}</p>,
           <p key={index + "-method"}>{item.transferMethod || "--"}</p>,
           <p key={index + "-status"}>{item.status || "--"}</p>,
-          <p key={index + "-date"}>{formatDate(item.createdAt)}</p>,
+          <p key={index + "-date"}>{item.date}</p>,
         ],
       };
     }

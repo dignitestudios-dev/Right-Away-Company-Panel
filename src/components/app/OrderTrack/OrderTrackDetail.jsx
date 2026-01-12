@@ -25,78 +25,63 @@ import ReportModal from "../Customer/ReportReasonModal";
 import { OpenRiderChat } from "../../../redux/slices/ChatSlice";
 import QRCode from "react-qr-code";
 
-const CustomerReviewCard = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const CustomerReviewCard = ({ review }) => {
+  const { userRecord, rating, reviews, createdAt, reply } = review[0];
+
   return (
-    <div className="w-full mt-4  bg-white rounded-2xl shadow-[0_4px_25px_rgba(0,0,0,0.1)] p-4">
+    <div className="w-full mt-4 bg-white rounded-2xl shadow-[0_4px_25px_rgba(0,0,0,0.1)] p-4">
       {/* Header */}
       <div className="flex justify-between items-center mb-2">
-        <h2 className=" text-gray-900 text-[20px]  font-[600]">
+        <h2 className="text-gray-900 text-[20px] font-[600]">
           Customer Review
         </h2>
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="text-[14px] border-b border-[#22B573] font-[400] gradient-text  underline"
-        >
-          Report Review
-        </button>
       </div>
-      <ReportModal isOpen={isOpen} setIsOpen={setIsOpen} />
+
       {/* Rating */}
       <div className="flex items-center gap-1 mb-2">
-        <FaStar className="text-yellow-400 text-lg" />
-        <FaStar className="text-yellow-400 text-lg" />
-        <FaStar className="text-yellow-400 text-lg" />
-        <FaStar className="text-yellow-400 text-lg" />
-        <FaRegStar className="text-yellow-400 text-lg" />
+        {[1, 2, 3, 4, 5].map((star) =>
+          star <= rating ? (
+            <FaStar key={star} className="text-yellow-400 text-lg" />
+          ) : (
+            <FaRegStar key={star} className="text-yellow-400 text-lg" />
+          )
+        )}
       </div>
 
       {/* Review Text */}
-      <p className="text-[#181818] text-[12px] mb-2 font-[400]">
-        Amazing product. I booked on Monday and I got my order on the next day.
-        I’m highly impressed with their services. Highly recommended!
-      </p>
+      <p className="text-[#181818] text-[12px] mb-2 font-[400]">{reviews}</p>
 
       {/* User Info */}
-      <div className="flex relative items-center gap-3 mb-3">
+      <div className="flex items-center gap-3 mb-3">
         <img
-          src={Person1}
+          src={userRecord?.profilePicture}
           alt="Profile"
           className="w-10 h-10 rounded-full border-2 border-[#00B39F]"
         />
-
-        <img
-          src={ReplyComment}
-          className="absolute top-11 left-4 w-[12px]"
-          alt="ReplyComment"
-        />
-
         <div>
           <h3 className="text-[12px] font-[500] text-[#181818]">
-            Christine Easom
+            {userRecord?.name}
           </h3>
-          <p className="text-[10px] font-[400] text-[#5C5C5C]">17 Jan, 2023</p>
+          <p className="text-[10px] font-[400] text-[#5C5C5C]">
+            {new Date(createdAt).toLocaleDateString()}
+          </p>
         </div>
       </div>
 
       {/* Reply Section */}
-      <div className="pl-3 ml-6 mb-2">
-        <p className="text-[#181818] text-[12px] font-[400]">
-          Amazing product. I’m highly impressed with their services. Highly
-          recommended!
-        </p>
-      </div>
+      {reply && (
+        <>
+          <div className="pl-3 ml-6 mb-2">
+            <p className="text-[#181818] text-[12px] font-[400]">{reply}</p>
+          </div>
 
-      {/* Replied Tag */}
-      <div className="flex items-center gap-2 ml-8">
-        <p className="text-[#181818] flex items-center mt-2 gap-2 text-[12px] font-medium">
-          <img
-            src="https://i.pravatar.cc/40?img=1"
-            className="w-[32px] h-[32px] rounded-full object-cover"
-          />{" "}
-          Replied By You
-        </p>
-      </div>
+          <div className="flex items-center gap-2 ml-8">
+            <p className="text-[#181818] flex items-center mt-2 gap-2 text-[12px] font-medium">
+              Replied By You
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 };
@@ -195,7 +180,7 @@ export default function OrderTrackDetail() {
     await dispatch(OpenRiderChat(rider?._id)).unwrap();
     navigate("/app/chat");
   };
-  console.log(singleOrder?.deliveryMethod, "deliverMethods");
+  console.log(singleOrder, "deliverMethods");
   return (
     <>
       {isLoading ? (
@@ -375,8 +360,8 @@ export default function OrderTrackDetail() {
                   </div>
                 ))}
                 <div className="border-b border-t py-3 flex items-center justify-between border-[#D4D4D4]">
-                  <p className="text-[#000000]  font-[600] text-[16px]">
-                    subtotal
+                  <p className="text-[#000000] capitalize font-[600] text-[16px]">
+                    Sub Total
                   </p>
                   <p className="text-[#000000] font-[400] text-[16px]">
                     ${Number(singleOrder?.subTotal || 0).toFixed(2)}
@@ -529,20 +514,24 @@ export default function OrderTrackDetail() {
                   setOrderStatus={handleStartPreparingClick}
                 />
               )}
-              {singleOrder?.deliveryMethod?.trim().toLowerCase() != "store" && (
-                <div className="bg-[#FFFFFF] px-6 p-4 mt-4 drop-shadow-sm rounded-[14px]">
-                  <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
-                    QR Code
-                  </h3>
-                  <QRCode
-                    value={singleOrder?._id || ""}
-                    className="mt-2"
-                    size={306}
-                  />
-                </div>
-              )}
+              {singleOrder?.deliveryMethod?.trim().toLowerCase() !== "store" &&
+                statusMap[orderStatus] !== "Delivered" && (
+                  <div className="bg-[#FFFFFF] px-6 p-4 mt-4 drop-shadow-sm rounded-[14px]">
+                    <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
+                      QR Code
+                    </h3>
+                    <QRCode
+                      value={singleOrder?._id || ""}
+                      className="mt-2"
+                      size={306}
+                    />
+                  </div>
+                )}
 
-              {statusMap[orderStatus] == "Delivered" && <CustomerReviewCard />}
+              {statusMap[orderStatus] == "Delivered" &&
+                singleOrder?.review?.length > 0 && (
+                  <CustomerReviewCard review={singleOrder?.review} />
+                )}
             </div>
           </div>
           {/* <OrderCancelConfirmModal
