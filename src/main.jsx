@@ -16,7 +16,7 @@ createRoot(document.getElementById("root")).render(
         <PersistGate loading={null} persistor={persistor}>
           <LoadScript
             googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API}
-            libraries={["places"]}
+            libraries={["places", "geometry"]}
           >
             <App />
           </LoadScript>

@@ -68,12 +68,16 @@ import BorderSuccessIcon from "./borderSuccess.png";
 import RedAlertIcon from "./red-alert.png";
 import BankFlagIcon from "./bank-flag.png";
 import PersonImage from "./person.png";
+import VehcleImg from "./vehcle.png";
+import MarkImage from "./mark.png";
 
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
 export {
+  MarkImage,
+  VehcleImg,
   PersonImage,
   RedAlertIcon,
   BorderSuccessIcon,

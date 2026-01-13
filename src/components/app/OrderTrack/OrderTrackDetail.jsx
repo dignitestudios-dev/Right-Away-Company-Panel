@@ -24,6 +24,7 @@ import { ErrorToast, SuccessToast } from "../../global/Toaster";
 import ReportModal from "../Customer/ReportReasonModal";
 import { OpenRiderChat } from "../../../redux/slices/ChatSlice";
 import QRCode from "react-qr-code";
+import OrderTrackingModal from "../../global/OrderTrackingModal";
 
 const CustomerReviewCard = ({ review }) => {
   const { userRecord, rating, reviews, createdAt, reply } = review[0];
@@ -89,7 +90,7 @@ const CustomerReviewCard = ({ review }) => {
 export default function OrderTrackDetail() {
   const navigate = useNavigate("");
   const [orderStatus, setOrderStatus] = useState("Ready For Pickup");
-
+  const [isTrackOpen, setIsTrackOpen] = useState(false);
   const statusMap = {
     pickUp: "Ready For Pickup",
     delivery: "Out for Delivery",
@@ -207,7 +208,11 @@ export default function OrderTrackDetail() {
                     >
                       Chat With Buyer
                     </button>
-                    <Button customClass={"w-[150px]"} text={"Track Order"} />
+                    <Button
+                      onClick={() => setIsTrackOpen(true)}
+                      customClass={"w-[150px]"}
+                      text={"Track Order"}
+                    />
                   </>
                 ))}
             </div>
@@ -539,6 +544,7 @@ export default function OrderTrackDetail() {
         isOpen={isOpen}
         setIsOpen={setIsOpen}
       /> */}
+          <OrderTrackingModal  isOpen={isTrackOpen} setIsOpen={setIsTrackOpen} order={singleOrder} />
         </div>
       )}
     </>

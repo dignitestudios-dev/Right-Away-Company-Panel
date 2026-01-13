@@ -1,134 +1,165 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-GoogleMap,
-Marker,
-Polyline,
-withGoogleMap,
-withScriptjs
-} from "react-google-maps";
-// import API_KEY from "./apiKey";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { socket } from "../../../../socket";
+import { ErrorToast } from "../../global/Toaster";
 
-// Stops and path coordinates
-const pathData = [
-{ lat: 12.9802347, lng: 77.5907760 },
-{ lat: 12.9793774, lng: 77.5910979 },
-{ lat: 12.9795865, lng: 77.5911622 },
-{ lat: 12.9771191, lng: 77.5857120 }
-// add all points
-];
+export default function TrackingMap({ order }) {
+  const isLoaded = window.google && window.google.maps;
 
-const stops = [
-{ lat: 12.9802347, lng: 77.5907760, id: "stop1" },
-{ lat: 12.9787501, lng: 77.5917845, id: "stop2" },
-{ lat: 12.9771191, lng: 77.5857120, id: "stop3" }
-];
+  const [pathData, setPathData] = useState([]);
+  const [progress, setProgress] = useState([]);
+  const [heading, setHeading] = useState(0);
 
-const vehicleIcon = {
-url:
-"[https://images.vexels.com/media/users/3/154573/isolated/preview/bd08e000a449288c914d851cb9dae110-hatchback-car-top-view-silhouette-by-vexels.png](https://images.vexels.com/media/users/3/154573/isolated/preview/bd08e000a449288c914d851cb9dae110-hatchback-car-top-view-silhouette-by-vexels.png)",
-scaledSize: new window.google.maps.Size(30, 30),
-anchor: new window.google.maps.Point(15, 15)
-};
+  const startTimeRef = useRef(null);
+  const intervalRef = useRef(null);
 
-const Map = () => {
-const [progress, setProgress] = useState([]);
-const intervalRef = useRef(null);
-const initialTimeRef = useRef(new Date());
+  const velocity = 40;
 
-const velocity = 100; // meters per second
+  // ================= SOCKET =================
+  useEffect(() => {
+    if (!order?._id) return;
 
-// Compute distance traveled
-const getDistance = () => ((new Date() - initialTimeRef.current) / 1000) * velocity;
+    // 🔹 SEND ORDER ID
+    socket.emit("order:track", {
+      id: order._id,
+    });
 
-// Calculate cumulative distance along the path
-const pathWithDistance = pathData.map((point, i, arr) => {
-if (i === 0) return { ...point, distance: 0 };
-const prevLatLng = new window.google.maps.LatLng(arr[i - 1].lat, arr[i - 1].lng);
-const currLatLng = new window.google.maps.LatLng(point.lat, point.lng);
-const distance = window.google.maps.geometry.spherical.computeDistanceBetween(
-prevLatLng,
-currLatLng
-);
-return { ...point, distance: (arr[i - 1].distance || 0) + distance };
-});
+    // 🔹 RECEIVE PATH
+    socket.on("order:track:success", (data) => {
+      console.log(data, "datacomes from socket");
+      if (!Array.isArray(data?.path)) return;
 
-const moveVehicle = () => {
-const distance = getDistance();
-if (!distance) return;
+      setPathData(data.path);
+      setProgress([]);
+      startTimeRef.current = Date.now();
 
-```
-const completed = pathWithDistance.filter(p => p.distance <= distance);
-const nextPoint = pathWithDistance.find(p => p.distance > distance);
+      clearInterval(intervalRef.current);
+      intervalRef.current = setInterval(moveVehicle, 1000);
+    });
 
-if (!nextPoint) {
-  setProgress(completed);
-  clearInterval(intervalRef.current);
-  return;
-}
+    socket.on("order:track:error", (err) => {
+      ErrorToast(err?.message);
+    });
 
-const lastPoint = completed[completed.length - 1];
-const lastLatLng = new window.google.maps.LatLng(lastPoint.lat, lastPoint.lng);
-const nextLatLng = new window.google.maps.LatLng(nextPoint.lat, nextPoint.lng);
-const segmentDistance = nextPoint.distance - lastPoint.distance;
-const ratio = (distance - lastPoint.distance) / segmentDistance;
+    return () => {
+      socket.off("order:track:success");
+      socket.off("order:track:error");
+    };
+  }, [order?._id]);
 
-const position = window.google.maps.geometry.spherical.interpolate(lastLatLng, nextLatLng, ratio);
-setProgress([...completed, position]);
-```
+  // ================= STOPS =================
+  const stops = useMemo(() => {
+    if (!order) return [];
 
-};
+    return [
+      {
+        lat: order.store.location.coordinates[0],
+        lng: order.store.location.coordinates[1],
+        id: "start",
+      },
+      {
+        lat: order.address.location.coordinates[0],
+        lng: order.address.location.coordinates[1],
+        id: "end",
+      },
+    ];
+  }, [order]);
 
-const startSimulator = () => {
-clearInterval(intervalRef.current);
-setProgress([]);
-initialTimeRef.current = new Date();
-intervalRef.current = setInterval(moveVehicle, 1000);
-};
+  // ================= PATH DISTANCE =================
+  const pathWithDistance = useMemo(() => {
+    if (!isLoaded || pathData.length === 0) return [];
 
-useEffect(() => {
-return () => clearInterval(intervalRef.current);
-}, []);
+    return pathData.reduce((acc, point, i) => {
+      if (i === 0) {
+        acc.push({ ...point, distance: 0 });
+      } else {
+        const prev = acc[i - 1];
+        const d = window.google.maps.geometry.spherical.computeDistanceBetween(
+          new window.google.maps.LatLng(prev.lat, prev.lng),
+          new window.google.maps.LatLng(point.lat, point.lng)
+        );
+        acc.push({ ...point, distance: prev.distance + d });
+      }
+      return acc;
+    }, []);
+  }, [isLoaded, pathData]);
 
-return ( <div className="relative">
-<GoogleMap
-defaultZoom={16}
-defaultCenter={{ lat: pathData[0].lat, lng: pathData[0].lng }}
->
-<Polyline path={pathData} options={{ strokeColor: "#0088FF", strokeWeight: 6 }} />
+  // ================= MOVE VEHICLE =================
+  const moveVehicle = () => {
+    if (!startTimeRef.current || pathWithDistance.length === 0) return;
 
-```
-    {stops.map((stop, idx) => (
-      <Marker key={stop.id} position={stop} label={`${idx + 1}`} title={stop.id} />
-    ))}
+    const elapsed = (Date.now() - startTimeRef.current) / 1000;
+    const distanceCovered = elapsed * velocity;
 
-    {progress.length > 0 && (
-      <>
-        <Polyline path={progress} options={{ strokeColor: "pink", strokeWeight: 4 }} />
-        <Marker position={progress[progress.length - 1]} icon={vehicleIcon} />
-      </>
-    )}
-  </GoogleMap>
+    const completed = pathWithDistance.filter(
+      (p) => p.distance <= distanceCovered
+    );
+    const next = pathWithDistance.find((p) => p.distance > distanceCovered);
 
-  <button
-    onClick={startSimulator}
-    className="absolute top-4 left-4 px-4 py-2 bg-blue-500 text-white rounded shadow"
-  >
-    Start Simulator
-  </button>
-</div>
-);
-};
+    if (!next) {
+      setProgress(completed);
+      clearInterval(intervalRef.current);
+      return;
+    }
 
-const MapComponent = withScriptjs(withGoogleMap(Map));
-// const mapURL = `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${API_KEY.mapsOtherkey}`;
+    const last = completed[completed.length - 1];
+    if (!last) return;
 
-export default function TrackingMap() {
-return (
-<MapComponent
-// googleMapURL={mapURL}
-loadingElement={<div style={{ height: "100%" }} />}
-containerElement={<div style={{ height: "600px", width: "600px" }} />}
-mapElement={<div style={{ height: "100%" }} />}
-/>
-);
+    const ratio =
+      (distanceCovered - last.distance) / (next.distance - last.distance);
+
+    const pos = window.google.maps.geometry.spherical.interpolate(
+      new window.google.maps.LatLng(last.lat, last.lng),
+      new window.google.maps.LatLng(next.lat, next.lng),
+      ratio
+    );
+
+    setHeading(getBearing(last, next));
+    setProgress([...completed, { lat: pos.lat(), lng: pos.lng() }]);
+  };
+
+  // ================= CLEANUP =================
+  useEffect(() => {
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  if (!isLoaded || pathData.length === 0) {
+    return <p>Waiting for route…</p>;
+  }
+
+  return (
+    <GoogleMap
+      zoom={16}
+      center={pathData[0]}
+      mapContainerStyle={{ height: "600px", width: "600px" }}
+    >
+      <Polyline
+        path={pathData}
+        options={{ strokeColor: "#03958A", strokeWeight: 7 }}
+      />
+
+      {stops.map((s) => (
+        <Marker key={s.id} position={s} />
+      ))}
+
+      {progress.length > 0 && (
+        <>
+          <Polyline
+            path={progress}
+            options={{ strokeColor: "#22B573", strokeWeight: 4 }}
+          />
+
+          <Marker
+            position={progress[progress.length - 1]}
+            icon={vehicleBg}
+            zIndex={1}
+          />
+          <Marker
+            position={progress[progress.length - 1]}
+            icon={vehicleIcon}
+            zIndex={2}
+          />
+        </>
+      )}
+    </GoogleMap>
+  );
 }
