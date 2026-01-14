@@ -21,7 +21,7 @@ import Chat from "./pages/app/Chat";
 import OrderTrack from "./pages/app/OrderTrack";
 import OrderTrackDetail from "./components/app/OrderTrack/OrderTrackDetail";
 import Profile from "./pages/app/Profile";
-import { ProtectedRoute, PublicRoute } from "./routes/ProtectedRoute";
+import { ProtectedRoute } from "./routes/ProtectedRoute";
 import CustomerDetail from "./pages/app/CustomerDetail";
 import Wallet from "./pages/app/Wallet";
 import ProductReviews from "./pages/app/ProductReviews";
