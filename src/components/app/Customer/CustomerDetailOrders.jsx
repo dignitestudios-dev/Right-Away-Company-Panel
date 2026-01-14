@@ -16,7 +16,7 @@ export default function CustomerDetailOrders({ customer }) {
     "Amount",
     "Action",
   ];
-
+  console.log(customer, "customer_id");
   const { CustomerOrders, isLoading } = useSelector((state) => state?.app);
   const dispatch = useDispatch();
   const fetchCustomersOrders = async () => {
@@ -24,7 +24,7 @@ export default function CustomerDetailOrders({ customer }) {
   };
   useEffect(() => {
     fetchCustomersOrders();
-  }, []);
+  }, [customer]);
 
   // ✅ Properly structure data for GlobalTable
   const data = CustomerOrders?.map((item, index) => ({

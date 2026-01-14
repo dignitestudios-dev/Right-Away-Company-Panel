@@ -138,6 +138,7 @@ export default function CreateAccount({ handleNext, setEmail }) {
               name="phoneNumber"
               touched={touched.phoneNumber}
               error={errors.phoneNumber}
+              maxLength={10}
               handleChange={(e) => {
                 const value = e.target.value.replace(/\D/g, "");
                 if (value.length <= 10) {
@@ -230,6 +231,7 @@ export default function CreateAccount({ handleNext, setEmail }) {
               error={errors.password}
               handleChange={handleChange}
               handleBlur={handleBlur}
+              hideText={true}
             />
           </div>
 
@@ -243,6 +245,7 @@ export default function CreateAccount({ handleNext, setEmail }) {
               error={errors.reTypePassword}
               handleChange={handleChange}
               handleBlur={handleBlur}
+              hideText={true}
             />
           </div>
         </div>

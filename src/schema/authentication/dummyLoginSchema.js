@@ -86,25 +86,32 @@ export const RegisterSchema = Yup.object({
 export const CompleteProfileSchema = Yup.object({
   profilePic: Yup.mixed()
     .required("Profile picture is required")
-    .test("fileType", "Only PNG, JPG, or JPEG files are allowed", (value) => {
-      // Accept if it's an existing URL string
-      if (typeof value === "string") {
-        return /^https?:\/\/.+\.(jpg|jpeg|png)$/i.test(value);
-      }
 
-      // Accept if it's a File object with valid image type
+    // ✅ File type validation (PNG, JPG, JPEG)
+    .test("fileType", "Only PNG, JPG, and JPEG files are allowed.", (value) => {
+      // agar already uploaded image ka URL ho
+      if (typeof value === "string") return true;
+
+      // agar naya file upload ho
       if (value && value.type) {
-        return ["image/jpeg", "image/png", "image/jpg"].includes(value.type);
+        const allowedTypes = ["image/png", "image/jpg", "image/jpeg"];
+        return allowedTypes.includes(value.type);
       }
 
       return false;
     })
-    .test("fileSize", "File size must be less than 10 MB", (value) => {
-      // Only validate size if it's a File object
+
+    // ✅ File size validation (< 10 MB)
+    .test("fileSize", "File size must be under 10 MB.", (value) => {
+      // URL ke liye size check skip
+      if (typeof value === "string") return true;
+
       if (value && value.size) {
-        return value.size <= 10 * 1024 * 1024; // 10 MB
+        const maxSize = 10 * 1024 * 1024; // 10 MB
+        return value.size <= maxSize;
       }
-      return true; // skip if it's a URL
+
+      return true;
     }),
 
   description: Yup.string()
@@ -115,6 +122,7 @@ export const CompleteProfileSchema = Yup.object({
     "Please select a fulfillment method"
   ),
 });
+
 export const AddNewStoreSchema = Yup.object({
   businessName: Yup.string()
     .required("Store name is required")

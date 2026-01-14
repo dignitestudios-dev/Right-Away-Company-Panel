@@ -50,11 +50,11 @@ const EditInventory = ({
           <h3 className="text-[28px] font-[700] text-[#181818]">
             Edit Inventory Details
           </h3>
-          {/* <IoCloseSharp
+          <IoCloseSharp
             size={22}
             className="cursor-pointer"
             onClick={() => setIsOpen(false)}
-          /> */}
+          />
         </div>
 
         <form onSubmit={handleSubmit} className="w-full mt-4">

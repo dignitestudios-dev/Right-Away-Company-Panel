@@ -83,7 +83,7 @@ export default function VerifyDocuments({ handleNext }) {
       <div className="flex flex-col items-center">
         <h3 className="font-[600] text-[36px]">Verification Documents</h3>
         <p className="text-[#838383] text-[16px] font-[400]">
-          Upload your business license, certifications (if any)
+          Upload your business license, certifications
         </p>
       </div>
 

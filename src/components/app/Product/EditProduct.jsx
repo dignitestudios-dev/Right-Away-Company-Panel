@@ -99,12 +99,12 @@ export default function EditProduct() {
     if (singleProduct) {
       setOldImages(singleProduct?.images || []);
       setOldDocs(singleProduct?.productDoc || []);
-      setInventories(singleProduct?.inventories || []);
+      setInventories(product?.inventories || []);
       setValues({ ...ProductValues, ...singleProduct });
     }
   }, [singleProduct]);
 
-  console.log(product, "products");
+  console.log(singleProduct, "products--->");
   // 🧩 Formik Setup
   const {
     values,
@@ -144,10 +144,12 @@ export default function EditProduct() {
       });
       // 🔸 Append inventory list
       inventories.forEach((inv, i) => {
-        form.append(`inventories[${i}][storeRecord]`, inv.storeName || inv._id);
+        form.append(
+          `inventories[${i}][storeRecord]`,
+          inv.storeName || inv?.storeRecord?._id
+        );
         form.append(`inventories[${i}][stock]`, inv.stock);
       });
-
       try {
         await dispatch(updateProduct({ id: product?._id, form })).unwrap();
         resetForm();
@@ -157,7 +159,6 @@ export default function EditProduct() {
       }
     },
   });
-  console.log(errors, values, "errors");
   // 🖼️ Handle new image uploads
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);

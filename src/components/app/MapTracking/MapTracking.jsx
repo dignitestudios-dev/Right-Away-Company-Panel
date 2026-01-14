@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { socket } from "../../../../socket";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ErrorToast } from "../../global/Toaster";
 import {
   GoogleMap,
@@ -8,10 +7,12 @@ import {
   DirectionsService,
 } from "@react-google-maps/api";
 import { MarkImage } from "../../../assets/export";
+import SocketContext from "../../../context/SocketContext";
+import { SOCKET_EVENTS } from "../../../constants/socketEvents";
 
 export default function TrackingMap({ order, setIsOpen }) {
   const isLoaded = window.google && window.google.maps;
-
+  const { socket, emit } = useContext(SocketContext);
   const [pathData, setPathData] = useState([]);
   const [progress, setProgress] = useState([]);
   const [heading, setHeading] = useState(0);
@@ -24,33 +25,37 @@ export default function TrackingMap({ order, setIsOpen }) {
 
   // ================= SOCKET =================
   useEffect(() => {
-    if (!order?._id) return;
+    if (!order?._id || !socket) return;
 
-    // 🔹 SEND ORDER ID
-    socket.emit("order:track", {
+    // 🔹 SEND ORDER ID (via context emit)
+    emit(SOCKET_EVENTS.ORDER.TRACK, {
       id: order._id,
     });
 
-    // 🔹 RECEIVE PATH
-    socket.on("order:track:success", (data) => {
-      console.log(data, "datacomes from socket");
+    // 🔹 SUCCESS HANDLER
+    const handleSuccess = (data) => {
+      console.log("📍 Tracking data:", data);
 
       const currentPos = data?.data?.currentCoordinates;
       if (currentPos) {
         setProgress([currentPos]);
       }
-    });
+    };
 
-    socket.on("order:track:error", (err) => {
+    // 🔹 ERROR HANDLER
+    const handleError = (err) => {
       setIsOpen(false);
       ErrorToast(err?.message);
-    });
+    };
+
+    socket.on(SOCKET_EVENTS.ORDER.TRACK_SUCCESS, handleSuccess);
+    socket.on(SOCKET_EVENTS.ORDER.TRACK_ERROR, handleError);
 
     return () => {
-      socket.off("order:track:success");
-      socket.off("order:track:error");
+      socket.off(SOCKET_EVENTS.ORDER.TRACK_SUCCESS, handleSuccess);
+      socket.off(SOCKET_EVENTS.ORDER.TRACK_ERROR, handleError);
     };
-  }, [order?._id]);
+  }, [order?._id, socket, emit]);
 
   // ================= STOPS =================
   const stops = useMemo(() => {

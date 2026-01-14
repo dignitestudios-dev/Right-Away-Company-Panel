@@ -5,8 +5,6 @@ import {
   CallIcon,
   ChatBtnIcon,
   MessageIcon,
-  Person1,
-  ReplyComment,
   SubTitleIcon,
   TruckIcon,
 } from "../../../assets/export";
@@ -15,13 +13,12 @@ import Button from "../../global/Button";
 
 import { FaStar, FaRegStar } from "react-icons/fa";
 import ShippingActivity from "./ShippingActivity";
-import { socket } from "../../../../socket";
+// import { socket } from "../../../../socket";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrderById, setSingleOrder } from "../../../redux/slices/AppSlice";
-import { formatDate } from "../../../lib/helpers";
+import { formatDate, formatTime } from "../../../lib/helpers";
 import OrderDetailSkeleton from "../../global/DetailSkeliton";
 import { ErrorToast, SuccessToast } from "../../global/Toaster";
-import ReportModal from "../Customer/ReportReasonModal";
 import { OpenRiderChat } from "../../../redux/slices/ChatSlice";
 import QRCode from "react-qr-code";
 import OrderTrackingModal from "../../global/OrderTrackingModal";
@@ -142,25 +139,25 @@ export default function OrderTrackDetail() {
     setOrderStatus(singleOrder?.status);
   }, [singleOrder]);
 
-  useEffect(() => {
-    // ✅ Success response listener
-    socket.on("order:updated:status", (data) => {
-      console.log("✅ Order status update success:", data);
-      dispatch(setSingleOrder(data?.data));
-      SuccessToast("Order status updated successfully!");
-    });
+  // useEffect(() => {
+  //   // ✅ Success response listener
+  //   socket.on("order:updated:status", (data) => {
+  //     console.log("✅ Order status update success:", data);
+  //     dispatch(setSingleOrder(data?.data));
+  //     SuccessToast("Order status updated successfully!");
+  //   });
 
-    // ❌ Error response listener
-    socket.on("order:update:status:error", (error) => {
-      ErrorToast(error?.message);
-    });
+  //   // ❌ Error response listener
+  //   socket.on("order:update:status:error", (error) => {
+  //     ErrorToast(error?.message);
+  //   });
 
-    // 🧹 Cleanup on unmount
-    return () => {
-      socket.off("order:updated:status");
-      socket.off("order:update:status:error");
-    };
-  }, []);
+  //   // 🧹 Cleanup on unmount
+  //   return () => {
+  //     socket.off("order:updated:status");
+  //     socket.off("order:update:status:error");
+  //   };
+  // }, []);
 
   const handleStartPreparingClick = async (status) => {
     if (!selectedOption && status === "processing") {
@@ -178,6 +175,7 @@ export default function OrderTrackDetail() {
     }
   };
   const handleChatWithRider = async (rider) => {
+    console.log(rider, "riderRecord");
     await dispatch(OpenRiderChat(rider?._id)).unwrap();
     navigate("/app/chat");
   };
@@ -203,7 +201,7 @@ export default function OrderTrackDetail() {
                 singleOrder?.rideStatus != "completed" && (
                   <>
                     <button
-                      onClick={() => navigate("/app/chat")}
+                      onClick={() => handleChatWithRider(singleOrder?.rider)}
                       className="bg-transparent border border-[#03958A] font-[500] gradient-text  text-[13px] w-[150px] h-[44px] rounded-[15px]"
                     >
                       Chat With Buyer
@@ -349,14 +347,21 @@ export default function OrderTrackDetail() {
                   </p>
                 </div>
               </div>
-              <div className="border mt-4 col-span-12  lg:col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
-                <h3 className="text-[20px] capitalize font-[600] mb-4">
-                  proof of delivery
-                </h3>
-                <div className="w-[190px] h-[165px] ">
-                  <img src={singleOrder?.confirmDeliveryFile} className="rounded-lg h-full w-full" alt="confirmDeliveryFile" srcset="" />
+              {statusMap[orderStatus] === "delivered" && (
+                <div className="border mt-4 col-span-12  lg:col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
+                  <h3 className="text-[20px] capitalize font-[600] mb-4">
+                    proof of delivery
+                  </h3>
+                  <div className="w-[190px] h-[165px] ">
+                    <img
+                      src={singleOrder?.confirmDeliveryFile}
+                      className="rounded-lg h-full w-full"
+                      alt="confirmDeliveryFile"
+                      srcset=""
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <div className="lg:col-span-4 col-span-12 ">
@@ -418,7 +423,7 @@ export default function OrderTrackDetail() {
                         Delivery Date
                       </p>
                       <p className="text-[#000000] font-[400] text-[16px]">
-                        15 Jan, 2023
+                        {formatDate(singleOrder?.deliveryDateTime)}
                       </p>
                     </div>
                     <div className="py-1 flex items-center justify-between">
@@ -426,7 +431,7 @@ export default function OrderTrackDetail() {
                         Delivery Time
                       </p>
                       <p className="text-[#000000] font-[400] text-[16px]">
-                        09:30 PM
+                        {formatTime(singleOrder?.deliveryDateTime)}
                       </p>
                     </div>
                   </div>
@@ -508,7 +513,7 @@ export default function OrderTrackDetail() {
                           Vehicle Type
                         </p>
                         <p className="text-[#464646] font-[500] text-[12px]">
-                          Truck
+                          {singleOrder?.vehicle?.vehicle}
                         </p>
                       </div>
 
@@ -523,7 +528,7 @@ export default function OrderTrackDetail() {
                           Vehicle Number
                         </p>
                         <p className="text-[#464646] font-[500] text-[12px]">
-                          ABC-1234
+                          {singleOrder?.vehicle?.registrationNumber}
                         </p>
                       </div>
                     </div>

@@ -32,9 +32,9 @@ export default function CustomerDetail() {
           />
         </div>
       </div>
-      <div className="mt-4 bg-white rounded-[15px] shadow-[6px_6px_54px_0px_#0000000D] p-6 flex-wrap  lg:flex  items-center gap-6 mx-auto">
+      <div className="mt-4 bg-white rounded-[15px] shadow-[6px_6px_54px_0px_#0000000D] p-6 grid grid-cols-12 gap-6 mx-auto">
         {/* Left Side: Profile */}
-        <div className="flex items-center gap-4 w-full pr-6">
+        <div className="flex items-center col-span-4 gap-4 w-full pr-6">
           <div className="relative">
             <img
               src={customer?.profilePicture}
@@ -56,8 +56,8 @@ export default function CustomerDetail() {
         </div>
 
         {/* Right Side: Details */}
-        <div className="mt-5 lg:mt-0">      
-          <div className="flex-1 mt-3 py-3 border-t grid-cols-1 grid lg:grid-cols-3 gap-y-4 gap-x-8 text-sm text-gray-700">
+        <div className="mt-5 col-span-8 lg:mt-0">      
+          <div className="flex-1 mt-3 py-3 grid-cols-1 grid lg:grid-cols-3 gap-y-4 gap-x-8 text-sm text-gray-700">
             <div className="border-r  border-[#BDBDBD]">
               <p className="text-[#959393] text-[16px] font-[400]">Country</p>
               <p className="font-[400] text-[16px] text-[#000000]">

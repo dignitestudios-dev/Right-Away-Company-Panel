@@ -270,14 +270,19 @@ export const getCustomers = createAsyncThunk(
 );
 
 export const getCustomerOrders = createAsyncThunk(
-  "/company/user/:id/order?page=1&limit=10",
+  "company/getCustomerOrders",
   async (payload, thunkAPI) => {
     try {
-      // 4️⃣ Send request to backend
+      // ❌ Don't hit API if payload is missing
+      if (!payload) {
+        return thunkAPI.rejectWithValue("User ID is required");
+      }
+
       const response = await instance.get(
-        `/company/user/${payload}/order?search=${""}&page=${1}&limit=${10}`
+        `/company/user/${payload}/order?search=&page=1&limit=10`
       );
-      return response?.data;
+
+      return response.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
       ErrorToast(message);
@@ -285,6 +290,7 @@ export const getCustomerOrders = createAsyncThunk(
     }
   }
 );
+
 //👽 ----------- Product Review Managment -----------👽
 export const getProductReview = createAsyncThunk(
   "/company/products/reviews",

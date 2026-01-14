@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ChatMessage from "../../components/app/chat/ChatMessage";
 import ChatUser from "../../components/app/chat/ChatUser";
 import { Person1, Person2, PersonImage } from "../../assets/export";
@@ -7,13 +7,15 @@ import { GoArrowLeft } from "react-icons/go";
 import { useNavigate } from "react-router";
 import ReportModal from "../../components/app/Customer/ReportReasonModal";
 import { useDispatch, useSelector } from "react-redux";
-import { socket } from "../../../socket";
+// import { socket } from "../../../socket";
 import { formatTime } from "../../lib/helpers";
 import {
   addMessage,
   getChatRooms,
   setSelectedChat,
 } from "../../redux/slices/ChatSlice";
+import SocketContext from "../../context/SocketContext";
+import { SOCKET_EVENTS } from "../../constants/socketEvents";
 
 const Chat = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,60 +24,58 @@ const Chat = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isActiveTab, setIsActiveTab] = useState("");
   const dispatch = useDispatch();
+  const { socket, sendMessage: sendChatMessage } = useContext(SocketContext);
 
   const { selectedChat, messages } = useSelector((state) => state.chat);
 
   useEffect(() => {
     if (!socket) return;
 
-    // Handler functions
     const handleReceiveMessage = (data) => {
-      console.log("New Message:", data?.data?.message);
+      console.log("📩 New Message:", data?.data?.message);
       dispatch(addMessage(data?.data?.message));
-      dispatch(getChatRooms({ page: 1, limit: 20, type: tabs }));
+      dispatch(getChatRooms({ page: 1, limit: 20, type: isActiveTab }));
     };
 
     const handleSendError = (error) => {
-      console.error("Send Error:", error);
+      console.error("❌ Chat send error:", error);
     };
 
-    const handleUnreadCount = (data) => {
-      console.log("Unread Count:", data);
-      dispatch(getChatRooms({ page: 1, limit: 20, type: tabs }));
+    const handleUnreadCount = () => {
+      dispatch(getChatRooms({ page: 1, limit: 20, type: isActiveTab }));
     };
 
-    // Attach listeners
-    socket.on("chat:receive", handleReceiveMessage);
-    socket.on("chat:send:error", handleSendError);
+    socket.on(SOCKET_EVENTS.CHAT.RECEIVE_MESSAGE, handleReceiveMessage);
+    socket.on("chat:send:error", handleSendError); // if backend sends this
     socket.on("chat:unread:count", handleUnreadCount);
 
     return () => {
-      // Clean up listeners
-      socket.off("chat:receive", handleReceiveMessage);
+      socket.off(SOCKET_EVENTS.CHAT.RECEIVE_MESSAGE, handleReceiveMessage);
       socket.off("chat:send:error", handleSendError);
       socket.off("chat:unread:count", handleUnreadCount);
     };
-  }, [dispatch]); // ✅ Changed dependency
+  }, [socket, dispatch, isActiveTab]);
 
-  const sendMessage = () => {
-    if (!newMessage.trim()) return;
-    const payload = {
-      roomId: selectedChat?.id,
+  const handleSendMessage = () => {
+    if (!newMessage.trim() || !selectedChat) return;
+
+    sendChatMessage({
+      roomId: selectedChat.id,
       message: newMessage,
       type: "text",
-    };
-    socket.emit("chat:send", payload);
+    });
+
     setNewMessage("");
   };
 
-  // Handle Enter key press
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      handleSendMessage();
     }
   };
-  console.log(messages,selectedChat, "selectedRider");
+
+  console.log(messages, selectedChat, "selectedRider");
   return (
     <div className="h-[calc(100%-4.5rem)]">
       <div className="flex items-center gap-4">
@@ -179,7 +179,7 @@ const Chat = () => {
                       <ChatMessage
                         key={msg?._id}
                         sender={
-                          msg?.sender == selectedChat?.user?._id ? false :true
+                          msg?.sender == selectedChat?.user?._id ? false : true
                         }
                         content={msg?.content}
                         time={formatTime(msg?.createdAt)}
@@ -201,7 +201,7 @@ const Chat = () => {
                     className="flex-1 border focus:outline-none w-full px-4 text-[16px] font-[400] text-[#18181880] border-[#EEEEEE] h-[40px] rounded-[14px] bg-transparent"
                   />
                   <button
-                    onClick={sendMessage}
+                    onClick={handleSendMessage}
                     className="w-[40px]  h-[40px] flex justify-center items-center rounded-[10px] bg-gradient text-white  "
                   >
                     <IoIosSend size={20} />

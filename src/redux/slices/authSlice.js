@@ -21,8 +21,10 @@ export const Register = createAsyncThunk(
   "/register",
   async (payload, thunkAPI) => {
     try {
-      console.log("Incoming payload:", payload);
-
+      await instance.post("/auth/check", {
+        email: payload.email,
+        role: "company",
+      });
       // 1️⃣ Create Firebase user
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -34,7 +36,6 @@ export const Register = createAsyncThunk(
 
       // 2️⃣ Get Firebase ID Token
       const idToken = await user.getIdToken();
-      console.log("Generated Firebase idToken:", idToken);
       const finalPayload = {
         name: payload.businessName || "",
         email: payload.email || "",
@@ -50,7 +51,6 @@ export const Register = createAsyncThunk(
         "/auth/signUp/company",
         finalPayload
       );
-      console.log(response);
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       // SuccessToast(response?.data?.message || "Registration successful!");
       return response?.data;

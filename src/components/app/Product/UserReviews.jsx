@@ -25,7 +25,7 @@ const ReviewsSection = ({ id }) => {
       day: "numeric",
     });
   };
-
+console.log(SingleProductReview)
   return (
     <div className="bg-[#FFFFFF] rounded-2xl shadow-sm border-[0.3px] border-gray-200 p-6 mt-10 mx-auto font-inter">
       <h2 className="text-[18px] font-semibold text-[#181818] mb-6">

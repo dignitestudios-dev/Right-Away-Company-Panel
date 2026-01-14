@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { GoArrowLeft } from "react-icons/go";
 import { useLocation, useNavigate } from "react-router";
 import {
   CallIcon,
   ChatBtnIcon,
   MessageIcon,
-  MilkPackImg,
   Person1,
   PersonImage,
   ReplyComment,
@@ -14,20 +13,15 @@ import {
 } from "../../../assets/export";
 import Button from "../../global/Button";
 import OrderCancelConfirmModal from "./CancelOrderConfirmModal";
-
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  cancelOrder,
-  getOrderById,
-  setSingleOrder,
-} from "../../../redux/slices/AppSlice";
+import { getOrderById } from "../../../redux/slices/AppSlice";
 import { EpocformatDate, formatDate } from "../../../lib/helpers";
-import { socket } from "../../../../socket";
-import { ErrorToast, SuccessToast } from "../../global/Toaster";
+import { ErrorToast } from "../../global/Toaster";
 import OrderDetailSkeleton from "../../global/DetailSkeliton";
-import QRCode from "react-qr-code";
 import OrderTrackingModal from "../../global/OrderTrackingModal";
+import SocketContext from "../../../context/SocketContext";
+
 const CustomerReviewCard = () => {
   return (
     <div className="w-full mt-4  bg-white rounded-2xl shadow-[0_4px_25px_rgba(0,0,0,0.1)] p-4">
@@ -101,6 +95,8 @@ const CustomerReviewCard = () => {
 };
 
 export default function OrderDetail() {
+  const { socket, emit, updateOrder } = useContext(SocketContext);
+
   const [isTrackOpen, setIsTrackOpen] = useState(false);
   const navigate = useNavigate("");
   const [isOpen, setIsOpen] = useState(false);
@@ -144,26 +140,6 @@ export default function OrderDetail() {
     },
   };
 
-  useEffect(() => {
-    // ✅ Success response listener
-    socket.on("order:updated:status", (data) => {
-      console.log("✅ Order status update success:", data);
-      dispatch(setSingleOrder(data?.data));
-      SuccessToast("Order status updated successfully!");
-    });
-
-    // ❌ Error response listener
-    socket.on("order:update:status:error", (error) => {
-      ErrorToast(error?.message);
-    });
-
-    // 🧹 Cleanup on unmount
-    return () => {
-      socket.off("order:updated:status");
-      socket.off("order:update:status:error");
-    };
-  }, []);
-
   const handleStartPreparingClick = async (status) => {
     if (!selectedOption && status === "processing") {
       ErrorToast("Please select a delivery option before proceeding.");
@@ -171,9 +147,9 @@ export default function OrderDetail() {
     }
 
     try {
-      socket.emit("order:update:status", {
+      updateOrder({
         id: orderId,
-        status: status,
+        status,
       });
     } catch (error) {
       ErrorToast(error?.message);
@@ -183,7 +159,6 @@ export default function OrderDetail() {
   // ✅ Always safely select a style (fallback = 'incoming')
   const currentStyle =
     statusStyles[orderStatus?.toLowerCase?.()] || statusStyles["incoming"];
-  console.log(singleOrder, "order-detail");
   return (
     <>
       {isLoading ? (

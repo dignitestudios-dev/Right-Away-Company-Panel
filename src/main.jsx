@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import { persistor, store } from "./redux/store/store.js"; // Import the store from your redux store file
 import { ToasterContainer } from "./components/global/Toaster.jsx";
 import { PersistGate } from "redux-persist/integration/react";
+import { SocketProvider } from "./context/SocketContext.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
@@ -18,7 +19,9 @@ createRoot(document.getElementById("root")).render(
             googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API}
             libraries={["places", "geometry"]}
           >
-            <App />
+            <SocketProvider>
+              <App />
+            </SocketProvider>
           </LoadScript>
         </PersistGate>
       </Provider>

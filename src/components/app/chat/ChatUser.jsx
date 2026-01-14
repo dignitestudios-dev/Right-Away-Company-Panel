@@ -1,5 +1,5 @@
 import { CiSearch } from "react-icons/ci";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getChatRooms,
@@ -8,7 +8,9 @@ import {
 } from "../../../redux/slices/ChatSlice";
 import { PersonImage } from "../../../assets/export";
 import { formatTime } from "../../../lib/helpers";
-import { socket } from "../../../../socket";
+import SocketContext from "../../../context/SocketContext";
+import { SOCKET_EVENTS } from "../../../constants/socketEvents";
+// import { socket } from "../../../../socket";
 
 export default function ChatUser({
   searchQuery,
@@ -19,6 +21,8 @@ export default function ChatUser({
 }) {
   const [tabs, setTabs] = useState("rider-company");
   const dispatch = useDispatch();
+  const { socket, joinChat, readChat } = useContext(SocketContext);
+
   const { chatRooms } = useSelector((state) => state?.chat);
 
   console.log(chatRooms, "chatRooms");
@@ -26,35 +30,32 @@ export default function ChatUser({
   useEffect(() => {
     if (!socket) return;
 
-    // Named handler functions for proper cleanup
     const handleReadError = (err) => {
-      console.error("Read Error:", err);
+      console.error("❌ Chat read error:", err);
     };
 
     const handleReceiveUpdated = (data) => {
-      console.log("Chat Receive Updated:", data);
-      // Optionally refresh chat rooms to update unread counts
+      console.log("📩 Chat updated:", data);
       dispatch(getChatRooms({ page: 1, limit: 20, type: tabs }));
     };
 
-    // Attach listeners
-    socket.on("chat:read:error", handleReadError);
-    socket.on("chat:receive:updated", handleReceiveUpdated);
+    socket.on(SOCKET_EVENTS.CHAT.READ_ERROR, handleReadError);
+    socket.on(SOCKET_EVENTS.CHAT.RECEIVE_UPDATED, handleReceiveUpdated);
 
-    // Cleanup
     return () => {
-      socket.off("chat:read:error", handleReadError);
-      socket.off("chat:receive:updated", handleReceiveUpdated);
+      socket.off(SOCKET_EVENTS.CHAT.READ_ERROR, handleReadError);
+      socket.off(SOCKET_EVENTS.CHAT.RECEIVE_UPDATED, handleReceiveUpdated);
     };
-  }, [dispatch, tabs]); // ✅ Added proper dependencies
+  }, [socket, tabs, dispatch]);
 
   useEffect(() => {
     dispatch(getChatRooms({ page: 1, limit: 20, type: tabs }));
   }, [tabs, dispatch]);
 
   const handleGetMessages = (roomId) => {
-    socket.emit("chat:read", { roomId: roomId });
-    socket.emit("join", { roomId: roomId });
+    readChat(roomId);
+    joinChat(roomId);
+
     dispatch(getMessages({ page: 1, limit: 20, roomId }));
   };
 
@@ -173,7 +174,7 @@ export default function ChatUser({
                               : PersonImage
                           }
                           alt={user?.user?.name}
-                        className="w-full h-full "
+                          className="w-full h-full "
                         />
                       </div>
                       <div className="ml-3 flex-1">
