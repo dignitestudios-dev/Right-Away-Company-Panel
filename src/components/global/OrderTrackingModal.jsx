@@ -2,7 +2,7 @@ import { IoCloseSharp } from "react-icons/io5";
 import Modal from "react-modal";
 import TrackingMap from "../app/MapTracking/MapTracking";
 
-const OrderTrackingModal = ({ isOpen, setIsOpen,order }) => {
+const OrderTrackingModal = ({ isOpen, setIsOpen, order }) => {
   return (
     <Modal
       isOpen={isOpen}
@@ -15,15 +15,14 @@ const OrderTrackingModal = ({ isOpen, setIsOpen,order }) => {
       <div className="bg-white rounded-[24px] p-4 shadow-lg w-[916px] h-[603px]">
         <div
           onClick={() => {
-            alert("Are you sure you want to close the tracker?");
             setIsOpen(!isOpen);
           }}
           className="flex justify-end items-center"
         >
           <IoCloseSharp size={22} className="cursor-pointer" />
         </div>
-        <div className="flex flex-col g text-center justify-center items-center">
-          <TrackingMap order={order} />
+        <div className="overflow-hidden rounded-lg w-full h-[540px]">
+          <TrackingMap order={order} setIsOpen={setIsOpen} />
         </div>
       </div>
     </Modal>

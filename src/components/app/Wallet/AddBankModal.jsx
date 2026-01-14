@@ -63,6 +63,7 @@ export default function AddBankModal({ isOpen, setIsOpen }) {
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-12">
                 <Input
+                  text="Bank Name"
                   holder="Enter bank name here"
                   type="text"
                   touched={touched.bankName}

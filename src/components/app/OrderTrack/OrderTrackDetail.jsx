@@ -199,8 +199,8 @@ export default function OrderTrackDetail() {
               Order Tracking Details
             </h3>
             <div className="flex items-center gap-4">
-              {statusMap[orderStatus] == "Out for Delivery" ||
-                (statusMap[orderStatus] == "Ready For Pickup" && (
+              {statusMap[orderStatus] != "delivered" &&
+                singleOrder.rideStatus != "completed" && (
                   <>
                     <button
                       onClick={() => navigate("/app/chat")}
@@ -214,181 +214,197 @@ export default function OrderTrackDetail() {
                       text={"Track Order"}
                     />
                   </>
-                ))}
+                )}
             </div>
           </div>
           <div className="grid lg:grid-cols-12 items-start gap-4  mt-4">
-            <div className="border col-span-12  lg:col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
-              <div className="flex justify-between items-center">
-                <h3 className="text-[20px] font-[600]">Order Items</h3>
-                <div
-                  className={`${currentStyle.bg} ${currentStyle.text}  mb-4 capitalize text-[14px] ml-auto p-3 font-[500]  h-[37px] rounded-full flex justify-center items-center`}
-                >
-                  {displayStatus}
-                </div>
-              </div>
-              {singleOrder?.item?.map((item, i) => (
-                <div key={i} className="flex  py-1 justify-between">
-                  <div className="flex gap-4 items-center">
-                    <div className="w-[84px] flex items-center justify-center h-[84px] bg-[#F2FBF7] rounded-[15px]">
-                      <img
-                        src={item?.products?.images[0]}
-                        className="w-[70px] rounded-md h-[70px]"
-                        alt=""
-                      />
-                    </div>
-                    <div>
-                      <h3 className="text-[20px] text-[#000000] font-[600] ">
-                        {item?.products?.name}
-                      </h3>
-                      <p className="text-[16px] font-[400] text-[#000000]">
-                        <span className="text-[#959393]  ">Category:</span>{" "}
-                        {item?.products?.category}
-                      </p>
-                      <p className="text-[16px] font-[400] text-[#000000]">
-                        <span className="text-[#959393]  ">Sub Category:</span>{" "}
-                        {item?.products?.subCategory}{" "}
-                        <span className="text-[#959393]  ">Qty:</span>{" "}
-                        {item?.quantity}
-                      </p>
-                    </div>
+            <div className=" col-span-12  lg:col-span-8 ">
+              <div className="p-4 bg-[#FFFFFF] border drop-shadow-sm rounded-[14px]">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-[20px] font-[600]">Order Items</h3>
+                  <div
+                    className={`${currentStyle.bg} ${currentStyle.text}  mb-4 capitalize text-[14px] ml-auto p-3 font-[500]  h-[37px] rounded-full flex justify-center items-center`}
+                  >
+                    {displayStatus}
                   </div>
                 </div>
-              ))}
-              {/* Order Details */}
-              <div className="border-b border-t py-4 flex items-center justify-between border-[#D4D4D4]">
-                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                  Order ID
-                </p>
-                <p className="text-[#000000]  font-[400] text-[16px]">
-                  #{singleOrder?.orderId}
-                </p>
-              </div>
-              <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                  Order Date
-                </p>
-                <p className="text-[#000000]  font-[400] text-[16px]">
-                  {formatDate(singleOrder?.createdAt)}
-                </p>
-              </div>
-              {singleOrder?.type == "Scheduled" && (
+                {singleOrder?.item?.map((item, i) => (
+                  <div key={i} className="flex  py-1 justify-between">
+                    <div className="flex gap-4 items-center">
+                      <div className="w-[84px] flex items-center justify-center h-[84px] bg-[#F2FBF7] rounded-[15px]">
+                        <img
+                          src={item?.products?.images[0]}
+                          className="w-[70px] rounded-md h-[70px]"
+                          alt=""
+                        />
+                      </div>
+                      <div>
+                        <h3 className="text-[20px] text-[#000000] font-[600] ">
+                          {item?.products?.name}
+                        </h3>
+                        <p className="text-[16px] font-[400] text-[#000000]">
+                          <span className="text-[#959393]  ">Category:</span>{" "}
+                          {item?.products?.category}
+                        </p>
+                        <p className="text-[16px] font-[400] text-[#000000]">
+                          <span className="text-[#959393]  ">
+                            Sub Category:
+                          </span>{" "}
+                          {item?.products?.subCategory}{" "}
+                          <span className="text-[#959393]  ">Qty:</span>{" "}
+                          {item?.quantity}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {/* Order Details */}
+                <div className="border-b border-t py-4 flex items-center justify-between border-[#D4D4D4]">
+                  <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                    Order ID
+                  </p>
+                  <p className="text-[#000000]  font-[400] text-[16px]">
+                    #{singleOrder?.orderId}
+                  </p>
+                </div>
                 <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
                   <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                    Scheduled Date
+                    Order Date
                   </p>
                   <p className="text-[#000000]  font-[400] text-[16px]">
                     {formatDate(singleOrder?.createdAt)}
                   </p>
                 </div>
-              )}
-              <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                  Delivery Address
-                </p>
-                <p className="text-[#000000]  font-[400] text-[16px]">
-                  {singleOrder?.address?.address}
-                </p>
-              </div>
-              <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                  Delivery Type
-                </p>
-                <p className="text-[#000000]  font-[400] text-[16px]">
-                  {" "}
-                  {singleOrder?.type}
-                </p>
-              </div>
-              <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                  Special Instructions
-                </p>
-                <p className="text-[#000000]  font-[400] text-[16px]">
-                  {singleOrder?.instruction}
-                </p>
-              </div>
-              <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                  User Name
-                </p>
-                <p
-                  onClick={() =>
-                    navigate("/app/customer-detail", {
-                      state: { customer: singleOrder?.user },
-                    })
-                  }
-                  className="text-[#000000] flex items-center gap-3 font-[400] text-[16px]"
-                >
-                  <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
-                    <img
-                      src={singleOrder?.user?.profilePicture}
-                      alt="person"
-                      className="w-full h-full rounded-full"
-                    />
-                  </div>
-                  {singleOrder?.user?.name}
-                </p>
-              </div>
-              <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
-                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                  Email Address
-                </p>
-                <p className="text-[#000000]  font-[400] text-[16px]">
-                  {singleOrder?.user?.email}
-                </p>
-              </div>
-              <div className=" py-4 flex items-center justify-between border-[#D4D4D4]">
-                <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                  Contact Number
-                </p>
-                <p className="text-[#000000]  font-[400] text-[16px]">
-                  {singleOrder?.user?.phone}
-                </p>
-              </div>
-            </div>
-            <div className="lg:col-span-4 col-span-12 ">
-              <div className="bg-[#FFFFFF] p-4   drop-shadow-sm rounded-[14px]">
-                <h3 className="text-[20px] font-[600] mb-4 text-[#000000] ">
-                  Payment Details
-                </h3>
-                {singleOrder?.item?.map((item, i) => (
-                  <div
-                    key={i}
-                    className="border-b border-t py-3 flex items-center justify-between border-[#D4D4D4]"
-                  >
+                {singleOrder?.type == "Scheduled" && (
+                  <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
                     <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                      {item?.products?.name}
+                      Scheduled Date
                     </p>
-                    <p className="text-[#000000] font-[400] text-[16px]">
-                      ${Number(item?.products?.unitPrice || 0).toFixed(2)}
+                    <p className="text-[#000000]  font-[400] text-[16px]">
+                      {formatDate(singleOrder?.createdAt)}
                     </p>
                   </div>
-                ))}
-                <div className="border-b border-t py-3 flex items-center justify-between border-[#D4D4D4]">
-                  <p className="text-[#000000] capitalize font-[600] text-[16px]">
-                    Sub Total
-                  </p>
-                  <p className="text-[#000000] font-[400] text-[16px]">
-                    ${Number(singleOrder?.subTotal || 0).toFixed(2)}
-                  </p>
-                </div>
-                <div className="border-b  py-3 flex items-center justify-between border-[#D4D4D4]">
+                )}
+                <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
                   <p className="text-[#7C7C7C]  font-[400] text-[16px]">
-                    Total Items
+                    Delivery Address
                   </p>
                   <p className="text-[#000000]  font-[400] text-[16px]">
-                    {singleOrder?.item?.length}
+                    {singleOrder?.address?.address}
                   </p>
                 </div>
-                <div className=" py-3 flex items-center justify-between border-[#D4D4D4]">
-                  <p className="text-[#202224]  font-[600] text-[16px]">
-                    Total Amount
+                <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
+                  <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                    Delivery Type
                   </p>
-                  <p className="gradient-text  font-[700] text-[16px]">
-                    ${Number(singleOrder?.total || 0).toFixed(2)}
+                  <p className="text-[#000000] capitalize font-[400] text-[16px]">
+                    {" "}
+                    {singleOrder?.type}
+                  </p>
+                </div>
+                <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
+                  <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                    Special Instructions
+                  </p>
+                  <p className="text-[#000000]  font-[400] text-[16px]">
+                    {singleOrder?.instruction}
+                  </p>
+                </div>
+                <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
+                  <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                    User Name
+                  </p>
+                  <p
+                    onClick={() =>
+                      navigate("/app/customer-detail", {
+                        state: { customer: singleOrder?.user },
+                      })
+                    }
+                    className="text-[#000000] flex items-center gap-3 font-[400] text-[16px]"
+                  >
+                    <div className="border h-[43px] w-[43px] rounded-full p-[2px] border-[#03958A]">
+                      <img
+                        src={singleOrder?.user?.profilePicture}
+                        alt="person"
+                        className="w-full h-full rounded-full"
+                      />
+                    </div>
+                    {singleOrder?.user?.name}
+                  </p>
+                </div>
+                <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
+                  <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                    Email Address
+                  </p>
+                  <p className="text-[#000000]  font-[400] text-[16px]">
+                    {singleOrder?.user?.email}
+                  </p>
+                </div>
+                <div className=" py-4 flex items-center justify-between border-[#D4D4D4]">
+                  <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                    Contact Number
+                  </p>
+                  <p className="text-[#000000]  font-[400] text-[16px]">
+                    {singleOrder?.user?.phone}
                   </p>
                 </div>
               </div>
+              <div className="border mt-4 col-span-12  lg:col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
+                <h3 className="text-[20px] capitalize font-[600] mb-4">
+                  proof of delivery
+                </h3>
+                <div className="w-[190px] h-[165px] ">
+                  <img src={singleOrder?.confirmDeliveryFile} className="rounded-lg h-full w-full" alt="confirmDeliveryFile" srcset="" />
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-4 col-span-12 ">
+              {statusMap[orderStatus] !== "Delivered" && (
+                <div className="bg-[#FFFFFF] p-4   drop-shadow-sm rounded-[14px]">
+                  <h3 className="text-[20px] font-[600] mb-4 text-[#000000] ">
+                    Payment Details
+                  </h3>
+                  {singleOrder?.item?.map((item, i) => (
+                    <div
+                      key={i}
+                      className="border-b border-t py-3 flex items-center justify-between border-[#D4D4D4]"
+                    >
+                      <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                        {item?.products?.name}
+                      </p>
+                      <p className="text-[#000000] font-[400] text-[16px]">
+                        ${Number(item?.products?.unitPrice || 0).toFixed(2)}
+                      </p>
+                    </div>
+                  ))}
+                  <div className="border-b border-t py-3 flex items-center justify-between border-[#D4D4D4]">
+                    <p className="text-[#000000] capitalize font-[600] text-[16px]">
+                      Sub Total
+                    </p>
+                    <p className="text-[#000000] font-[400] text-[16px]">
+                      ${Number(singleOrder?.subTotal || 0).toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="border-b  py-3 flex items-center justify-between border-[#D4D4D4]">
+                    <p className="text-[#7C7C7C]  font-[400] text-[16px]">
+                      Total Items
+                    </p>
+                    <p className="text-[#000000]  font-[400] text-[16px]">
+                      {singleOrder?.item?.length}
+                    </p>
+                  </div>
+                  <div className=" py-3 flex items-center justify-between border-[#D4D4D4]">
+                    <p className="text-[#202224]  font-[600] text-[16px]">
+                      Total Amount
+                    </p>
+                    <p className="gradient-text  font-[700] text-[16px]">
+                      ${Number(singleOrder?.total || 0).toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {statusMap[orderStatus] === "Delivered" && (
                 <div className="bg-[#FFFFFF] p-4  drop-shadow-sm rounded-[14px]">
                   <h3 className="text-[20px] font-[600] mb-1 text-[#000000]">
@@ -544,7 +560,11 @@ export default function OrderTrackDetail() {
         isOpen={isOpen}
         setIsOpen={setIsOpen}
       /> */}
-          <OrderTrackingModal  isOpen={isTrackOpen} setIsOpen={setIsTrackOpen} order={singleOrder} />
+          <OrderTrackingModal
+            isOpen={isTrackOpen}
+            setIsOpen={setIsTrackOpen}
+            order={singleOrder}
+          />
         </div>
       )}
     </>

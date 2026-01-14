@@ -27,6 +27,7 @@ import { socket } from "../../../../socket";
 import { ErrorToast, SuccessToast } from "../../global/Toaster";
 import OrderDetailSkeleton from "../../global/DetailSkeliton";
 import QRCode from "react-qr-code";
+import OrderTrackingModal from "../../global/OrderTrackingModal";
 const CustomerReviewCard = () => {
   return (
     <div className="w-full mt-4  bg-white rounded-2xl shadow-[0_4px_25px_rgba(0,0,0,0.1)] p-4">
@@ -100,6 +101,7 @@ const CustomerReviewCard = () => {
 };
 
 export default function OrderDetail() {
+  const [isTrackOpen, setIsTrackOpen] = useState(false);
   const navigate = useNavigate("");
   const [isOpen, setIsOpen] = useState(false);
   const [orderStatus, setOrderStatus] = useState();
@@ -181,7 +183,7 @@ export default function OrderDetail() {
   // ✅ Always safely select a style (fallback = 'incoming')
   const currentStyle =
     statusStyles[orderStatus?.toLowerCase?.()] || statusStyles["incoming"];
-console.log(singleOrder,"order-detail")
+  console.log(singleOrder, "order-detail");
   return (
     <>
       {isLoading ? (
@@ -207,9 +209,6 @@ console.log(singleOrder,"order-detail")
                   >
                     Cancel Order
                   </button>
-                  <button className="bg-[#E7E7E8] font-[500] text-[#181818] text-[13px] w-[150px] h-[44px] rounded-[15px]">
-                    Track Order
-                  </button>
                 </>
               )}
               {orderStatus == "processing" && (
@@ -220,7 +219,15 @@ console.log(singleOrder,"order-detail")
                   >
                     Chat With Buyer
                   </button>
-                  <Button customClass={"w-[150px]"} text={"Track Order"} />
+                  <Button
+                    onClick={() =>
+                      singleOrder?.rider
+                        ? setIsTrackOpen(true)
+                        : ErrorToast("Rider not assigned yet")
+                    }
+                    customClass={"w-[150px]"}
+                    text={"Track Order"}
+                  />
                 </>
               )}
             </div>
@@ -563,6 +570,11 @@ console.log(singleOrder,"order-detail")
             setOrderStatus={setOrderStatus}
             isOpen={isOpen}
             setIsOpen={setIsOpen}
+          />
+          <OrderTrackingModal
+            isOpen={isTrackOpen}
+            setIsOpen={setIsTrackOpen}
+            order={singleOrder}
           />
         </div>
       )}

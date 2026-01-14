@@ -73,7 +73,7 @@ instance.interceptors.response.use(
       // await dispatch(logout()).unwrap();
 
       ErrorToast("Session expired. Please relogin");
-      // window.location.href = "/auth/login";
+      window.location.href = "/auth/login";
     }
 
     return Promise.reject(error);

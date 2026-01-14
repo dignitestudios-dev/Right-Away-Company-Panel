@@ -93,15 +93,7 @@ function App() {
       </Route>
 
       {/* Public Auth Routes */}
-      <Route
-        path="auth"
-        element={
-          <PublicRoute>
-            {" "}
-            <AuthLayout />
-          </PublicRoute>
-        }
-      >
+      <Route path="auth" element={<AuthLayout />}>
         <Route path="signup" element={<SignUp />} />
         <Route path="login" element={<Login />} />
         <Route
