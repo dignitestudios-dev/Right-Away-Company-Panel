@@ -200,7 +200,7 @@ export default function OrderTrackDetail() {
             </h3>
             <div className="flex items-center gap-4">
               {statusMap[orderStatus] != "delivered" &&
-                singleOrder.rideStatus != "completed" && (
+                singleOrder?.rideStatus != "completed" && (
                   <>
                     <button
                       onClick={() => navigate("/app/chat")}
