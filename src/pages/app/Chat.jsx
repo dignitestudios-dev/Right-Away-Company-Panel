@@ -1,13 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import ChatMessage from "../../components/app/chat/ChatMessage";
 import ChatUser from "../../components/app/chat/ChatUser";
-import { Person1, Person2, PersonImage } from "../../assets/export";
+import { PersonImage } from "../../assets/export";
 import { IoIosSend } from "react-icons/io";
 import { GoArrowLeft } from "react-icons/go";
 import { useNavigate } from "react-router";
-import ReportModal from "../../components/app/Customer/ReportReasonModal";
 import { useDispatch, useSelector } from "react-redux";
-// import { socket } from "../../../socket";
 import { formatTime } from "../../lib/helpers";
 import {
   addMessage,
@@ -16,6 +14,7 @@ import {
 } from "../../redux/slices/ChatSlice";
 import SocketContext from "../../context/SocketContext";
 import { SOCKET_EVENTS } from "../../constants/socketEvents";
+import ChatReportModal from "../../components/app/chat/ChatReportModal";
 
 const Chat = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,7 +23,7 @@ const Chat = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isActiveTab, setIsActiveTab] = useState("");
   const dispatch = useDispatch();
-  const { socket, sendMessage: sendChatMessage } = useContext(SocketContext);
+  const { socket, sendMessage } = useContext(SocketContext);
 
   const { selectedChat, messages } = useSelector((state) => state.chat);
 
@@ -59,7 +58,7 @@ const Chat = () => {
   const handleSendMessage = () => {
     if (!newMessage.trim() || !selectedChat) return;
 
-    sendChatMessage({
+    sendMessage({
       roomId: selectedChat.id,
       message: newMessage,
       type: "text",
@@ -74,8 +73,13 @@ const Chat = () => {
       handleSendMessage();
     }
   };
+  const messagesEndRef = useRef(null);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
 
-  console.log(messages, selectedChat, "selectedRider");
   return (
     <div className="h-[calc(100%-4.5rem)]">
       <div className="flex items-center gap-4">
@@ -116,7 +120,7 @@ const Chat = () => {
                             : PersonImage
                         }
                         alt={selectedChat?.rider?.profilePicture}
-                        className="h-full overflow-hidden w-full "
+                        className="h-full rounded-full overflow-hidden w-full "
                       />
                     </div>
                     <div className="ml-2">
@@ -187,6 +191,7 @@ const Chat = () => {
                         name={selectedChat?.user?.name}
                       />
                     ))}
+                <div ref={messagesEndRef} />
               </div>
 
               {/* Message Input */}
@@ -216,7 +221,7 @@ const Chat = () => {
           )}
         </div>
       </div>
-      <ReportModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <ChatReportModal selectedChat={selectedChat} isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );
 };

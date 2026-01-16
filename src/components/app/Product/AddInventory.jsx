@@ -81,29 +81,30 @@ const AddInventory = ({
                 text="Total Stock"
                 holder="Enter Total Stock"
                 type="number"
+                name="stock"
+                value={values.stock}
                 touched={touched.stock}
+                error={errors.stock}
+                handleBlur={handleBlur}
                 handleChange={(e) => {
                   const value = e.target.value;
 
-                  // allow empty or numbers only AND enforce max 1000
-                  if (
-                    value === "" ||
-                    (Number(value) > 0 && Number(value) <= 1000)
-                  ) {
+                  // allow empty
+                  if (value === "") {
+                    handleChange(e);
+                    return;
+                  }
+
+                  // allow only digits AND max 5 digits
+                  if (/^\d{1,5}$/.test(value)) {
                     handleChange(e);
                   }
                 }}
-                value={values.stock}
-                name="stock"
-                error={errors.stock}
-                handleBlur={handleBlur}
                 onKeyDown={(e) => {
                   if (["e", "E", "+", "-"].includes(e.key)) {
                     e.preventDefault();
                   }
                 }}
-                min="1"
-                max="1000"
               />
             </div>
           </div>

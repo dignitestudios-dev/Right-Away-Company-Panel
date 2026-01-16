@@ -406,7 +406,7 @@ export default function OrderDetail() {
                       onClick={() => handleStartPreparingClick("processing")}
                       text="Start Preparing Order"
                       loading={loading}
-                      customClass="w-[332px] mx-auto mt-5"
+                      customClass="w-full  mx-auto mt-5"
                     />
                   </div>
                 </div>

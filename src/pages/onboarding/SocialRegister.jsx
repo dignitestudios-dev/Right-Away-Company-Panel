@@ -7,27 +7,24 @@ import { LoginBgTopShapes } from "../../assets/export";
 import OnboardingStepper from "../../components/onboarding/OnboardingSteps";
 import { RxFileText } from "react-icons/rx";
 import { CiFileOn } from "react-icons/ci";
-import CreateAccount from "../../components/onboarding/CreateAccount";
-import VerifyAccount from "../../components/onboarding/VerifyAccount";
 import VerifyDocuments from "../../components/onboarding/VerifyDocuments";
 import CompanyProfile from "../../components/onboarding/CompanyProfile";
 import AddStore from "../../components/onboarding/AddStore";
 import PaymentMethod from "../../components/onboarding/PaymentMethod";
 import { setOnboardingStep } from "../../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-export default function SignUp() {
+import CreateSocialAccount from "../../components/onboarding/CreateSocialAccount";
+export default function SocialRegister() {
   const [currentStep, setCurrentStep] = useState(0);
   const dispatch = useDispatch();
-  const { isOnboardingStep } = useSelector(state => state.auth);
+  const { isOnboardingStep } = useSelector((state) => state.auth);
   const providerSteps = [
     { icon: RxFileText, title: "Business Details" },
-    { icon: IoMailOutline, title: "Verify email" },
     { icon: CiFileOn, title: "Identification and Verification" },
     { icon: LiaIdCard, title: "Company details" },
     { icon: PiCertificateBold, title: "Multiple Store Location" },
     { icon: MdOutlinePayment, title: "Payment Method" },
   ];
-  console.log(isOnboardingStep, "reduxCurrentStep");
   const [email, setEmail] = useState("");
   const steps = providerSteps.map((step, index) => ({
     ...step,
@@ -46,7 +43,6 @@ export default function SignUp() {
     }
   };
 
-
   return (
     <div className={`grid grid-cols-12 gap-6  h-full w-full`}>
       <OnboardingStepper steps={steps} currentStep={currentStep} />
@@ -62,16 +58,14 @@ export default function SignUp() {
             alt="LoginBgTopShapes"
           />
           {currentStep === 0 ? (
-            <CreateAccount setEmail={setEmail} handleNext={handleNext} />
+            <CreateSocialAccount setEmail={setEmail} handleNext={handleNext} />
           ) : currentStep === 1 ? (
-            <VerifyAccount email={email} handleNext={handleNext} />
-          ) : currentStep === 2 ? (
             <VerifyDocuments email={email} handleNext={handleNext} />
-          ) : currentStep === 3 ? (
+          ) : currentStep === 2 ? (
             <CompanyProfile handleNext={handleNext} />
-          ) : currentStep === 4 ? (
+          ) : currentStep === 3 ? (
             <AddStore handleNext={handleNext} />
-          ) : currentStep === 5 ? (
+          ) : currentStep === 4 ? (
             <PaymentMethod handleNext={handleNext} />
           ) : null}
         </div>

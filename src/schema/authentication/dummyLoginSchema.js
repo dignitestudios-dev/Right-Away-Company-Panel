@@ -11,6 +11,14 @@ const passwordRules = Yup.string()
   )
   .required("Password is required");
 
+const confirmPasswordRule = (
+  refField = "password",
+  label = "Confirm Password"
+) =>
+  Yup.string()
+    .oneOf([Yup.ref(refField)], `${label} must match password`)
+    .required(`${label} is required`);
+
 export const signInSchema = Yup.object({
   email: Yup.string()
     .email("Please enter a valid email address.")
@@ -40,7 +48,7 @@ export const forgetPasswordSchema = Yup.object({
 
 export const resetPasswordSchema = Yup.object({
   password: passwordRules,
-  confirmPassword: passwordRules.label("Confirm Password"),
+  confirmPassword: confirmPasswordRule("password", "Confirm Password"),
 });
 
 export const changedPasswordSchema = Yup.object().shape({
@@ -48,7 +56,7 @@ export const changedPasswordSchema = Yup.object().shape({
 
   newPassword: passwordRules.label("New Password"),
 
-  confirmPassword: passwordRules.label("Confirm Password"),
+  confirmPassword: confirmPasswordRule("newPassword", "Confirm Password"),
 });
 
 export const RegisterSchema = Yup.object({
@@ -80,7 +88,26 @@ export const RegisterSchema = Yup.object({
 
   password: passwordRules,
 
-  reTypePassword: passwordRules.label("Confirm Password"),
+  reTypePassword: confirmPasswordRule("password", "Confirm Password"),
+});
+export const SocialRegisterSchema = Yup.object({
+  businessName: Yup.string()
+    .trim()
+    .min(3, "Business name must be at least 3 characters")
+    .required("Business name is required"),
+
+  phoneNumber: Yup.string()
+    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+    .required("Phone number is required"),
+
+  registerNumber: Yup.string()
+    .matches(/^\d+$/, "Registration number must contain only numbers")
+    .min(3, "Registration number is too short")
+    .required("Company registration number is required"),
+
+  address: Yup.string()
+    .min(5, "Address must be at least 5 characters long")
+    .required("Business address is required"),
 });
 
 export const CompleteProfileSchema = Yup.object({

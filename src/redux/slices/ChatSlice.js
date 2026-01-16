@@ -5,6 +5,7 @@ const initialState = {
   selectedChat: null,
   chatRooms: null,
   messages: null,
+  isReportLoading: false,
 };
 
 export const OpenRiderChat = createAsyncThunk(
@@ -58,6 +59,19 @@ export const getMessages = createAsyncThunk(
     }
   }
 );
+export const chatReport = createAsyncThunk(
+  "/chat/report/room-id",
+  async ({ roomId, data }, thunkAPI) => {
+    try {
+      const response = await instance.post(`chat/report/${roomId}`, data);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 const chatSlice = createSlice({
   name: "chat",
   initialState,
@@ -107,9 +121,18 @@ const chatSlice = createSlice({
       })
       .addCase(getMessages.rejected, (state) => {
         state.isLoading = false;
+      })
+      .addCase(chatReport.pending, (state) => {
+        state.isReportLoading = true;
+      })
+      .addCase(chatReport.fulfilled, (state, action) => {
+        state.isReportLoading = false;
+      })
+      .addCase(chatReport.rejected, (state) => {
+        state.isReportLoading = false;
       });
   },
 });
 
-export const { setMessages, addMessage,setSelectedChat } = chatSlice.actions;
+export const { setMessages, addMessage, setSelectedChat } = chatSlice.actions;
 export default chatSlice.reducer;

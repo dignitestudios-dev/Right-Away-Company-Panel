@@ -59,6 +59,30 @@ export default function ChatUser({
     dispatch(getMessages({ page: 1, limit: 20, roomId }));
   };
 
+  const filteredChatRooms = chatRooms?.filter((room) => {
+    if (!searchQuery) return true;
+
+    const query = searchQuery.toLowerCase();
+
+    if (tabs === "rider-company") {
+      return room?.rider?.name?.toLowerCase().includes(query);
+    }
+
+    if (tabs === "user-company") {
+      return room?.user?.name?.toLowerCase().includes(query);
+    }
+
+    return true;
+  });
+
+  const visibleChatRooms = filteredChatRooms?.filter((room) => {
+    // Rider ne company ko block kiya ho
+    if (room?.blockedBy?.includes(room?.rider?._id)) {
+      return false; // ❌ hide this chat
+    }
+    return true; // ✅ show
+  });
+
   return (
     <div className="h-full bg-[#F9FAFA]  rounded-[24px] flex flex-col">
       <div>
@@ -109,7 +133,7 @@ export default function ChatUser({
             </div>
             <div className="">
               {tabs == "rider-company"
-                ? chatRooms?.map((user) => (
+                ? visibleChatRooms?.map((user) => (
                     <div
                       key={user.id}
                       className={`flex items-center p-3 px-8 mt-2 cursor-pointer   ${
@@ -153,7 +177,7 @@ export default function ChatUser({
                       )}
                     </div>
                   ))
-                : chatRooms?.map((user) => (
+                : filteredChatRooms?.map((user) => (
                     <div
                       key={user.id}
                       className={`flex items-center p-3 px-8 mt-2 cursor-pointer   ${

@@ -20,6 +20,7 @@ const initialState = {
   popularProducts: null,
   salesGraph: null,
   transactionGraph: null,
+  walletHistory: null,
 };
 
 //👽 ----------- Dashboard Managment -----------👽
@@ -404,6 +405,32 @@ export const getWalletTransactions = createAsyncThunk(
     }
   }
 );
+export const getWalletHistory = createAsyncThunk(
+  "/company/wallet/history?page=1&limit=10",
+  async (payload = {}, thunkAPI) => {
+    try {
+      const { search, startDate, endDate, page = 1, limit = 10 } = payload;
+
+      // Build query object with only existing values
+      const query = {
+        page,
+        limit,
+        ...(search && { search }),
+        ...(startDate && { startDate }),
+        ...(endDate && { endDate }),
+      };
+
+      const params = new URLSearchParams(query).toString();
+
+      const response = await instance.get(`/company/wallet/history?${params}`);
+
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 const appSlice = createSlice({
   name: "app",
@@ -653,6 +680,18 @@ const appSlice = createSlice({
         state.pagination = action.payload.pagination;
       })
       .addCase(getWalletTransactions.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(getWalletHistory.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getWalletHistory.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.walletHistory = action.payload.data;
+        state.pagination = action.payload.pagination;
+      })
+      .addCase(getWalletHistory.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
       });

@@ -9,9 +9,8 @@ const DeleteProductModal = ({ isOpen, setIsOpen, selected, loading }) => {
   const navigate = useNavigate();
   const handleSubmit = async () => {
     await dispatch(deleteProducts(selected));
-    await dispatch(getProducts()).unwrap();
-    navigate("/app/product-management");
     setIsOpen(false);
+    navigate("/app/product-management");
   };
   return (
     <Modal

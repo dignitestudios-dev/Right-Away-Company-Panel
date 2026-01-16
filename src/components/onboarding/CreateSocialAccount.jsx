@@ -4,18 +4,28 @@ import Input from "../global/Input";
 import Button from "../global/Button";
 import { useFormik } from "formik";
 import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
-import { RegisterSchema } from "../../schema/authentication/dummyLoginSchema";
-import { RegisterAccount } from "../../init/authentication/dummyLoginValues";
+import {
+  RegisterSchema,
+  SocialRegisterSchema,
+} from "../../schema/authentication/dummyLoginSchema";
+import {
+  RegisterAccount,
+  SocialRegisterAccountValues,
+} from "../../init/authentication/dummyLoginValues";
 import PrivacyPolicyModal from "../global/PrivacyPolicy";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { Register, SocialLogin } from "../../redux/slices/authSlice";
+import {
+  Register,
+  SocialLogin,
+  SocialRegister,
+} from "../../redux/slices/authSlice";
 import { signInWithPopup } from "firebase/auth";
 import { appleProvider, auth, googleProvider } from "../../firebase/firebase";
 import getFCMToken from "../../firebase/getFcmToken";
 import TermsConditionModal from "../global/TermsCondition";
 
-export default function CreateAccount({ handleNext, setEmail }) {
+export default function CreateSocialAccount({ handleNext, setEmail }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading } = useSelector((state) => state?.auth);
@@ -40,22 +50,21 @@ export default function CreateAccount({ handleNext, setEmail }) {
     setFieldValue,
   } = useFormik({
     initialValues: {
-      ...RegisterAccount,
+      ...SocialRegisterAccountValues,
       latitude: "",
       longitude: "",
       city: "",
       state: "",
     },
-    validationSchema: RegisterSchema,
+    validationSchema: SocialRegisterSchema,
     onSubmit: async (values) => {
       const payload = {
         ...values,
         coordinates: [values.longitude, values.latitude], // GeoJSON
         type: "Point",
       };
-
       setEmail(values.email);
-      await dispatch(Register(payload)).unwrap();
+      await dispatch(SocialRegister(payload)).unwrap();
       handleNext();
     },
   });
@@ -81,14 +90,10 @@ export default function CreateAccount({ handleNext, setEmail }) {
       console.log(payload, "payload");
 
       // Dispatch login action
-      await dispatch(SocialLogin(payload))
-        .then((e) => {
-          console.log(e, "response");
-        })
-        .unwrap();
+      await dispatch(SocialLogin(payload)).unwrap();
 
       // Navigate after successful login
-      // navigate("/app/dashboard");
+      navigate("/app/dashboard");
     } catch (error) {
       console.error("Social login error:", error);
     }
@@ -124,26 +129,11 @@ export default function CreateAccount({ handleNext, setEmail }) {
             />
           </div>
 
-          {/* Email */}
-          <div className="xl:col-span-6 col-span-12">
-            <Input
-              text="Business Email Address"
-              type="email"
-              holder="Enter business email"
-              name="email"
-              touched={touched.email}
-              error={errors.email}
-              handleChange={handleChange}
-              handleBlur={handleBlur}
-            />
-          </div>
-
           {/* Phone */}
           <div className="xl:col-span-6 col-span-12">
             <Input
               text="Business Phone Number"
               name="phoneNumber"
-              holder="Enter business phone number"
               touched={touched.phoneNumber}
               error={errors.phoneNumber}
               maxLength={10}
@@ -163,7 +153,6 @@ export default function CreateAccount({ handleNext, setEmail }) {
             <Input
               text="Company Registration Number"
               name="registerNumber"
-              holder="Enter company registration number"
               touched={touched.registerNumber}
               error={errors.registerNumber}
               handleChange={(e) => {
@@ -175,7 +164,7 @@ export default function CreateAccount({ handleNext, setEmail }) {
           </div>
 
           {/* 📍 Address with Places */}
-          <div className="col-span-12">
+          <div className="xl:col-span-6 col-span-12">
             <Autocomplete
               onLoad={setAutocomplete}
               onPlaceChanged={() => {
@@ -245,36 +234,6 @@ export default function CreateAccount({ handleNext, setEmail }) {
               />
             </GoogleMap>
           </div>
-
-          {/* Password */}
-          <div className="xl:col-span-6 col-span-12">
-            <Input
-              text="Password"
-              type="password"
-              name="password"
-              holder={"Enter Password"}
-              touched={touched.password}
-              error={errors.password}
-              handleChange={handleChange}
-              handleBlur={handleBlur}
-              hideText={true}
-            />
-          </div>
-
-          {/* Confirm Password */}
-          <div className="xl:col-span-6 col-span-12">
-            <Input
-              text="Confirm Password"
-              type="password"
-              name="reTypePassword"
-              holder={"Re-enter Password"}
-              touched={touched.reTypePassword}
-              error={errors.reTypePassword}
-              handleChange={handleChange}
-              handleBlur={handleBlur}
-              hideText={true}
-            />
-          </div>
         </div>
 
         <Button
@@ -311,33 +270,6 @@ export default function CreateAccount({ handleNext, setEmail }) {
             Privacy policy{" "}
           </span>
         </p>
-        <div className="flex w-full items-center rounded-full">
-          <div className="flex-1 border-b border-gray-350" />
-          <span className="text-[#484848] text-[20px] font-normal leading-8 px-3 ">
-            Or
-          </span>
-          <div className="flex-1 border-b border-gray-350 " />
-        </div>
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 items-center gap-4">
-          <button
-            onClick={handleGoogleLogin}
-            className="bg-shadow flex items-center p-2 bg-[#FFFFFF]  rounded-full w-full h-12"
-          >
-            <img src={GoogleImage} alt="" className="w-8" />
-            <span className="mx-auto text-[14px] font-[500] text-[#181818]">
-              Continue With Google
-            </span>
-          </button>
-          <button
-            onClick={handleAppleLogin}
-            className="bg-shadow flex items-center p-2 bg-[#FFFFFF]  rounded-full w-full h-12"
-          >
-            <img src={AppleImage} alt="" className="w-8" />
-            <span className="mx-auto text-[14px] font-[500] text-[#181818]">
-              Continue With Apple
-            </span>
-          </button>
-        </div>
       </div>
       <PrivacyPolicyModal
         isOpen={termCondition}

@@ -6,7 +6,7 @@ export const AddInventorySchema = Yup.object({
   stock: Yup.number()
     .typeError("Stock must be a number")
     .required("Stock is required")
-    .max(1000, "Stock cannot be more than 1000"),
+    .max(99999, "Stock cannot be more than 99999"),
 });
 
 export const ProductSchema = Yup.object({

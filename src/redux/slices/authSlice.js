@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ErrorToast, SuccessToast } from "../../components/global/Toaster";
+import { ErrorToast } from "../../components/global/Toaster";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
 import Cookies from "js-cookie";
 import instance from "../../axios";
+import { FirebaseError } from "firebase/app";
 const initialState = {
   isLoading: false,
   isResendLoading: false,
@@ -44,6 +45,9 @@ export const Register = createAsyncThunk(
         businessAddress: payload.address || "",
         password: payload.password || "",
         idToken,
+        coordinates: [payload.longitude, payload.latitude],
+        city: payload.city,
+        state: payload.state,
       };
 
       // 4️⃣ Send request to backend
@@ -56,9 +60,66 @@ export const Register = createAsyncThunk(
       return response?.data;
     } catch (error) {
       console.error("Registration error:", error);
-      const message =
-        error.response?.data?.message || error.message || "Registration failed";
+
+      let message = "Registration failed";
+
+      // 🔥 Firebase auth errors
+      if (error instanceof FirebaseError) {
+        switch (error.code) {
+          case "auth/email-already-in-use":
+            message = "Email already exists";
+            break;
+
+          case "auth/invalid-email":
+            message = "Invalid email address";
+            break;
+
+          case "auth/weak-password":
+            message = "Password must be at least 6 characters";
+            break;
+
+          case "auth/network-request-failed":
+            message = "Network error. Please try again.";
+            break;
+
+          default:
+            message = "Something went wrong. Please try again.";
+        }
+      }
+      // 🌐 Backend errors
+      else if (error.response?.data?.message) {
+        message = error.response.data.message;
+      }
+
       ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const SocialRegister = createAsyncThunk(
+  "/SocialRegister",
+  async (payload, thunkAPI) => {
+    try {
+      const finalPayload = {
+        name: payload.businessName || "",
+        phone: "+1" + payload.phoneNumber || "",
+        companyRegistrationNo: payload.registerNumber || "",
+        businessAddress: payload.address || "",
+        coordinates: [payload.longitude, payload.latitude],
+        city: payload.city,
+        state: payload.state,
+      };
+
+      // 4️⃣ Send request to backend
+      const response = await instance.post(
+        "/auth/socialRegister/company",
+        finalPayload
+      );
+      Cookies.set("token", response?.data?.data?.token, { expires: 7 });
+      // SuccessToast(response?.data?.message || "Registration successful!");
+      return response?.data;
+    } catch (error) {
+      console.error("Registration error:", error);
       return thunkAPI.rejectWithValue(message);
     }
   }
@@ -456,7 +517,8 @@ export const ConectStripeAccount = createAsyncThunk(
 
       const url = response?.data?.data?.url;
       if (url) {
-        window.open(url, "_blank"); // "_blank" opens in new tab
+        // window.open(url, "_blank");
+        window.location.href = url;
       }
 
       // ✅ Dispatch the resetOnboarding action properly
@@ -527,6 +589,19 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
       })
       .addCase(Register.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(SocialRegister.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(SocialRegister.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.company = action.payload?.data?.company;
+        state.token = action.payload?.data?.token;
+        state.isAuthenticated = true;
+      })
+      .addCase(SocialRegister.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
       })

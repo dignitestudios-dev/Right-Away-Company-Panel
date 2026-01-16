@@ -17,6 +17,7 @@ import { CreateProduct } from "../../../redux/slices/AppSlice";
 import ProductReview from "./ProductReview";
 import { getStore } from "../../../redux/slices/authSlice";
 import { ErrorToast } from "../../global/Toaster";
+import { IoMdClose } from "react-icons/io";
 export default function AddNewProduct() {
   const storeCategories = [
     {
@@ -246,6 +247,7 @@ export default function AddNewProduct() {
             setActionType("add");
             setIsOpen(!isOpen);
           }}
+          uploadError={uploadError?.docs}
           productDocs={productDocs}
           handleDocChange={handleDocChange}
           reviewData={productReview}
@@ -436,9 +438,11 @@ export default function AddNewProduct() {
                           prev.filter((_, i) => i !== idx)
                         );
                       }}
-                      className="absolute top-1 right-1 bg-white rounded-full shadow text-red-500 font-bold px-[6px]"
+                      className="absolute flex justify-center items-center top-1 right-1 text-center w-[20px] h-[20px] bg-white rounded-full text-red-500 font-bold "
                     >
-                      ×
+                      <div>
+                        <IoMdClose />
+                      </div>
                     </button>
                   </div>
                 ))}

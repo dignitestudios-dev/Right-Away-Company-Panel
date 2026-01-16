@@ -512,7 +512,7 @@ export default function OrderTrackDetail() {
                           />
                           Vehicle Type
                         </p>
-                        <p className="text-[#464646] font-[500] text-[12px]">
+                        <p className="text-[#464646] font-[500] capitalize text-[12px]">
                           {singleOrder?.vehicle?.vehicle}
                         </p>
                       </div>
@@ -548,8 +548,8 @@ export default function OrderTrackDetail() {
                     </h3>
                     <QRCode
                       value={singleOrder?._id || ""}
-                      className="mt-2"
-                      size={306}
+                      className="mt-2 -ml-8 w-full"
+                      
                     />
                   </div>
                 )}

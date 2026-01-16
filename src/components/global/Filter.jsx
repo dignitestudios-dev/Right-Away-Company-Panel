@@ -16,6 +16,7 @@ export default function Filter({
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [dateError, setDateError] = useState("");
 
   const navigate = useNavigate("");
 
@@ -29,6 +30,27 @@ export default function Filter({
     setStartDate("");
     setEndDate("");
     onFilterChange?.({ search: "", startDate: "", endDate: "" });
+  };
+
+  const handleEndDateChange = (e) => {
+    const value = e.target.value;
+    setEndDate(value);
+
+    if (startDate && value && value < startDate) {
+      setDateError("End date must be same or after start date");
+    } else {
+      setDateError("");
+    }
+  };
+  const handleStartDateChange = (e) => {
+    const value = e.target.value;
+    setStartDate(value);
+
+    if (endDate && value && endDate < value) {
+      setDateError("End date must be same or after start date");
+    } else {
+      setDateError("");
+    }
   };
 
   return (
@@ -83,8 +105,8 @@ export default function Filter({
             <input
               type="date"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="bg-[#FBFBFB] mt-2 px-3 w-full rounded-[9px] text-[#000000] text-[16px] font-[400] h-[49px]"
+              onChange={handleStartDateChange}
+              className="bg-[#FBFBFB] mt-2 px-3 w-full rounded-[9px] h-[49px]"
             />
           </div>
 
@@ -95,10 +117,14 @@ export default function Filter({
             <input
               type="date"
               value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="bg-[#FBFBFB] mt-2 px-3 w-full rounded-[9px] text-[#000000] text-[16px] font-[400] h-[49px]"
+              onChange={handleEndDateChange}
+              min={startDate} // 👈 extra safety
+              className="bg-[#FBFBFB] mt-2 px-3 w-full rounded-[9px] h-[49px]"
             />
           </div>
+          {dateError && (
+            <p className="text-red-500 text-[12px] mt-1">{dateError}</p>
+          )}
 
           <div className="flex gap-3 items-center mt-3">
             <button
@@ -111,6 +137,7 @@ export default function Filter({
               text={"Apply"}
               onClick={handleApply}
               customClass={"w-[140px]"}
+              disabled={!!dateError}
             />
           </div>
         </div>

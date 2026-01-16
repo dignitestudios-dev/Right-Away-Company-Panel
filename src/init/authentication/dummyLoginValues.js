@@ -29,6 +29,12 @@ export const RegisterAccount = {
   password: "",
   reTypePassword: "",
 };
+export const SocialRegisterAccountValues = {
+  businessName: "",
+  phoneNumber: "",
+  registerNumber: "",
+  address: "",
+};
 export const CompleteProfileValues = {
   profilePic: null,
   description: "",

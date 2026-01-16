@@ -38,6 +38,7 @@ export default function TrackingMap({ order, setIsOpen }) {
 
       const currentPos = data?.data?.currentCoordinates;
       if (currentPos) {
+        console.log(currentPos,"current position from socket")
         setProgress([currentPos]);
       }
     };
@@ -223,8 +224,8 @@ export default function TrackingMap({ order, setIsOpen }) {
       {stops.length === 2 && !directions && (
         <DirectionsService
           options={{
-            destination: stops[1],
-            origin: stops[0],
+            destination: stops[0],
+            origin: stops[1],
             travelMode: "DRIVING",
           }}
           callback={(response) => {

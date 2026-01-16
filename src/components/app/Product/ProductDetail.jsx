@@ -171,7 +171,7 @@ export default function ProductDetail() {
               <h2 className="gradient-text font-bold text-[24px]">
                 ${Number(singleProduct?.unitPrice || 0).toFixed(2)}
                 <span className="text-[10px] font-[400] ">
-                  /{singleProduct?.unitMessurement}
+                  /{singleProduct?.unitMessurement} Unit
                 </span>
               </h2>
             </div>

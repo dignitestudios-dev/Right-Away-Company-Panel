@@ -64,7 +64,7 @@ export default function PopularProducts() {
           Popular Products
         </h3>
         <p className="gradient-text text-[12px] font-[500]">
-          Total 10.4k Visitors{" "}
+          Total {popularProducts?.totalViews || "0"} Visitors{" "}
         </p>
       </div>
       <div>

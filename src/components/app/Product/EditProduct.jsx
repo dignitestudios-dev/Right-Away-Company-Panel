@@ -16,6 +16,7 @@ import { ProductValues } from "../../../init/app/AppValues";
 import { useLocation, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductsById, updateProduct } from "../../../redux/slices/AppSlice";
+import { IoMdClose } from "react-icons/io";
 
 export default function EditProduct() {
   const storeCategories = [
@@ -99,12 +100,12 @@ export default function EditProduct() {
     if (singleProduct) {
       setOldImages(singleProduct?.images || []);
       setOldDocs(singleProduct?.productDoc || []);
-      setInventories(product?.inventories || []);
+      setInventories(singleProduct?.inventories || []);
       setValues({ ...ProductValues, ...singleProduct });
     }
   }, [singleProduct]);
 
-  console.log(singleProduct, "products--->");
+  console.log(singleProduct?.inventories, "products--->");
   // 🧩 Formik Setup
   const {
     values,
@@ -124,7 +125,11 @@ export default function EditProduct() {
     onSubmit: async (values) => {
       const form = new FormData();
       // 🔸 Append images
-      oldImages.forEach((file) => form.append("images[]", file));
+      if (oldImages.length > 0) {
+        oldImages.forEach((file) => form.append("images[]", file));
+      } else {
+        form.append("images[]", "");
+      }
       newImages.forEach((file) => form.append("updateImages", file));
 
       // 🔸 Append documents
@@ -341,9 +346,11 @@ export default function EditProduct() {
                   <button
                     type="button"
                     onClick={() => removeImage(idx, "old")}
-                    className="absolute top-1 right-1 bg-white rounded-full text-red-500 font-bold px-[6px]"
+                    className="absolute flex justify-center items-center top-1 right-1 text-center w-[20px] h-[20px] bg-white rounded-full text-red-500 font-bold "
                   >
-                    ×
+                    <div>
+                      <IoMdClose />
+                    </div>
                   </button>
                 </div>
               ))}
@@ -361,9 +368,11 @@ export default function EditProduct() {
                   <button
                     type="button"
                     onClick={() => removeImage(idx, "new")}
-                    className="absolute top-1 right-1 bg-white rounded-full text-red-500 font-bold px-[6px]"
+                    className="absolute flex justify-center items-center top-1 right-1 text-center w-[20px] h-[20px] bg-white rounded-full text-red-500 font-bold "
                   >
-                    ×
+                    <div>
+                      <IoMdClose />
+                    </div>
                   </button>
                 </div>
               ))}
@@ -612,7 +621,7 @@ export default function EditProduct() {
                 Inventory Details
               </label>
 
-              {inventories.map((item, i) => (
+              {inventories?.map((item, i) => (
                 <StoreCard
                   key={i}
                   item={item}

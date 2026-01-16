@@ -4,16 +4,18 @@ import Button from "../../global/Button";
 import { useNavigate } from "react-router";
 import DeleteBankModal from "./DeleteBankModal";
 import { useDispatch, useSelector } from "react-redux";
-import { GetBanks } from "../../../redux/slices/authSlice";
+import { ConectStripeAccount, GetBanks } from "../../../redux/slices/authSlice";
 
 export default function BankDetail() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const { Banks, isLoading } = useSelector((state) => state.auth);
+  const { Banks, isLoading, company } = useSelector((state) => state.auth);
   const [selectedBank, setSelectedBank] = useState(null);
   useEffect(() => {
-    dispatch(GetBanks()).unwrap();
+    setTimeout(() => {
+      dispatch(GetBanks()).unwrap();
+    }, 2000);
   }, []);
 
   // Skeleton Loader
@@ -40,7 +42,9 @@ export default function BankDetail() {
       </div>
     ));
   };
-
+  const handleSubmit = () => {
+    dispatch(ConectStripeAccount());
+  };
   return (
     <div className="py-2 px-2">
       <div className="flex items-center gap-2 mb-6">
@@ -55,12 +59,20 @@ export default function BankDetail() {
             <h1 className="text-[32px] font-[500] text-[#181818] mb-4">
               Bank Account Details
             </h1>
-
-            <Button
-              onClick={() => navigate("/app/add-card")}
-              text={"Add Bank"}
-              customClass={"w-[180px]"}
-            />
+            {!company?.isStripeCompleted ? (
+              <Button
+                text={"Connect Account"}
+                loading={isLoading}
+                onClick={handleSubmit}
+                customClass={"w-[225px]"}
+              />
+            ) : (
+              <Button
+                onClick={() => navigate("/app/add-card")}
+                text={"Add Bank"}
+                customClass={"w-[180px]"}
+              />
+            )}
           </div>
 
           <h2 className="text-[16px] text-[#212935] font-medium mb-3">
@@ -111,12 +123,10 @@ export default function BankDetail() {
                   </button>
 
                   <button
-                    onClick={() => 
-                    {
+                    onClick={() => {
                       setSelectedBank(bank);
-                      setIsOpen(!isOpen)
-                    }
-                    }
+                      setIsOpen(!isOpen);
+                    }}
                     className="text-red-600 hover:scale-110 transition"
                   >
                     <img
@@ -136,7 +146,11 @@ export default function BankDetail() {
         </div>
       </div>
 
-      <DeleteBankModal selectedBank={selectedBank} isOpen={isOpen} setIsOpen={setIsOpen} />
+      <DeleteBankModal
+        selectedBank={selectedBank}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      />
     </div>
   );
 }

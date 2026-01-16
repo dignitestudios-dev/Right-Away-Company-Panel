@@ -7,7 +7,7 @@ import Button from "../../global/Button";
 import { GoArrowLeft } from "react-icons/go";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { CreateBank } from "../../../redux/slices/authSlice";
+import { CreateBank, GetBanks } from "../../../redux/slices/authSlice";
 
 export default function AddCard() {
   const navigate = useNavigate("");
@@ -34,6 +34,8 @@ export default function AddCard() {
         bankName: values?.bankName,
       };
       await dispatch(CreateBank(data)).unwrap();
+      await dispatch(GetBanks()).unwrap();
+
       navigate(-1);
       action.resetForm();
     },

@@ -2,13 +2,16 @@
 // The functions that you're using multiple times must be there.
 // e.g. formatDateToMMDDYYYY, formatEpochToMMDDYYYY, etc.
 // convert 24h format (e.g. "09:00") → "9 AM"
-const formatTime = (time) => {
-  if (!time) return "";
-  const [hour, minute] = time.split(":");
-  const h = parseInt(hour, 10);
-  const suffix = h >= 12 ? "PM" : "AM";
-  const formattedHour = h % 12 || 12;
-  return `${formattedHour}${minute !== "00" ? ":" + minute : ""} ${suffix}`;
+const formatTime = (dateString) => {
+  if (!dateString) return "";
+
+  const date = new Date(dateString);
+
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 };
 
 // convert ["monday", "tuesday", ...] → "Monday to Friday" or "Monday, Tuesday, Wednesday"
@@ -81,17 +84,11 @@ function formatDate(dateString) {
 
   const date = new Date(dateString);
 
-  // Options for date and time
-  const options = {
-    month: "short", // Jan, Feb, Mar...
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false, // 24-hour format, set true for 12-hour (AM/PM)
-  };
-
-  return date.toLocaleString("en-US", options).replace(",", ",");
+  return date.toLocaleDateString("en-US", {
+    month: "short", // Jan, Feb, Mar
+    day: "numeric", // 15
+    year: "numeric", // 2025
+  });
 }
 
 export const EpocformatDate = (epoch) => {
@@ -114,9 +111,4 @@ export const EpocformatDate = (epoch) => {
   });
 };
 
-export {
-  formatDays,
-  formatTime,
-  formatOperatingDays,
-  formatDate,
-};
+export { formatDays, formatTime, formatOperatingDays, formatDate };

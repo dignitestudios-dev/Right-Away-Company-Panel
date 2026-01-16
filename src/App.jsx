@@ -33,6 +33,7 @@ import EditCard from "./components/app/Setting/EditCard";
 import { useSelector } from "react-redux";
 import PrivacyPolicy from "./pages/app/PrivacyPolicy";
 import TermsConditions from "./pages/app/TermsConditions";
+import SocialRegister from "./pages/onboarding/SocialRegister";
 
 function App() {
   function DefaultRedirect() {
@@ -95,6 +96,7 @@ function App() {
       {/* Public Auth Routes */}
       <Route path="auth" element={<AuthLayout />}>
         <Route path="signup" element={<SignUp />} />
+        <Route path="social-register" element={<SocialRegister />} />
         <Route path="login" element={<Login />} />
         <Route
           path="two-factor-verfication"

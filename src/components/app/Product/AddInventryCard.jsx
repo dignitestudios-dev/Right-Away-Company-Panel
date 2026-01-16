@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 
 const StoreCard = ({ setActionType, setIsOpen, item, setEditIndex, index }) => {
   const { stores } = useSelector((state) => state?.auth);
-  console.log(stores[1]?._id, item?.storeRecord?._id, "testing---->");
+  console.log(item, "storesss");
   return (
     <div className="flex col-span-12 justify-between items-center bg-[#F9F9F9] rounded-2xl p-6 shadow-sm w-full ">
       {/* Left Section */}
@@ -13,9 +13,9 @@ const StoreCard = ({ setActionType, setIsOpen, item, setEditIndex, index }) => {
           <div className="flex flex-col">
             <p className="text-[16px] font-[400] text-[#181818]">Store Name</p>
             <p className="text-[#959393] text-[16px]">
-              {stores?.find(
-                (el) => el._id == (item?.storeName || item?.storeRecord?._id)
-              )?.name || "Unknown Store"}
+              {stores?.find((store) => store._id === item?.storeName)
+                ? stores?.find((store) => store._id === item?.storeName)?.name
+                : item?.storeRecord?.name || item?.storeName}
             </p>
           </div>
           <div className="flex flex-col">

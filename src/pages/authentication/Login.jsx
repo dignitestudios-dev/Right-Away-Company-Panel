@@ -60,9 +60,16 @@ const Login = () => {
       };
       console.log(payload, "payload,");
 
-      await dispatch(SocialLogin(payload)).unwrap();
-      // Navigate after successful login
-      navigate("/app/dashboard");
+      await dispatch(SocialLogin(payload))
+        .then((e) => {
+          console.log(e?.payload?.data?.company?.registationNo, "response");
+          if (e?.payload?.data?.company?.registationNo) {
+            navigate("/app/dashboard");
+          } else {
+            navigate("/auth/social-register");
+          }
+        })
+        .unwrap();
     } catch (error) {
       console.error("Google login error:", error);
     }

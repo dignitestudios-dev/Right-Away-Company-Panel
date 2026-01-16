@@ -1,10 +1,12 @@
 import { useFormik } from "formik";
 import { IoCloseSharp } from "react-icons/io5";
 import Modal from "react-modal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Input from "../../global/Input";
 import Button from "../../global/Button";
 import { AddInventorySchema } from "../../../schema/app/AppSchema";
+import { useEffect } from "react";
+import { getStore } from "../../../redux/slices/authSlice";
 
 const EditInventory = ({
   isOpen,
@@ -14,7 +16,10 @@ const EditInventory = ({
   setInventories,
 }) => {
   const { stores } = useSelector((state) => state?.auth);
-
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getStore());
+  }, []);
   const inventoryToEdit = inventories[editIndex] || {
     storeName: "",
     stock: "",
@@ -35,7 +40,7 @@ const EditInventory = ({
         setIsOpen(false);
       },
     });
-
+  console.log(values, "inventoryToEdit");
   return (
     <Modal
       isOpen={isOpen}
@@ -83,22 +88,25 @@ const EditInventory = ({
                 text="Total Stock"
                 holder="Enter stock quantity"
                 type="number"
+                name="stock"
+                value={values.stock}
                 touched={touched.stock}
+                error={errors.stock}
+                handleBlur={handleBlur}
                 handleChange={(e) => {
                   const value = e.target.value;
 
-                  // Allow empty, allow >0, block >1000
-                  if (
-                    value === "" ||
-                    (Number(value) > 0 && Number(value) <= 1000)
-                  ) {
+                  // allow empty
+                  if (value === "") {
+                    handleChange(e);
+                    return;
+                  }
+
+                  // allow only digits AND max 5 digits (1–99999)
+                  if (/^\d{1,5}$/.test(value)) {
                     handleChange(e);
                   }
                 }}
-                name="stock"
-                error={errors.stock}
-                handleBlur={handleBlur}
-                value={values.stock}
                 onKeyDown={(e) => {
                   if (["e", "E", "+", "-"].includes(e.key)) {
                     e.preventDefault();
@@ -106,8 +114,6 @@ const EditInventory = ({
                 }}
               />
             </div>
-
-      
           </div>
 
           <Button

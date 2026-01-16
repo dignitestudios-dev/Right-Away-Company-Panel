@@ -14,14 +14,15 @@ export default function ProductReview({
   inventoryAdd,
   inventories,
   handleDocChange,
-  productDocs
+  productDocs,
+  uploadError,
 }) {
   const navigate = useNavigate();
   const [selectedImg, setSelectedImg] = useState(null);
   const { stores } = useSelector((state) => state?.auth);
   const { values, productImages } = reviewData || {};
   useEffect(() => {
-    setSelectedImg(URL.createObjectURL(productImages[0]))
+    setSelectedImg(URL.createObjectURL(productImages[0]));
   }, [productImages]);
   return (
     <div className=" min-h-screen p-2">
@@ -64,7 +65,7 @@ export default function ProductReview({
             {productImages?.map((img, i) => (
               <div
                 key={i}
-                onClick={()=>setSelectedImg(URL.createObjectURL(img))}
+                onClick={() => setSelectedImg(URL.createObjectURL(img))}
                 className="bg-[#F2FBF7] rounded-xl  h-[70px] flex justify-center items-center cursor-pointer border hover:border-[#22b573]"
               >
                 {" "}
@@ -85,7 +86,10 @@ export default function ProductReview({
                 {" "}
                 Product Documents{" "}
               </h3>{" "}
-              <label htmlFor="productDocuments" className="gradient-text text-sm font-medium border-b border-[#22B573]">
+              <label
+                htmlFor="productDocuments"
+                className="gradient-text cursor-pointer text-sm font-medium border-b border-[#22B573]"
+              >
                 {" "}
                 Add New{" "}
                 <input
@@ -97,8 +101,11 @@ export default function ProductReview({
                   id="productDocuments"
                   onChange={handleDocChange}
                 />
-              </label>{" "}
+              </label>
             </div>{" "}
+            {uploadError && (
+              <p className="text-red-500 text-sm mt-1">{uploadError}</p>
+            )}{" "}
             <div className="grid grid-cols-3 gap-3">
               {" "}
               {productDocs?.map((label, i) => (
