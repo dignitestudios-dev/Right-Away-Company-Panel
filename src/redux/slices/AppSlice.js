@@ -117,6 +117,23 @@ export const updateProduct = createAsyncThunk(
     }
   }
 );
+
+export const updateProductStock = createAsyncThunk(
+  "company/update-product-stock",
+  async ({ id, isStock }, thunkAPI) => {
+    try {
+      const res = await instance.patch(`/company/product/${id}`, {
+        isStock,
+      });
+      return { id, isStock, data: res.data };
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const getProducts = createAsyncThunk(
   "company/product",
   async (

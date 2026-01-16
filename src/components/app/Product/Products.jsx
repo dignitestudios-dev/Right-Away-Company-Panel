@@ -4,7 +4,10 @@ import Filter from "../../global/Filter";
 import Pagination from "../../global/Pagination";
 import GlobalTable from "../../global/Table";
 import { useEffect, useState } from "react";
-import { getProducts } from "../../../redux/slices/AppSlice";
+import {
+  getProducts,
+  updateProductStock,
+} from "../../../redux/slices/AppSlice";
 import DeleteProductModal from "./DeleteProductModal";
 import { useNavigate } from "react-router";
 
@@ -22,7 +25,13 @@ export default function ProductsData() {
   const navigate = useNavigate("");
 
   useEffect(() => {
-    dispatch(getProducts({search: filters.search, startDate: filters.startDate, endDate: filters.endDate}));
+    dispatch(
+      getProducts({
+        search: filters.search,
+        startDate: filters.startDate,
+        endDate: filters.endDate,
+      })
+    );
   }, [dispatch, filters]); // 👈 re-fetch when filters change
 
   const productList = Array.isArray(products)
@@ -54,8 +63,28 @@ export default function ProductsData() {
       </div>,
       <p key={i}>{item?.category}</p>,
       <p key={i}>${Number(item?.unitPrice || 0).toFixed(2)}</p>,
-      <label key={i} className="inline-flex items-center cursor-pointer">
-        <input type="checkbox" className="sr-only peer" defaultChecked />
+      <label
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        key={i}
+        className="inline-flex items-center cursor-pointer"
+      >
+        <input
+          checked={item?.isStock}
+          onChange={async (e) => {
+            await dispatch(
+              updateProductStock({
+                id: item?._id,
+                isStock: e.target.checked,
+              })
+            ).unwrap();
+            await dispatch(getProducts({})).unwrap();
+          }}
+          type="checkbox"
+          className="sr-only peer"
+          defaultChecked
+        />
         <div className="w-11 h-6 bg-gray-200 rounded-full peer py-[2.5px] peer-checked:bg-[#0EBB8E] after:content-[''] after:absolute after:w-5 after:h-5 after:bg-white after:rounded-full after:transition-all peer-checked:after:translate-x-5 relative"></div>
       </label>,
       <div key={i} className="flex items-center gap-3">
@@ -105,7 +134,7 @@ export default function ProductsData() {
         totalItems={pagination?.totalItems}
         itemsPerPage={pagination?.itemsPerPage}
         onPageChange={(page) =>
-          dispatch(getProducts({ ...filters, page, limit:10 }))
+          dispatch(getProducts({ ...filters, page, limit: 10 }))
         }
       />
       <DeleteProductModal

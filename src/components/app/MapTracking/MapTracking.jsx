@@ -38,7 +38,7 @@ export default function TrackingMap({ order, setIsOpen }) {
 
       const currentPos = data?.data?.currentCoordinates;
       if (currentPos) {
-        console.log(currentPos,"current position from socket")
+        console.log(currentPos, "current position from socket");
         setProgress([currentPos]);
       }
     };
@@ -201,9 +201,12 @@ export default function TrackingMap({ order, setIsOpen }) {
           options={{ strokeColor: "#03958A", strokeWeight: 7 }}
         />
 
-        {stops.map((s) => (
-          <Marker icon={destinationIcon} key={s.id} position={s} />
-        ))}
+        {stops.map(
+          (s) =>
+            s.id == "start" && (
+              <Marker icon={destinationIcon} key={s.id} position={s} />
+            )
+        )}
 
         {progress.length > 0 && (
           <>

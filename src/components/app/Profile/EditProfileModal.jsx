@@ -18,6 +18,10 @@ import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
 export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
   const [preview, setPreview] = useState(null); // ✅ local preview image
   const [autocomplete, setAutocomplete] = useState(null);
+  const [locationMeta, setLocationMeta] = useState({
+    city: "",
+    state: "",
+  });
 
   const { company, isLoading } = useSelector((state) => state?.auth);
   const [mapCenter, setMapCenter] = useState({
@@ -43,19 +47,25 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
     validationSchema: CompleteProfileSchema,
     validateOnChange: true,
     validateOnBlur: true,
-    onSubmit: async (values, action) => {
+    onSubmit: async (values) => {
       try {
         const formData = new FormData();
+
         // Basic info
         formData.append("description", values.description);
-        formData.append("coordinates[0]", mapCenter.lng); // longitude
-        formData.append("coordinates[1]", mapCenter.lat); // latitude
+        formData.append("coordinates[0]", mapCenter.lng);
+        formData.append("coordinates[1]", mapCenter.lat);
         formData.append("type", "Point");
 
-        formData.append("store", values?.fulfillmentMethod);
-        // Avatar
+        formData.append("store", values.fulfillmentMethod);
+        formData.append("businessAddress", values.address);
+
+        // ✅ City & State
+        // formData.append("city", locationMeta.city);
+        // formData.append("state", locationMeta.state);
+
+        // Profile image
         if (values.profilePic && typeof values.profilePic !== "string") {
-          // Only append if it's a File (not a URL)
           formData.append("profilePicture", values.profilePic);
         }
 
@@ -214,23 +224,42 @@ export default function EditProfileModal({ isOpen, setIsOpen, isSelected }) {
                   const lng = place.geometry.location.lng();
 
                   setMapCenter({ lat, lng });
-
                   setFieldValue("address", place.formatted_address);
+
+                  let city = "";
+                  let state = "";
+
+                  place.address_components?.forEach((component) => {
+                    if (component.types.includes("locality")) {
+                      city = component.long_name;
+                    }
+                    if (
+                      component.types.includes("administrative_area_level_1")
+                    ) {
+                      state = component.long_name;
+                    }
+                  });
+
+                  setLocationMeta({ city, state });
                 }}
               >
-                <Input
-                  text={"Store Location"}
-                  holder={"Search store location"}
-                  type={"text"}
-                  name={"address"}
-                  value={values.address}
-                  touched={touched.address}
-                  handleChange={handleChange}
-                  handleBlur={handleBlur}
-                  error={errors.address}
-                />
+                {/* ✅ EXACTLY ONE CHILD */}
+                <div>
+                  <Input
+                    text="Store Location"
+                    holder="Search store location"
+                    type="text"
+                    name="address"
+                    value={values.address}
+                    touched={touched.address}
+                    handleChange={handleChange}
+                    handleBlur={handleBlur}
+                    error={errors.address}
+                  />
+                </div>
               </Autocomplete>
             </div>
+
             <div className="col-span-12 h-[87px]">
               <GoogleMap
                 center={mapCenter}

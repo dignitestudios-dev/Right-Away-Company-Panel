@@ -305,7 +305,7 @@ export default function OrderTrackDetail() {
                     Special Instructions
                   </p>
                   <p className="text-[#000000]  font-[400] text-[16px]">
-                    {singleOrder?.instruction}
+                    {singleOrder?.instruction||"-"}
                   </p>
                 </div>
                 <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
