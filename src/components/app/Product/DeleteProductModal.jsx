@@ -10,6 +10,7 @@ const DeleteProductModal = ({ isOpen, setIsOpen, selected, loading }) => {
   const handleSubmit = async () => {
     await dispatch(deleteProducts(selected));
     setIsOpen(false);
+    await dispatch(getProducts({}));
     navigate("/app/product-management");
   };
   return (
