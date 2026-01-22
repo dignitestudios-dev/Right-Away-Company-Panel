@@ -151,7 +151,7 @@ export default function EditProduct() {
       inventories.forEach((inv, i) => {
         form.append(
           `inventories[${i}][storeRecord]`,
-          inv.storeName || inv?.storeRecord?._id
+          inv.storeName || inv?.storeRecord?._id,
         );
         form.append(`inventories[${i}][stock]`, inv.stock);
       });
@@ -698,53 +698,57 @@ export default function EditProduct() {
             </label>
 
             {/* 🧾 Old Docs */}
-            {oldDocs.length > 0 && (
+            {oldDocs?.filter((url) => url && url.trim() !== "").length > 0 && (
               <div className="mt-3 space-y-2">
-                {oldDocs.map((url, idx) => (
-                  <div
-                    key={`old-doc-${idx}`}
-                    className="flex justify-between items-center bg-gray-100 p-2 rounded-md"
-                  >
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-sm text-blue-500 truncate w-[200px]"
+                {oldDocs
+                  .filter((url) => url && url.trim() !== "")
+                  .map((url, idx) => (
+                    <div
+                      key={`old-doc-${idx}`}
+                      className="flex justify-between items-center bg-gray-100 p-2 rounded-md"
                     >
-                      {url.split("/").pop()}
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => removeDoc(idx, "old")}
-                      className="text-red-500 text-sm"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm text-blue-500 truncate w-[200px]"
+                      >
+                        {url.split("/").pop()}
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => removeDoc(idx, "old")}
+                        className="text-red-500 text-sm"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
               </div>
             )}
 
             {/* 🆕 New Docs */}
-            {newDocs.length > 0 && (
+            {newDocs?.filter((file) => file && file.name).length > 0 && (
               <div className="mt-3 space-y-2">
-                {newDocs.map((file, idx) => (
-                  <div
-                    key={`new-doc-${idx}`}
-                    className="flex justify-between items-center bg-gray-100 p-2 rounded-md"
-                  >
-                    <p className="text-sm text-gray-700 truncate w-[200px]">
-                      {file.name}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => removeDoc(idx, "new")}
-                      className="text-red-500 text-sm"
+                {newDocs
+                  .filter((file) => file && file.name)
+                  .map((file, idx) => (
+                    <div
+                      key={`new-doc-${idx}`}
+                      className="flex justify-between items-center bg-gray-100 p-2 rounded-md"
                     >
-                      Remove
-                    </button>
-                  </div>
-                ))}
+                      <p className="text-sm text-gray-700 truncate w-[200px]">
+                        {file.name}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => removeDoc(idx, "new")}
+                        className="text-red-500 text-sm"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
               </div>
             )}
           </div>

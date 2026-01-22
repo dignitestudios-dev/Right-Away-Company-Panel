@@ -13,7 +13,7 @@ import { ProductValues } from "../../../init/app/AppValues";
 import { useFormik } from "formik";
 import { ProductSchema } from "../../../schema/app/AppSchema";
 import { useDispatch, useSelector } from "react-redux";
-import { CreateProduct } from "../../../redux/slices/AppSlice";
+import { CreateProduct, getCategories } from "../../../redux/slices/AppSlice";
 import ProductReview from "./ProductReview";
 import { getStore } from "../../../redux/slices/authSlice";
 import { ErrorToast } from "../../global/Toaster";
@@ -66,7 +66,10 @@ export default function AddNewProduct() {
   const [editIndex, setEditIndex] = useState(null);
   const dispatch = useDispatch();
   const [finalForm, setFinalForm] = useState(null);
-  const { isLoading } = useSelector((state) => state.app);
+  const { isLoading, categoriesLoading, categories } = useSelector(
+    (state) => state.app,
+  );
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
 
@@ -184,7 +187,7 @@ export default function AddNewProduct() {
         productImages,
         productDocs,
         inventories,
-        "formData---->"
+        "formData---->",
       );
       if (productImages.length === 0) {
         setUploadError({ images: "At least one image is required" });
@@ -198,7 +201,7 @@ export default function AddNewProduct() {
       }
 
       const invalidDocs = productDocs.filter(
-        (file) => file.type !== "application/pdf"
+        (file) => file.type !== "application/pdf",
       );
       if (invalidDocs.length > 0) {
         setUploadError({ docs: "Only PDF format is allowed" });
@@ -238,7 +241,9 @@ export default function AddNewProduct() {
 
   useEffect(() => {
     dispatch(getStore()).unwrap();
+    dispatch(getCategories()).unwrap();
   }, []);
+  console.log(categories, "categories-fetch");
   return (
     <div className=" min-h-screen p-2">
       {productReview ? (
@@ -323,8 +328,9 @@ export default function AddNewProduct() {
                 )}
               </div>
               <div className="grid grid-cols-2 gap-4">
+                {/* Category */}
                 <div className="w-full">
-                  <label htmlFor="category" className="font-[500] text-[14px]">
+                  <label htmlFor="category" className="font-medium text-sm">
                     Category
                   </label>
                   <br />
@@ -341,19 +347,17 @@ export default function AddNewProduct() {
                     className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-[#B7B7B7] outline-none"
                   >
                     <option value="">Select Category</option>
-                    {storeCategories?.map((cat, idx) => (
-                      <option key={idx} value={cat.category}>
-                        {cat.category}
+                    {categories?.map((cat) => (
+                      <option key={cat._id} value={cat.name}>
+                        {cat.name}
                       </option>
                     ))}
                   </select>
                 </div>
 
+                {/* Sub Category */}
                 <div className="w-full">
-                  <label
-                    htmlFor="subCategory"
-                    className="font-[500] text-[14px]"
-                  >
+                  <label htmlFor="subCategory" className="font-medium text-sm">
                     Sub Category
                   </label>
                   <br />
@@ -366,11 +370,11 @@ export default function AddNewProduct() {
                   >
                     <option value="">Select Sub Category</option>
                     {values.category &&
-                      storeCategories
-                        .find((c) => c.category === values.category)
-                        ?.subcategories.map((sub, idx) => (
-                          <option key={idx} value={sub}>
-                            {sub}
+                      categories
+                        ?.find((c) => c.name === values.category)
+                        ?.subcategories?.map((sub) => (
+                          <option key={sub.name} value={sub.name}>
+                            {sub.name}
                           </option>
                         ))}
                   </select>
@@ -435,7 +439,7 @@ export default function AddNewProduct() {
                       onClick={(e) => {
                         e.preventDefault();
                         setProductImages((prev) =>
-                          prev.filter((_, i) => i !== idx)
+                          prev.filter((_, i) => i !== idx),
                         );
                       }}
                       className="absolute flex justify-center items-center top-1 right-1 text-center w-[20px] h-[20px] bg-white rounded-full text-red-500 font-bold "
@@ -808,7 +812,7 @@ export default function AddNewProduct() {
                         className="text-red-500 text-sm"
                         onClick={() =>
                           setProductDocs((prev) =>
-                            prev.filter((_, i) => i !== idx)
+                            prev.filter((_, i) => i !== idx),
                           )
                         }
                       >

@@ -55,7 +55,7 @@ export default function ProductDetail() {
 
     fetchProduct();
   }, [id]);
-
+  console.log(singleProduct, "product--detail");
   return (
     <div className=" min-h-screen p-2">
       <div className="max-w-8xl mx-auto space-y-6">
@@ -123,23 +123,27 @@ export default function ProductDetail() {
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-              {singleProduct?.productDoc?.length > 0 ? (
-                singleProduct?.productDoc.map((doc, i) => (
-                  <a
-                    key={i}
-                    href={doc}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className=" p-2 bg-[#FFFFFF] rounded-[9px] flex flex-col items-center justify-center text-center cursor-pointer hover:border hover:border-[#22b573]"
-                  >
-                    <div className="w-full flex items-center justify-center">
-                      <FaFilePdf className="text-red-600 text-3xl mb-1" />
-                    </div>
-                    <p className="text-sm font-medium text-gray-700">
-                      Document {i + 1}
-                    </p>
-                  </a>
-                ))
+              {singleProduct?.productDoc?.filter(
+                (doc) => doc && doc.trim() !== "",
+              ).length > 0 ? (
+                singleProduct?.productDoc
+                  ?.filter((doc) => doc && doc.trim() !== "")
+                  .map((doc, i) => (
+                    <a
+                      key={i}
+                      href={doc}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 bg-[#FFFFFF] rounded-[9px] flex flex-col items-center justify-center text-center cursor-pointer hover:border hover:border-[#22b573]"
+                    >
+                      <div className="w-full flex items-center justify-center">
+                        <FaFilePdf className="text-red-600 text-3xl mb-1" />
+                      </div>
+                      <p className="text-sm font-medium text-gray-700">
+                        Document {i + 1}
+                      </p>
+                    </a>
+                  ))
               ) : (
                 <p className="text-sm text-gray-500">No documents uploaded</p>
               )}
@@ -199,7 +203,7 @@ export default function ProductDetail() {
               <p className="font-[400] text-[12px] text-[#838383]">
                 {singleProduct?.inventories?.reduce(
                   (acc, inv) => acc + (inv?.stock || 0),
-                  0
+                  0,
                 )}{" "}
                 Units
               </p>

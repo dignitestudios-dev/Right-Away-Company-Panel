@@ -21,6 +21,8 @@ const initialState = {
   salesGraph: null,
   transactionGraph: null,
   walletHistory: null,
+  categories: null,
+  categoriesLoading: false,
 };
 
 //👽 ----------- Dashboard Managment -----------👽
@@ -36,7 +38,7 @@ export const getDashboardStats = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const getPopularProducts = createAsyncThunk(
   "/company/dashboard/products",
@@ -49,7 +51,7 @@ export const getPopularProducts = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const getSalesGraph = createAsyncThunk(
   "/company/dashboard/salesGraph",
@@ -57,7 +59,7 @@ export const getSalesGraph = createAsyncThunk(
     try {
       const response = await instance.get(
         "/company/dashboard/salesGraph",
-        { params } // 👈 query params
+        { params }, // 👈 query params
       );
       return response?.data;
     } catch (error) {
@@ -65,7 +67,7 @@ export const getSalesGraph = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const getTransactionGraph = createAsyncThunk(
   "/company/dashboard/TransactionGraph",
@@ -73,7 +75,7 @@ export const getTransactionGraph = createAsyncThunk(
     try {
       const response = await instance.get(
         "/company/dashboard/transaction",
-        { params } // 👈 query params
+        { params }, // 👈 query params
       );
       return response?.data;
     } catch (error) {
@@ -81,7 +83,7 @@ export const getTransactionGraph = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 //👽 ----------- Product Managment-----------👽
@@ -100,7 +102,7 @@ export const CreateProduct = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const updateProduct = createAsyncThunk(
   "/company/update-product",
@@ -115,7 +117,7 @@ export const updateProduct = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const updateProductStock = createAsyncThunk(
@@ -131,14 +133,14 @@ export const updateProductStock = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const getProducts = createAsyncThunk(
   "company/product",
   async (
     { page = 1, limit = 10, search = "", startDate = "", endDate = "" },
-    thunkAPI
+    thunkAPI,
   ) => {
     try {
       const params = new URLSearchParams({
@@ -150,14 +152,14 @@ export const getProducts = createAsyncThunk(
       });
 
       const response = await instance.get(
-        `company/product?${params.toString()}`
+        `company/product?${params.toString()}`,
       );
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const getProductsById = createAsyncThunk(
@@ -172,7 +174,7 @@ export const getProductsById = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const deleteProducts = createAsyncThunk(
   "company/product/:id",
@@ -187,7 +189,7 @@ export const deleteProducts = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 //👽 ----------- Order Managment -----------👽
 export const getOrders = createAsyncThunk(
@@ -202,7 +204,7 @@ export const getOrders = createAsyncThunk(
       startDate = "",
       endDate = "",
     },
-    thunkAPI
+    thunkAPI,
   ) => {
     try {
       // Build query object
@@ -227,7 +229,7 @@ export const getOrders = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const getOrderById = createAsyncThunk(
@@ -242,7 +244,7 @@ export const getOrderById = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const cancelOrder = createAsyncThunk(
   "/company/order/:id/cancel",
@@ -257,7 +259,7 @@ export const cancelOrder = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 //👽 ----------- Customer Managment -----------👽
 export const getCustomers = createAsyncThunk(
@@ -284,7 +286,7 @@ export const getCustomers = createAsyncThunk(
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const getCustomerOrders = createAsyncThunk(
@@ -297,7 +299,7 @@ export const getCustomerOrders = createAsyncThunk(
       }
 
       const response = await instance.get(
-        `/company/user/${payload}/order?search=&page=1&limit=10`
+        `/company/user/${payload}/order?search=&page=1&limit=10`,
       );
 
       return response.data;
@@ -306,7 +308,7 @@ export const getCustomerOrders = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 //👽 ----------- Product Review Managment -----------👽
@@ -328,7 +330,7 @@ export const getProductReview = createAsyncThunk(
       const params = new URLSearchParams(query).toString();
 
       const response = await instance.get(
-        `/company/products/reviews?${params}`
+        `/company/products/reviews?${params}`,
       );
 
       return response?.data;
@@ -336,21 +338,21 @@ export const getProductReview = createAsyncThunk(
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const getProductReviewByID = createAsyncThunk(
   "/company/products/:id/reviews",
   async (payload, thunkAPI) => {
     try {
       const response = await instance.get(
-        `/company/products/${payload}/reviews`
+        `/company/products/${payload}/reviews`,
       );
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const ProductReviewReply = createAsyncThunk(
   "/company/products/reviews/:id",
@@ -359,14 +361,14 @@ export const ProductReviewReply = createAsyncThunk(
       console.log(payload, "payload");
       const response = await instance.put(
         `company/products/reviews/${payload?.id}`,
-        payload?.data
+        payload?.data,
       );
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const Reported = createAsyncThunk(
   "/company/report/",
@@ -378,7 +380,7 @@ export const Reported = createAsyncThunk(
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 //👽 ----------- Wallet Managment -----------👽
 export const getWallet = createAsyncThunk(
@@ -392,7 +394,7 @@ export const getWallet = createAsyncThunk(
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const getWalletTransactions = createAsyncThunk(
   "/company/wallet/transaction?page=1&limit=10",
@@ -412,7 +414,7 @@ export const getWalletTransactions = createAsyncThunk(
       const params = new URLSearchParams(query).toString();
 
       const response = await instance.get(
-        `/company/wallet/transaction?${params}`
+        `/company/wallet/transaction?${params}`,
       );
 
       return response?.data;
@@ -420,7 +422,7 @@ export const getWalletTransactions = createAsyncThunk(
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const getWalletHistory = createAsyncThunk(
   "/company/wallet/history?page=1&limit=10",
@@ -446,9 +448,21 @@ export const getWalletHistory = createAsyncThunk(
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
-
+//👽 ----------- Categories Managment -----------👽
+export const getCategories = createAsyncThunk(
+  "/company/category",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await instance.get(`/company/category`);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
 const appSlice = createSlice({
   name: "app",
   initialState,
@@ -710,6 +724,17 @@ const appSlice = createSlice({
       })
       .addCase(getWalletHistory.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(getCategories.pending, (state, action) => {
+        state.categoriesLoading = true;
+      })
+      .addCase(getCategories.fulfilled, (state, action) => {
+        state.categoriesLoading = false;
+        state.categories = action.payload.data;
+      })
+      .addCase(getCategories.rejected, (state, action) => {
+        state.categoriesLoading = false;
         state.error = action.payload.message;
       });
   },
