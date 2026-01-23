@@ -20,27 +20,26 @@ const EditInventory = ({
   useEffect(() => {
     dispatch(getStore());
   }, []);
-  const inventoryToEdit = inventories[editIndex] || {
-    storeName: "",
-    stock: "",
+  const inventoryToEdit = {
+    storeName: inventories[editIndex]?.storeRecord?._id || "",
+    stock: inventories[editIndex]?.stock || "",
   };
 
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
       initialValues: inventoryToEdit,
-      enableReinitialize: true, // allows values to update when modal opens
+      enableReinitialize: true,
       validationSchema: AddInventorySchema,
       validateOnChange: true,
       validateOnBlur: true,
       onSubmit: async (values) => {
         const updatedInventories = inventories.map((inv, idx) =>
-          idx === editIndex ? values : inv
+          idx === editIndex ? values : inv,
         );
         setInventories(updatedInventories);
         setIsOpen(false);
       },
     });
-  console.log(values, "inventoryToEdit");
   return (
     <Modal
       isOpen={isOpen}
@@ -71,9 +70,9 @@ const EditInventory = ({
                 holder="e.g. Main Warehouse, Downtown Branch"
                 type="select"
                 name="storeName"
-                value={values.storeName}
-                touched={touched.storeName}
-                error={errors.storeName}
+                value={values?.storeName}
+                touched={touched?.storeName}
+                error={errors?.storeName}
                 handleChange={handleChange}
                 handleBlur={handleBlur}
                 selectOptions={stores?.map((item) => ({

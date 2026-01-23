@@ -52,12 +52,11 @@ const AddNewStoreModal = ({ isOpen, setIsOpen }) => {
           // Build plain JSON object instead of FormData
           const payload = {
             name: values.businessName,
-            address: values.address, // from input
+            address: values.address,
+            city: values.city, // ✅ added
+            state: values.state, // ✅ added
             type: "Point",
-            coordinates: [
-              mapCenter.lng, // GeoJSON requires [lng, lat]
-              mapCenter.lat,
-            ],
+            coordinates: [mapCenter.lng, mapCenter.lat],
             isOpen: true,
             isActive: true,
           };
@@ -124,16 +123,36 @@ const AddNewStoreModal = ({ isOpen, setIsOpen }) => {
                     if (!autocomplete) return;
 
                     const place = autocomplete.getPlace();
+                    if (!place.geometry) return;
 
-                    if (place.geometry) {
-                      const lat = place.geometry.location.lat();
-                      const lng = place.geometry.location.lng();
+                    const lat = place.geometry.location.lat();
+                    const lng = place.geometry.location.lng();
 
-                      setMapCenter({ lat, lng });
+                    setMapCenter({ lat, lng });
 
-                      // Update formik address field
-                      values.address = place.formatted_address;
+                    let city = "";
+                    let state = "";
+
+                    if (place.address_components) {
+                      place.address_components.forEach((component) => {
+                        if (component.types.includes("locality")) {
+                          city = component.long_name;
+                        }
+
+                        if (
+                          component.types.includes(
+                            "administrative_area_level_1",
+                          )
+                        ) {
+                          state = component.long_name;
+                        }
+                      });
                     }
+
+                    // ✅ set Formik values
+                    values.address = place.formatted_address;
+                    values.city = city;
+                    values.state = state;
                   }}
                 >
                   <Input

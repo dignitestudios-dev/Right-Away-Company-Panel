@@ -19,7 +19,7 @@ export default function Input({
   options = [], // for radio buttons
   bg,
   disabled,
-  onKeyDown
+  onKeyDown,
 }) {
   const [isPassVisible, setIsPassVisible] = useState(true);
 
@@ -75,7 +75,11 @@ export default function Input({
           >
             <option value="">{holder || "Select Option"}</option>
             {selectOptions.map((opt, idx) => (
-              <option key={idx} value={opt.value || opt}>
+              <option
+                key={idx}
+                selected={value == opt.value ? true : false}
+                value={opt.value || opt}
+              >
                 {opt.label || opt}
               </option>
             ))}
@@ -159,7 +163,7 @@ export default function Input({
           placeholder={holder}
           disabled={disabled}
           onKeyDown={onKeyDown}
-          className={`w-full h-[49px] bg-transparent outline-none px-3 text-[16px] text-[#262626] placeholder:text-[#959393] ${disabled&&"cursor-not-allowed"}`}
+          className={`w-full h-[49px] bg-transparent outline-none px-3 text-[16px] text-[#262626] placeholder:text-[#959393] ${disabled && "cursor-not-allowed"}`}
         />
 
         {type === "password" && (

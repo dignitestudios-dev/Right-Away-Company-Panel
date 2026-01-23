@@ -15,7 +15,11 @@ import { ProductSchema } from "../../../schema/app/AppSchema";
 import { ProductValues } from "../../../init/app/AppValues";
 import { useLocation, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { getProductsById, updateProduct } from "../../../redux/slices/AppSlice";
+import {
+  getCategories,
+  getProductsById,
+  updateProduct,
+} from "../../../redux/slices/AppSlice";
 import { IoMdClose } from "react-icons/io";
 
 export default function EditProduct() {
@@ -61,7 +65,8 @@ export default function EditProduct() {
   const [inventories, setInventories] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { singleProduct, isLoading } = useSelector((state) => state?.app);
+  const { singleProduct, isLoading, categoriesLoading, categories } =
+    useSelector((state) => state?.app);
   const loc = useLocation();
   const product = loc?.state?.product;
   const getProductDetail = async () => {
@@ -71,7 +76,7 @@ export default function EditProduct() {
     const fetchProduct = async () => {
       await getProductDetail();
     };
-
+    dispatch(getCategories()).unwrap();
     fetchProduct();
   }, [product?._id]);
   // 🔸 Append product fields
@@ -253,54 +258,60 @@ export default function EditProduct() {
             )}
 
             <div className="grid grid-cols-2 gap-4">
+              {/* Category */}
               <div className="w-full">
-                <label htmlFor="category" className="font-[500] text-[14px]">
+                <label htmlFor="category" className="font-medium text-sm">
                   Category
                 </label>
-                <br />
+
                 <select
                   name="category"
                   value={values.category}
                   onChange={(e) => {
-                    handleChange(e);
-                    // Reset subCategory when category changes
-                    handleChange({
-                      target: { name: "subCategory", value: "" },
-                    });
+                    setFieldValue("category", e.target.value);
+                    setFieldValue("subCategory", ""); // ✅ proper reset
                   }}
-                  className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-[#B7B7B7] outline-none"
+                  className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm outline-none"
                 >
                   <option value="">Select Category</option>
-                  {storeCategories?.map((cat, idx) => (
-                    <option key={idx} value={cat.category}>
-                      {cat.category}
+                  {categories?.map((cat) => (
+                    <option key={cat._id} value={cat.name}>
+                      {cat.name}
                     </option>
                   ))}
                 </select>
               </div>
 
+              {/* Sub Category */}
               <div className="w-full">
-                <label htmlFor="subCategory" className="font-[500] text-[14px]">
+                <label htmlFor="subCategory" className="font-medium text-sm">
                   Sub Category
                 </label>
-                <br />
+
                 <select
                   name="subCategory"
                   value={values.subCategory}
                   onChange={handleChange}
-                  className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-[#B7B7B7] outline-none"
                   disabled={!values.category}
+                  className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm outline-none"
                 >
                   <option value="">Select Sub Category</option>
+
                   {values.category &&
-                    storeCategories
-                      .find((c) => c.category === values.category)
-                      ?.subcategories.map((sub, idx) => (
-                        <option key={idx} value={sub}>
-                          {sub}
+                    categories
+                      ?.find((c) => c.name === values.category)
+                      ?.subcategories?.map((sub) => (
+                        <option key={sub.name} value={sub.name}>
+                          {sub.name}
                         </option>
                       ))}
                 </select>
+
+                {errors.subCategory && touched.subCategory && (
+                  <p className="text-red-600 text-xs mt-1">
+                    {errors.subCategory}
+                  </p>
+                )}
               </div>
             </div>
           </div>

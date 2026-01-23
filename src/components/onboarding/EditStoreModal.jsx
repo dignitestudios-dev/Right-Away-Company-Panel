@@ -60,6 +60,8 @@ const EditStoreModal = ({ isOpen, setIsOpen, isSelected }) => {
           data: {
             name: values.businessName,
             address: values.address,
+            city: values.city, // ✅
+            state: values.state, // ✅
             type: "Point",
             coordinates: [
               values.longitude || mapCenter.lng,
@@ -139,16 +141,37 @@ const EditStoreModal = ({ isOpen, setIsOpen, isSelected }) => {
               onLoad={setAutocomplete}
               onPlaceChanged={() => {
                 if (!autocomplete) return;
+
                 const place = autocomplete.getPlace();
                 if (!place.geometry) return;
 
                 const lat = place.geometry.location.lat();
                 const lng = place.geometry.location.lng();
 
+                let city = "";
+                let state = "";
+
+                if (place.address_components) {
+                  place.address_components.forEach((component) => {
+                    if (component.types.includes("locality")) {
+                      city = component.long_name;
+                    }
+
+                    if (
+                      component.types.includes("administrative_area_level_1")
+                    ) {
+                      state = component.long_name;
+                    }
+                  });
+                }
+
                 setMapCenter({ lat, lng });
+
                 setFieldValue("address", place.formatted_address);
                 setFieldValue("latitude", lat);
                 setFieldValue("longitude", lng);
+                setFieldValue("city", city); // ✅
+                setFieldValue("state", state); // ✅
               }}
             >
               <Input

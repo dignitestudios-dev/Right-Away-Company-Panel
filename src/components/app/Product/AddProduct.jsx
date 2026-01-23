@@ -18,40 +18,7 @@ import ProductReview from "./ProductReview";
 import { getStore } from "../../../redux/slices/authSlice";
 import { ErrorToast } from "../../global/Toaster";
 import { IoMdClose } from "react-icons/io";
-export default function AddNewProduct() {
-  const storeCategories = [
-    {
-      category: "Food & Beverages",
-      subcategories: [
-        "Fast Food & Snacks",
-        "Restaurants & Cafés",
-        "Beverages & Juices",
-        "Desserts & Bakery",
-        "Healthy / Organic Food",
-      ],
-    },
-    {
-      category: "Groceries & Daily Essentials",
-      subcategories: [
-        "Fruits & Vegetables",
-        "Dairy & Eggs",
-        "Meat & Seafood",
-        "Snacks & Packaged Food",
-        "Household Supplies",
-      ],
-    },
-    {
-      category: "Electronics & Gadgets",
-      subcategories: [
-        "Mobile Phones & Accessories",
-        "Laptops & Computers",
-        "Home Appliances",
-        "Audio & Headphones",
-        "Smart Watches & Wearables",
-      ],
-    },
-  ];
-
+export default function AddNewProduct() { 
   const [isOpen, setIsOpen] = useState(false);
   const [actionType, setActionType] = useState("");
   const navigate = useNavigate("");
