@@ -35,7 +35,11 @@ const Profile = () => {
           {/* Profile Info */}
           <div className="flex items-center gap-4">
             <div className=" rounded-full w-20 h-20 p-1 border border-dashed border-[#22B573]">
-              <img src={company?.profilePicture} alt="Profile" className="w-full h-full rounded-full object-cover" />
+              <img
+                src={company?.profilePicture}
+                alt="Profile"
+                className="w-full h-full rounded-full object-cover"
+              />
             </div>
             <div>
               <h3 className="text-lg font-semibold">{company?.name}</h3>
@@ -77,7 +81,7 @@ const Profile = () => {
               Company Registered Number
             </p>
             <p className="text-[16px] font-[400] text-[#959393]">
-              {company?.registationNo}
+              {company?.registationNo.slice(0,10)}
             </p>
           </div>
           <div>
@@ -130,8 +134,7 @@ const Profile = () => {
                 <div className="flex items-center gap-2 text-sm text-[#181818]">
                   <FaClock className="text-emerald-500" />
                   <span>
-                    {formatTime(loc.openingTime)} -{" "}
-                    {formatTime(loc.closingTime)},{" "}
+                    {loc?.openingTime} - {loc?.closingTime},{" "}
                     {formatOperatingDays(loc.operatingDays)}
                   </span>
                 </div>

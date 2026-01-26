@@ -19,7 +19,9 @@ export default function ChatUser({
   setActiveChat,
   setIsActiveTab,
 }) {
-  const [tabs, setTabs] = useState("rider-company");
+  const [tabs, setTabs] = useState(
+    activeChat?.rider ? "rider-company" : "user-company",
+  );
   const dispatch = useDispatch();
   const { socket, joinChat, readChat } = useContext(SocketContext);
 

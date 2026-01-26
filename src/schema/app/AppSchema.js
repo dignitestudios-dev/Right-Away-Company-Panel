@@ -23,7 +23,7 @@ export const ProductSchema = Yup.object({
     .required("Description is required"),
 
   category: Yup.string().required("Category is required"),
-  subCategory: Yup.string().required("Sub-category is required"),
+  subcategory: Yup.string().required("Sub-category is required"),
 
   itemHeight: Yup.string()
     .matches(/^\d+$/, "Only numbers allowed")

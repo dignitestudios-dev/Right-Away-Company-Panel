@@ -98,6 +98,7 @@ export default function EditProduct() {
     "instructions",
     "maxOrder",
     "minOrder",
+    "subCategory",
   ];
   // 🧩 Load product data
 
@@ -110,7 +111,7 @@ export default function EditProduct() {
     }
   }, [singleProduct]);
 
-  console.log(singleProduct?.inventories, "products--->");
+  console.log(product, "products--Values-->");
   // 🧩 Formik Setup
   const {
     values,
@@ -121,6 +122,7 @@ export default function EditProduct() {
     handleSubmit,
     setValues,
     resetForm,
+    setFieldValue,
   } = useFormik({
     initialValues: {
       ...ProductValues,
@@ -130,6 +132,7 @@ export default function EditProduct() {
     onSubmit: async (values) => {
       const form = new FormData();
       // 🔸 Append images
+      console.log(values, "submit values");
       if (oldImages.length > 0) {
         oldImages.forEach((file) => form.append("images[]", file));
       } else {
@@ -289,7 +292,7 @@ export default function EditProduct() {
                 </label>
 
                 <select
-                  name="subCategory"
+                  name="subcategory"  
                   value={values.subCategory}
                   onChange={handleChange}
                   disabled={!values.category}
@@ -307,9 +310,9 @@ export default function EditProduct() {
                       ))}
                 </select>
 
-                {errors.subCategory && touched.subCategory && (
+                {errors.subcategory && touched.subcategory && (
                   <p className="text-red-600 text-xs mt-1">
-                    {errors.subCategory}
+                    {errors.subcategory}
                   </p>
                 )}
               </div>

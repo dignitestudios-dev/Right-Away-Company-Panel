@@ -21,6 +21,7 @@ import { ErrorToast } from "../../global/Toaster";
 import OrderDetailSkeleton from "../../global/DetailSkeliton";
 import OrderTrackingModal from "../../global/OrderTrackingModal";
 import SocketContext from "../../../context/SocketContext";
+import { OpenRiderChat } from "../../../redux/slices/ChatSlice";
 
 const CustomerReviewCard = () => {
   return (
@@ -141,11 +142,6 @@ export default function OrderDetail() {
   };
 
   const handleStartPreparingClick = async (status) => {
-    if (!selectedOption && status === "processing") {
-      ErrorToast("Please select a delivery option before proceeding.");
-      return;
-    }
-
     try {
       updateOrder({
         id: orderId,
@@ -155,10 +151,15 @@ export default function OrderDetail() {
       ErrorToast(error?.message);
     }
   };
-
+  const handleChatWithRider = async (rider) => {
+    console.log(rider, "riderRecord");
+    await dispatch(OpenRiderChat(rider?._id)).unwrap();
+    navigate("/app/chat");
+  };
   // ✅ Always safely select a style (fallback = 'incoming')
   const currentStyle =
     statusStyles[orderStatus?.toLowerCase?.()] || statusStyles["incoming"];
+    console.log(singleOrder?.scheduledDateTime,"datess")
   return (
     <>
       {isLoading ? (
@@ -189,7 +190,7 @@ export default function OrderDetail() {
               {orderStatus == "processing" && (
                 <>
                   <button
-                    onClick={() => navigate("/app/chat")}
+                    onClick={() => handleChatWithRider(singleOrder?.user)}
                     className="bg-transparent border border-[#03958A] font-[500] gradient-text  text-[13px] w-[150px] h-[44px] rounded-[15px]"
                   >
                     Chat With Buyer
@@ -380,13 +381,13 @@ export default function OrderDetail() {
                 </div>
               </div>
               {orderStatus === "incoming" && (
-                <div className="bg-[#FFFFFF] p-4 mt-4 h-[205px] drop-shadow-sm rounded-[14px]">
+                <div className="bg-[#FFFFFF] p-4 mt-4 h-[150px] drop-shadow-sm rounded-[14px]">
                   <h3 className="text-[20px] font-[600] mb-4 text-[#000000]">
                     Delivery Options
                   </h3>
 
                   <div className="col-span-6">
-                    <label className="flex items-center gap-2 cursor-pointer font-[500] text-[16px] text-[#262626]">
+                    {/* <label className="flex items-center gap-2 cursor-pointer font-[500] text-[16px] text-[#262626]">
                       <input
                         type="radio"
                         name="deliveryOption"
@@ -395,12 +396,7 @@ export default function OrderDetail() {
                         onChange={(e) => setSelectedOption(e.target.value)}
                         className="accent-[#0AA48B] w-4 h-4"
                       />
-                      <span>Assign to Platform Riders</span>
-                    </label>
-
-                    <p className="text-[#686868] font-[400] text-[13px]">
-                      System auto-assigns an available rider
-                    </p>
+                    </label> */}
 
                     <Button
                       onClick={() => handleStartPreparingClick("processing")}

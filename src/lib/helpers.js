@@ -18,7 +18,7 @@ const formatTime = (dateString) => {
 const formatDays = (days = []) => {
   if (days.length === 0) return "";
   const capitalized = days.map(
-    (d) => d.charAt(0).toUpperCase() + d.slice(1).toLowerCase()
+    (d) => d.charAt(0).toUpperCase() + d.slice(1).toLowerCase(),
   );
   if (capitalized.length === 1) return capitalized[0];
   if (capitalized.length === 2) return capitalized.join(" and ");
@@ -44,7 +44,7 @@ const formatOperatingDays = (days = []) => {
 
   // Sort days according to week order
   const sortedDays = cleanDays.sort(
-    (a, b) => weekOrder.indexOf(a) - weekOrder.indexOf(b)
+    (a, b) => weekOrder.indexOf(a) - weekOrder.indexOf(b),
   );
 
   // Helper to capitalize first letter
@@ -95,11 +95,7 @@ export const EpocformatDate = (epoch) => {
   if (!epoch) return "";
 
   let time = Number(epoch);
-
-  // 🔥 If value looks like seconds, convert to milliseconds
-  if (time < 1000000000000) {
-    time = time * 1000;
-  }
+  if (time < 1e12) time *= 1000;
 
   return new Date(time).toLocaleString("en-US", {
     month: "short",

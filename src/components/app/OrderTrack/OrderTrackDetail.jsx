@@ -42,7 +42,7 @@ const CustomerReviewCard = ({ review }) => {
             <FaStar key={star} className="text-yellow-400 text-lg" />
           ) : (
             <FaRegStar key={star} className="text-yellow-400 text-lg" />
-          )
+          ),
         )}
       </div>
 
@@ -201,7 +201,7 @@ export default function OrderTrackDetail() {
                 singleOrder?.rideStatus != "completed" && (
                   <>
                     <button
-                      onClick={() => handleChatWithRider(singleOrder?.rider)}
+                      onClick={() => handleChatWithRider(singleOrder?.user)}
                       className="bg-transparent border border-[#03958A] font-[500] gradient-text  text-[13px] w-[150px] h-[44px] rounded-[15px]"
                     >
                       Chat With Buyer
@@ -305,7 +305,7 @@ export default function OrderTrackDetail() {
                     Special Instructions
                   </p>
                   <p className="text-[#000000]  font-[400] text-[16px]">
-                    {singleOrder?.instruction||"-"}
+                    {singleOrder?.instruction || "-"}
                   </p>
                 </div>
                 <div className="border-b py-4 flex items-center justify-between border-[#D4D4D4]">
@@ -347,7 +347,8 @@ export default function OrderTrackDetail() {
                   </p>
                 </div>
               </div>
-              {statusMap[orderStatus] === "delivered" && (
+              {console.log(statusMap[orderStatus], "orderStatusChecking")}
+              {statusMap[orderStatus] == "Delivered" && (
                 <div className="border mt-4 col-span-12  lg:col-span-8 p-4 bg-[#FFFFFF] drop-shadow-sm rounded-[14px]">
                   <h3 className="text-[20px] capitalize font-[600] mb-4">
                     proof of delivery
@@ -549,7 +550,6 @@ export default function OrderTrackDetail() {
                     <QRCode
                       value={singleOrder?._id || ""}
                       className="mt-2 -ml-8 w-full"
-                      
                     />
                   </div>
                 )}

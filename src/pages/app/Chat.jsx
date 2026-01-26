@@ -10,6 +10,7 @@ import { formatTime } from "../../lib/helpers";
 import {
   addMessage,
   getChatRooms,
+  getMessages,
   setSelectedChat,
 } from "../../redux/slices/ChatSlice";
 import SocketContext from "../../context/SocketContext";
@@ -26,6 +27,9 @@ const Chat = () => {
   const { socket, sendMessage } = useContext(SocketContext);
 
   const { selectedChat, messages } = useSelector((state) => state.chat);
+  useEffect(() => {
+    dispatch(getMessages({ page: 1, limit: 20, roomId: selectedChat?.id }));
+  }, []);
 
   useEffect(() => {
     if (!socket) return;
@@ -221,7 +225,11 @@ const Chat = () => {
           )}
         </div>
       </div>
-      <ChatReportModal selectedChat={selectedChat} isOpen={isOpen} setIsOpen={setIsOpen} />
+      <ChatReportModal
+        selectedChat={selectedChat}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      />
     </div>
   );
 };

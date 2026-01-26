@@ -203,7 +203,7 @@ export default function TrackingMap({ order, setIsOpen }) {
 
         {stops.map(
           (s) =>
-            s.id == "start" && (
+            s.id == "end" && (
               <Marker icon={destinationIcon} key={s.id} position={s} />
             )
         )}

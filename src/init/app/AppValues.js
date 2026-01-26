@@ -2,7 +2,7 @@ export const ProductValues = {
   name: "",
   description: "",
   category: "",
-  subCategory: "",
+  subcategory: "",
   itemHeight: "",
   itemWidth: "",
   itemLength: "",
