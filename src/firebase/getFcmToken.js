@@ -25,7 +25,7 @@ const getFCM = async () => {
     if (permission === "granted") {
       const token = await getToken(messaging, {
         vapidKey:
-          "BNnLSgZYDG5ojySEHllcFMk-BfdHRgBin9Qi3yISF820n0Cfgne6iazbjOCO5upjepmFwFi7zdvT1BUSG2wxDIw", // Update VAPID KEY with your projects VAPID KEY
+          "BIn9iQRsQNorh7AyYFioh_GxcxYyfpxphWleHOwYkrmozJtrPnDw8xr7kgxBYWx6IhZjhbYKfJJvBOXhxwHwLO8", // Update VAPID KEY with your projects VAPID KEY
       });
       return token;
     } else {

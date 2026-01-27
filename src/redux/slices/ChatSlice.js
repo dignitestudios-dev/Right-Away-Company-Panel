@@ -18,7 +18,7 @@ export const OpenRiderChat = createAsyncThunk(
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const getChatRooms = createAsyncThunk(
@@ -37,7 +37,7 @@ export const getChatRooms = createAsyncThunk(
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const getMessages = createAsyncThunk(
   "/chat/messages/:id?page=1&limit=10",
@@ -50,14 +50,14 @@ export const getMessages = createAsyncThunk(
       });
 
       const response = await instance.get(
-        `chat/messages/${roomId}?${params.toString()}`
+        `chat/messages/${roomId}?${params.toString()}`,
       );
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const chatReport = createAsyncThunk(
   "/chat/report/room-id",
@@ -69,13 +69,14 @@ export const chatReport = createAsyncThunk(
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
+    resetChatState: () => initialState,
     setMessages: (state, action) => {
       state.messages = action.payload;
     },
@@ -134,5 +135,5 @@ const chatSlice = createSlice({
   },
 });
 
-export const { setMessages, addMessage, setSelectedChat } = chatSlice.actions;
+export const { setMessages, addMessage, setSelectedChat,resetChatState } = chatSlice.actions;
 export default chatSlice.reducer;

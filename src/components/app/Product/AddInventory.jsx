@@ -14,6 +14,7 @@ const AddInventory = ({
   setInventories,
   setUploadError,
   uploadError,
+  inventories,
 }) => {
   const { stores } = useSelector((state) => state?.auth);
 
@@ -37,6 +38,7 @@ const AddInventory = ({
       setUploadError({ ...uploadError, inventories: "" });
     },
   });
+  console.log(inventories,stores,"stores-->checker")
   return (
     <Modal
       isOpen={isOpen}
@@ -73,6 +75,9 @@ const AddInventory = ({
                 selectOptions={stores?.map((item) => ({
                   value: item._id,
                   label: item.name,
+                  disabled: inventories?.some(
+                    (inv) => inv.storeName === item._id,
+                  ), // ❌ Disable if already added
                 }))}
               />
             </div>

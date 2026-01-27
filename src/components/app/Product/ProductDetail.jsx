@@ -52,10 +52,8 @@ export default function ProductDetail() {
     const fetchProduct = async () => {
       await getProductDetail();
     };
-
     fetchProduct();
   }, [id]);
-  console.log(singleProduct, "product--detail");
   return (
     <div className=" min-h-screen p-2">
       <div className="max-w-8xl mx-auto space-y-6">
@@ -208,57 +206,46 @@ export default function ProductDetail() {
                 Units
               </p>
             </div>
+            {/* Package Size */}
             <div>
               <p className="text-[#181818] mb-1 text-[14px] font-[500] capitalize">
                 Package Size
               </p>
               <p className="font-[400] text-[12px] text-[#838383]">
-                {singleProduct?.packageLength} × {singleProduct?.packageWidth} ×{" "}
-                {singleProduct?.packageHeight}
+                {singleProduct?.packageLength || 0} ×{" "}
+                {singleProduct?.packageWidth || 0} ×{" "}
+                {singleProduct?.packageHeight || 0} in
+              </p>
+            </div>
+            <div className="border-r border-[#EEEEEE]">
+              <p className="text-[#181818] text-[14px] font-[500] mb-1">
+                Package Weight
+              </p>
+              <p className="text-[#838383] text-[12px] font-[400]">
+                {singleProduct?.packageWeight || 0} Lbs
               </p>
             </div>
           </div>
 
           {/* Dimensions */}
           <div className="grid grid-cols-5 gap-y-4 mt-4 gap-4 border-t border-gray-200 pt-4">
+            {/* ✅ Combined Item Size like package size */}
             <div className="border-r border-[#EEEEEE]">
               <p className="text-[#181818] text-[14px] font-[500] mb-1">
-                Package Weight
+                Package Item Size
               </p>
               <p className="text-[#838383] text-[12px] font-[400]">
-                {singleProduct?.packageWeight}
+                {`${singleProduct?.itemLength || 0} × ${singleProduct?.itemWidth || 0} × ${singleProduct?.itemHeight || 0}`}{" "}
+                in
               </p>
             </div>
+
             <div className="border-r border-[#EEEEEE]">
-              <p className="text-[#181818] text-[14px] font-[500] mb-1">
-                Item Height
-              </p>
-              <p className="text-[#838383] text-[12px] font-[400]">
-                {singleProduct?.itemHeight}
-              </p>
-            </div>
-            <div className="border-r border-[#EEEEEE]">
-              <p className="text-[#181818] text-[14px] font-[500] mb-1">
-                Item Width
-              </p>
-              <p className="text-[#838383] text-[12px] font-[400]">
-                {singleProduct?.itemWidth}
-              </p>
-            </div>
-            <div className="border-r border-[#EEEEEE]">
-              <p className="text-[#181818] text-[14px] font-[500] mb-1">
-                Item Length
-              </p>
-              <p className="text-[#838383] text-[12px] font-[400]">
-                {singleProduct?.itemLength}
-              </p>
-            </div>
-            <div>
               <p className="text-[#181818] text-[14px] font-[500] mb-1">
                 Item Weight
               </p>
               <p className="text-[#838383] text-[12px] font-[400]">
-                {singleProduct?.itemWeight}
+                {singleProduct?.itemWeight || 0} Lbs
               </p>
             </div>
           </div>

@@ -31,9 +31,16 @@ export default function OrderTrackData() {
     dispatch(getOrders(payload));
   }, [dispatch, filters, activeStatus]);
 
-  const statuses = ["All", "Ready for Pickup", "Out for Delivery", "Completed"];
+  const statuses = [
+    "All",
+    "Processing",
+    "Ready for Pickup",
+    "Out for Delivery",
+    "Completed",
+  ];
   const statusMap = {
     All: null, // no filter
+    Processing: "processing",
     "Ready for Pickup": "pickUp",
     "Out for Delivery": "delivery",
     Completed: "completed",
@@ -98,18 +105,22 @@ export default function OrderTrackData() {
           item.status === "pickUp"
             ? "text-[#10CBFF]"
             : item.status === "delivery"
-            ? "text-[#FF6D08]"
-            : item.status === "completed"
-            ? "text-[#00C853]"
-            : "text-[#03958A]"
+              ? "text-[#FF6D08]"
+              : item.status === "completed"
+                ? "text-[#00C853]"
+                : "text-[#FF9800]"
         }`}
       >
-        {item.status}
+        {item.status === "pickUp" ? "Picked Up / On The Way" : item?.status}
       </p>,
 
       <div key={index + "-action"} className="flex items-center gap-3">
         <NavLink
-          to="/app/order-track-detail"
+          to={
+            item?.status == "processing"
+              ? "/app/order-detail"
+              : "/app/order-track-detail"
+          }
           state={{ id: item._id }}
           className="text-[#00C49A] font-[500] border-b border-[#00C49A]"
         >
@@ -144,8 +155,8 @@ export default function OrderTrackData() {
           ))}
         </div>
 
-        {/* ✅ Pass structured data to GlobalTable */} 
-        <GlobalTable data={data} columns={columns}  loading={isLoading} />
+        {/* ✅ Pass structured data to GlobalTable */}
+        <GlobalTable data={data} columns={columns} loading={isLoading} />
       </div>
 
       <Pagination

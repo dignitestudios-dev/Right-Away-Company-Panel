@@ -35,7 +35,7 @@ export default function OrdersData() {
     dispatch(getOrders(payload));
   }, [dispatch, filters, activeStatus]); // 👈 re-fetch when filters change
 
-  const statuses = ["All", "incoming","processing" ,"cancelled"];
+  const statuses = ["All", "incoming" ,"cancelled"];
 
   const columns = [
     "Order ID",

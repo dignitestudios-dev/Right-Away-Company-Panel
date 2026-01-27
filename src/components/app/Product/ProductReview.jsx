@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { LargeImageMilk, MilkPackImg } from "../../../assets/export";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { IoMdClose } from "react-icons/io";
 
 export default function ProductReview({
   reviewData,
@@ -16,14 +17,23 @@ export default function ProductReview({
   handleDocChange,
   productDocs,
   uploadError,
+  setProductDocs,
+  productImages,
+  setProductImages,
+  handleImageChange,
 }) {
   const navigate = useNavigate();
   const [selectedImg, setSelectedImg] = useState(null);
   const { stores } = useSelector((state) => state?.auth);
-  const { values, productImages } = reviewData || {};
+  const { values } = reviewData || {};
   useEffect(() => {
-    setSelectedImg(URL.createObjectURL(productImages[0]));
+    if (productImages?.length > 0) {
+      setSelectedImg(URL.createObjectURL(productImages[0]));
+    } else {
+      setSelectedImg(null); // no image selected
+    }
   }, [productImages]);
+
   return (
     <div className=" min-h-screen p-2">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -51,22 +61,47 @@ export default function ProductReview({
         {/* Left Side */}{" "}
         <div className="col-span-12 lg:col-span-4">
           {" "}
-          <div className="bg-[#F2FBF7] rounded-2xl flex justify-center items-center p-6">
-            {" "}
-            <img
-              src={selectedImg}
-              alt="Product"
-              className="h-56 object-contain"
-            />{" "}
-          </div>{" "}
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-bold text-[#181818] text-[16px]">
+              {" "}
+              Product Images{" "}
+            </h3>{" "}
+            <label
+              htmlFor="productImages"
+              className="gradient-text cursor-pointer text-sm font-medium border-b border-[#22B573]"
+            >
+              <input
+                type="file"
+                multiple
+                accept="image/jpeg,image/jpg,image/png"
+                className="hidden"
+                id="productImages"
+                name="productImages"
+                onChange={handleImageChange}
+              />
+              Add New{" "}
+            </label>
+          </div>
+          <div className="bg-[#F2FBF7] rounded-2xl flex justify-center items-center p-6 h-56">
+            {selectedImg ? (
+              <img
+                src={selectedImg}
+                alt="Product"
+                className="h-56 object-contain"
+              />
+            ) : (
+              <p className="text-gray-400 font-medium text-sm">
+                No images available
+              </p>
+            )}
+          </div>
           {/* Thumbnails */}{" "}
           <div className="grid grid-cols-4 gap-2 w-full p-3 mt-4">
-            {" "}
-            {productImages?.map((img, i) => (
+            {productImages?.map((img, idx) => (
               <div
-                key={i}
+                key={idx}
                 onClick={() => setSelectedImg(URL.createObjectURL(img))}
-                className="bg-[#F2FBF7] rounded-xl  h-[70px] flex justify-center items-center cursor-pointer border hover:border-[#22b573]"
+                className="bg-[#F2FBF7] relative rounded-xl  h-[70px] flex justify-center items-center cursor-pointer border hover:border-[#22b573]"
               >
                 {" "}
                 <img
@@ -74,9 +109,20 @@ export default function ProductReview({
                   alt="Thumbnail"
                   className="w-full h-full object-contain"
                 />{" "}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setProductImages((prev) =>
+                      prev.filter((_, i) => i !== idx),
+                    );
+                  }}
+                  className="absolute flex justify-center items-center top-1 right-1 w-[20px] h-[20px] bg-white rounded-full text-red-500 font-bold"
+                >
+                  <IoMdClose />
+                </button>
               </div>
-            ))}{" "}
-          </div>{" "}
+            ))}
+          </div>
           {/* Product Documents */}{" "}
           <div className="mt-12 bg-[#F4F4F4] rounded-[18px] p-3 ">
             {" "}
@@ -108,9 +154,9 @@ export default function ProductReview({
             )}{" "}
             <div className="grid grid-cols-3 gap-3">
               {" "}
-              {productDocs?.map((label, i) => (
+              {productDocs?.map((label, idx) => (
                 <div
-                  key={i}
+                  key={idx}
                   className="rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer hover:border hover:border-[#22b573]"
                 >
                   {" "}
@@ -121,6 +167,14 @@ export default function ProductReview({
                   <p className="text-sm font-medium text-gray-700">
                     {label?.name.slice(0, 12)}...
                   </p>{" "}
+                  <button
+                    className="text-red-500 text-sm"
+                    onClick={() =>
+                      setProductDocs((prev) => prev.filter((_, i) => i !== idx))
+                    }
+                  >
+                    Remove
+                  </button>
                 </div>
               ))}{" "}
             </div>{" "}
@@ -182,9 +236,9 @@ export default function ProductReview({
                 Package Size
               </p>
               <p className="font-[400] text-[12px] text-[#838383]">
-                {`${values?.packageLength || 0} x ${
-                  values?.packageWidth || 0
-                } x ${values?.packageHeight || 0} Ft`}
+                {`${values?.packageLength || 0} x ${values?.packageWidth || 0} x ${
+                  values?.packageHeight || 0
+                } in`}
               </p>
             </div>
           </div>
@@ -195,12 +249,15 @@ export default function ProductReview({
                 label: "Package Weight",
                 value: `${values?.packageWeight || 0} Lbs`,
               },
-              { label: "Item Height", value: `${values?.itemHeight || 0} Ft` },
-              { label: "Item Width", value: `${values?.itemWidth || 0} Ft` },
-              { label: "Item Length", value: `${values?.itemLength || 0} Ft` },
+              {
+                label: "Package Item Size",
+                value: `${values?.itemLength || 0} x ${values?.itemWidth || 0} x ${
+                  values?.itemHeight || 0
+                } in`, // ✅ combined dimensions like package size
+              },
               { label: "Item Weight", value: `${values?.itemWeight || 0} Lbs` },
-            ].map((item) => (
-              <div key={item.label} className="border-r border-[#EEEEEE]">
+            ].map((item, idx) => (
+              <div key={idx} className="border-r border-[#EEEEEE]">
                 <p className="text-[#181818] text-[14px] font-[500] mb-1">
                   {item.label}
                 </p>
@@ -242,7 +299,7 @@ export default function ProductReview({
               {inventories.map((store, index) => {
                 // find the actual store object by its ID
                 const matchedStore = stores?.find(
-                  (el) => el._id === store?.storeName
+                  (el) => el._id === store?.storeName,
                 );
 
                 return (

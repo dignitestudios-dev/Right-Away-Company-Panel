@@ -9,7 +9,7 @@ import {
   RatingIcon,
   settingIcon,
 } from "../../assets/export";
-import { useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import Notifications from "../global/NotificationDropdown";
 import LogOutModal from "../global/LogOutModal";
 import { useSelector } from "react-redux";
@@ -18,6 +18,33 @@ const SideBar = () => {
   const [isNotification, setIsNotification] = useState(false);
   const [isLogout, setIsLogout] = useState(false);
   const { company } = useSelector((state) => state?.auth);
+  const { notifications } = useSelector((state) => state.app);
+  const notificationRef = useRef(null);
+  const iconRef = useRef(null);
+
+  // 🔔 unread count
+  const unreadCount = useMemo(() => {
+    return notifications?.filter((n) => !n.isRead).length || 0;
+  }, [notifications]);
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        isNotification &&
+        notificationRef.current &&
+        !notificationRef.current.contains(e.target) &&
+        iconRef.current &&
+        !iconRef.current.contains(e.target)
+      ) {
+        setIsNotification(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isNotification]);
+
   const navigate = useNavigate("");
   const location = useLocation("");
   return (
@@ -26,12 +53,23 @@ const SideBar = () => {
         <div>
           <img src={Logo} className="h-[64px]" />
         </div>
-        <div>
+        <div className="relative" ref={iconRef}>
           <img
             src={NotificationIcon}
             onClick={() => setIsNotification(!isNotification)}
             className="cursor-pointer h-[62px] w-[62px]"
           />
+
+          {/* 🔴 Unread Counter */}
+          {unreadCount > 0 && (
+            <span
+              className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1
+      bg-red-500 text-white text-[12px] font-[600]
+      rounded-full flex items-center justify-center"
+            >
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          )}
         </div>
       </div>
 
@@ -125,7 +163,11 @@ const SideBar = () => {
           </NavLink>
         </div>
       </div>
-      {isNotification && <Notifications />}
+      {isNotification && (
+        <div ref={notificationRef}>
+          <Notifications />
+        </div>
+      )}
       <LogOutModal isOpen={isLogout} setIsOpen={setIsLogout} />
     </div>
   );

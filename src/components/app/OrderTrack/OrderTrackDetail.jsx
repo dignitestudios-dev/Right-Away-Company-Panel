@@ -361,6 +361,9 @@ export default function OrderTrackDetail() {
                       srcset=""
                     />
                   </div>
+                  <p className="text-[16px] mt-2">
+                    {singleOrder?.confirmDeliveryNote}
+                  </p>
                 </div>
               )}
             </div>

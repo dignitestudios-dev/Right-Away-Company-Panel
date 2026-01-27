@@ -30,7 +30,7 @@ export const Register = createAsyncThunk(
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         payload.email,
-        payload.password
+        payload.password,
       );
 
       const user = userCredential.user;
@@ -53,7 +53,7 @@ export const Register = createAsyncThunk(
       // 4️⃣ Send request to backend
       const response = await instance.post(
         "/auth/signUp/company",
-        finalPayload
+        finalPayload,
       );
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       // SuccessToast(response?.data?.message || "Registration successful!");
@@ -94,7 +94,7 @@ export const Register = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const SocialRegister = createAsyncThunk(
   "/SocialRegister",
@@ -113,7 +113,7 @@ export const SocialRegister = createAsyncThunk(
       // 4️⃣ Send request to backend
       const response = await instance.post(
         "/auth/socialRegister/company",
-        finalPayload
+        finalPayload,
       );
       Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       // SuccessToast(response?.data?.message || "Registration successful!");
@@ -122,7 +122,7 @@ export const SocialRegister = createAsyncThunk(
       console.error("Registration error:", error);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const CompanyLogin = createAsyncThunk(
   "/auth/signIn",
@@ -139,7 +139,7 @@ export const CompanyLogin = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const SocialLogin = createAsyncThunk(
   "/auth/socialRegister",
@@ -157,7 +157,7 @@ export const SocialLogin = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const SendOtpFa = createAsyncThunk(
@@ -175,8 +175,32 @@ export const SendOtpFa = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
+
+export const updateFCMToken = createAsyncThunk(
+  "/auth/update-fcm",
+  async ({ fcmToken }, thunkAPI) => {
+    try {
+      const res = await instance.post(
+        "/auth/updateFCM",
+        { fcmToken },
+        {
+          headers: {
+            devicemodel: "Web",
+            deviceuniqueid: navigator.userAgent,
+          },
+        },
+      );
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message,
+      );
+    }
+  },
+);
+
 export const VerifyLoginOtp = createAsyncThunk(
   "/auth/login-verifyOTP",
   async (payload, thunkAPI) => {
@@ -191,7 +215,7 @@ export const VerifyLoginOtp = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const ReSendOtpFa = createAsyncThunk(
@@ -209,7 +233,7 @@ export const ReSendOtpFa = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const forgetPassword = createAsyncThunk(
@@ -229,7 +253,7 @@ export const forgetPassword = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const ResendForgetOtp = createAsyncThunk(
   "/auth/resendForgetPasswordOTP",
@@ -248,7 +272,7 @@ export const ResendForgetOtp = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const SendOtpAccountVerification = createAsyncThunk(
@@ -266,7 +290,7 @@ export const SendOtpAccountVerification = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const ReSendOtpAccountVerification = createAsyncThunk(
   "/resend-account-verify",
@@ -283,7 +307,7 @@ export const ReSendOtpAccountVerification = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const VerifyEmail = createAsyncThunk(
@@ -299,7 +323,7 @@ export const VerifyEmail = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const VerifyForgotPassword = createAsyncThunk(
@@ -316,7 +340,7 @@ export const VerifyForgotPassword = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const updateForgotPassword = createAsyncThunk(
   "/auth/updatePassword",
@@ -331,7 +355,7 @@ export const updateForgotPassword = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const UploadCompanyDocuments = createAsyncThunk(
@@ -347,7 +371,7 @@ export const UploadCompanyDocuments = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const CompleteCompanyProfile = createAsyncThunk(
@@ -357,7 +381,7 @@ export const CompleteCompanyProfile = createAsyncThunk(
       // 4️⃣ Send request to backend
       const response = await instance.post(
         "/company/profile/complete",
-        payload
+        payload,
       );
       // SuccessToast(response?.data?.message);
       return response?.data;
@@ -366,7 +390,7 @@ export const CompleteCompanyProfile = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const UpdateCompanyProfile = createAsyncThunk(
   "/company/profile/update",
@@ -375,7 +399,7 @@ export const UpdateCompanyProfile = createAsyncThunk(
       // 4️⃣ Send request to backend
       const response = await instance.post(
         "/company/profile/complete",
-        payload
+        payload,
       );
       // SuccessToast(response?.data?.message);
       return response?.data;
@@ -384,7 +408,7 @@ export const UpdateCompanyProfile = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const CreateStore = createAsyncThunk(
   "/company/store",
@@ -399,7 +423,7 @@ export const CreateStore = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const EditStore = createAsyncThunk(
   "edit/company/store",
@@ -409,7 +433,7 @@ export const EditStore = createAsyncThunk(
       // 4️⃣ Send request to backend
       const response = await instance.put(
         `/company/store/${payload?.id}`,
-        payload?.data
+        payload?.data,
       );
       // SuccessToast(response?.data?.message);
       return response?.data;
@@ -418,7 +442,7 @@ export const EditStore = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const getStore = createAsyncThunk(
   "get/company/store",
@@ -432,7 +456,7 @@ export const getStore = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const deleteStore = createAsyncThunk(
   "delete/company/store",
@@ -447,7 +471,7 @@ export const deleteStore = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const CreateBank = createAsyncThunk(
@@ -463,7 +487,7 @@ export const CreateBank = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const GetBanks = createAsyncThunk(
   "get/company/bank",
@@ -477,7 +501,7 @@ export const GetBanks = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const EditBank = createAsyncThunk(
   "update/company/bank",
@@ -492,7 +516,7 @@ export const EditBank = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const DeleteBank = createAsyncThunk(
   "delete/company/bank",
@@ -506,7 +530,7 @@ export const DeleteBank = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const ConectStripeAccount = createAsyncThunk(
   "/company/account/link",
@@ -531,7 +555,7 @@ export const ConectStripeAccount = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 export const ChangePassword = createAsyncThunk(
   "/auth/changePassword",
@@ -546,13 +570,14 @@ export const ChangePassword = createAsyncThunk(
       ErrorToast(message);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    resetAuthState: () => initialState,
     setOnboardingStep(state, action) {
       state.isOnboardingStep = action.payload;
     },
@@ -852,5 +877,6 @@ export const {
   logout,
   setOnboardingStep,
   resetOnboarding,
+  resetAuthState,
 } = authSlice.actions;
 export default authSlice.reducer;

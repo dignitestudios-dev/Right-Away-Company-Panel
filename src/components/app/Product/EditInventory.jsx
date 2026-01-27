@@ -21,10 +21,12 @@ const EditInventory = ({
     dispatch(getStore());
   }, []);
   const inventoryToEdit = {
-    storeName: inventories[editIndex]?.storeRecord?._id || "",
+    storeName:
+      inventories[editIndex]?.storeRecord?._id ||
+      inventories[editIndex]?.storeName,
     stock: inventories[editIndex]?.stock || "",
   };
-
+  console.log(inventoryToEdit, inventories[editIndex], "inventoryEdit");
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
       initialValues: inventoryToEdit,

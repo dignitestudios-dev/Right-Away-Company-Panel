@@ -189,8 +189,6 @@ export default function AddNewProduct() {
       try {
         setProductReview({
           values,
-          productImages,
-          productDocs,
         });
         setFinalForm(form);
       } catch (error) {
@@ -203,7 +201,6 @@ export default function AddNewProduct() {
     dispatch(getStore()).unwrap();
     dispatch(getCategories()).unwrap();
   }, []);
-  console.log(categories, "categories-fetch");
   return (
     <div className=" min-h-screen p-2">
       {productReview ? (
@@ -214,11 +211,15 @@ export default function AddNewProduct() {
           }}
           uploadError={uploadError?.docs}
           productDocs={productDocs}
+          productImages={productImages}
           handleDocChange={handleDocChange}
           reviewData={productReview}
           isLoading={isLoading}
           inventories={inventories}
           onBack={() => setProductReview(false)}
+          setProductDocs={setProductDocs}
+          handleImageChange={handleImageChange}
+          setProductImages={setProductImages}
           onConfirm={async () => {
             if (!finalForm) {
               console.error("❌ FormData missing, please resubmit.");
@@ -300,15 +301,23 @@ export default function AddNewProduct() {
                     onChange={(e) => {
                       handleChange(e);
                     }}
-                    className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-[#B7B7B7] outline-none"
+                    className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-black outline-none"
                   >
                     <option value="">Select Category</option>
-                    {categories?.map((cat) => (
-                      <option key={cat._id} value={cat.name}>
-                        {cat.name}
-                      </option>
-                    ))}
+                    {categories?.map(
+                      (cat) =>
+                        cat.name != "All" && (
+                          <option key={cat._id} value={cat.name}>
+                            {cat.name}
+                          </option>
+                        ),
+                    )}
                   </select>
+                  {errors.category && touched.category && (
+                    <p className="text-red-700 text-sm font-medium">
+                      {errors.category}
+                    </p>
+                  )}
                 </div>
 
                 {/* Sub Category */}
@@ -321,7 +330,7 @@ export default function AddNewProduct() {
                     name="subCategory"
                     value={values.subCategory}
                     onChange={handleChange}
-                    className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-[#B7B7B7] outline-none"
+                    className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-black outline-none"
                     disabled={!values.category}
                   >
                     <option value="">Select Sub Category</option>
@@ -794,6 +803,7 @@ export default function AddNewProduct() {
       )}
       {actionType == "add" && (
         <AddInventory
+          inventories={inventories}
           setInventories={setInventories}
           isOpen={isOpen}
           setIsOpen={setIsOpen}

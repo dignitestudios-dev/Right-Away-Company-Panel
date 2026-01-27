@@ -4,10 +4,15 @@ import Button from "../../components/global/Button";
 import { useEffect, useRef, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router";
-import { ReSendOtpFa, VerifyLoginOtp } from "../../redux/slices/authSlice";
+import {
+  ReSendOtpFa,
+  updateFCMToken,
+  VerifyLoginOtp,
+} from "../../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { SuccessToast } from "../../components/global/Toaster";
 import { FaSpinner } from "react-icons/fa";
+import getFCMToken from "../../firebase/getFcmToken";
 
 const TwoFactorAuthentication = () => {
   const [isResendDisabled, setIsResendDisabled] = useState(true);
@@ -88,13 +93,30 @@ const TwoFactorAuthentication = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const data = {
       email: location?.state?.email,
       role: "company",
       otp: otp.join(""),
     };
-    await dispatch(VerifyLoginOtp(data)).unwrap();
-    navigate("/app/dashboard");
+
+    try {
+      // ✅ 1. Verify OTP
+      await dispatch(VerifyLoginOtp(data)).unwrap();
+
+      // ✅ 2. Get FCM token
+      const fcmToken = await getFCMToken();
+
+      // ✅ 3. Update FCM if available
+      if (fcmToken) {
+        await dispatch(updateFCMToken({ fcmToken }));
+      }
+
+      // ✅ 4. Navigate
+      navigate("/app/dashboard");
+    } catch (error) {
+      console.error("Login flow failed:", error);
+    }
   };
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace") {

@@ -10,12 +10,11 @@ const ShippingActivity = ({ setOrderStatus, orderStatus, rider }) => {
       completed: true,
     },
     { label: "Preparing", completed: true },
-    { label: "Picked by the Rider", completed: false },
-    { label: "On The Way", completed: false },
+    { label: "Picked Up/ On The Way", completed: false },
     { label: "Delivered", completed: false },
   ]);
   const statusToStepIndex = {
-    "Ready For Pickup": 1, // pickUp
+    "Picked Up/ On The Way": 1, // pickUp
     "Out for Delivery": 3, // delivery
     Delivered: 4, // completed
   };
@@ -39,7 +38,7 @@ const ShippingActivity = ({ setOrderStatus, orderStatus, rider }) => {
   const handlePickedClick = (index) => {
     // complete all steps up to "On The Way"
     const updated = steps.map((step, i) =>
-      i <= index + 1 ? { ...step, completed: true } : step
+      i <= index + 1 ? { ...step, completed: true } : step,
     );
     // setSteps(updated);
     setOpenModal(true); // show modal
@@ -47,11 +46,10 @@ const ShippingActivity = ({ setOrderStatus, orderStatus, rider }) => {
   const handleDeliveredClick = (index) => {
     // complete all steps up to "On The Way"
     const updated = steps.map((step, i) =>
-      i <= index + 1 ? { ...step, completed: true } : step
+      i <= index + 1 ? { ...step, completed: true } : step,
     );
     console.log(updated, "update--");
-    // setSteps(updated);
-    setOpenDeliveredModal(true); // show modal
+    setOpenDeliveredModal(true);
   };
 
   return (
@@ -63,13 +61,13 @@ const ShippingActivity = ({ setOrderStatus, orderStatus, rider }) => {
           <div
             key={index}
             className={`mb-6 flex items-start relative cursor-pointer`}
-            onClick={() =>
-              !step.completed &&
-              ((step.label === "Picked by the Rider" &&
-                rider &&
-                handlePickedClick(index)) ||
-                (step.label === "Delivered" && handleDeliveredClick(index)))
-            }
+            // onClick={() =>
+            //   !step.completed &&
+            //   ((step.label === "Picked by the Rider" &&
+            //     rider &&
+            //     handlePickedClick(index)) ||
+            //     (step.label === "Delivered" && handleDeliveredClick(index)))
+            // }
           >
             {/* Timeline Dot / Check */}
             <div

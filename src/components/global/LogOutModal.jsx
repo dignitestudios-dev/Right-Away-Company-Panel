@@ -4,8 +4,10 @@ import { LogOutImg } from "../../assets/export";
 import Button from "./Button";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { logout } from "../../redux/slices/authSlice";
-import Cookies from "js-cookie"
+import { logout, resetAuthState } from "../../redux/slices/authSlice";
+import Cookies from "js-cookie";
+import { resetAppState } from "../../redux/slices/AppSlice";
+import { resetChatState } from "../../redux/slices/ChatSlice";
 const LogOutModal = ({ isOpen, setIsOpen }) => {
   const navigate = useNavigate("");
   const dispatch = useDispatch();
@@ -42,10 +44,14 @@ const LogOutModal = ({ isOpen, setIsOpen }) => {
               No
             </button>
             <Button
-              onClick={async() => {
+              onClick={async () => {
                 await dispatch(logout());
+                dispatch(resetAppState()); // app clear
+                dispatch(resetAuthState()); // Auth clear
+                dispatch(resetChatState()); // Chat clear
+
                 Cookies.remove("token");
-                navigate("/auth/login")
+                navigate("/auth/login");
               }}
               text={"Yes"}
               customClass={"w-[140px]"}

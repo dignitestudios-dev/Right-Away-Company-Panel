@@ -548,6 +548,7 @@ const appSlice = createSlice({
   name: "app",
   initialState,
   reducers: {
+    resetAppState: () => initialState,
     setToken: (state, action) => {
       state.token = action.payload;
       state.isAuthenticated = true;
@@ -861,6 +862,12 @@ const appSlice = createSlice({
   },
 });
 
-export const { setToken, setRefreshToken, setUser, logout, setSingleOrder } =
-  appSlice.actions;
+export const {
+  setToken,
+  setRefreshToken,
+  setUser,
+  logout,
+  setSingleOrder,
+  resetAppState,
+} = appSlice.actions;
 export default appSlice.reducer;

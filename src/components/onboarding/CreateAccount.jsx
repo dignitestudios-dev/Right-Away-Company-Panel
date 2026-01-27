@@ -164,10 +164,11 @@ export default function CreateAccount({ handleNext, setEmail }) {
               text="Company Registration Number"
               name="registerNumber"
               holder="Enter company registration number"
+              maxLength={15} // ✅ TECHNICALLY SAFE
               touched={touched.registerNumber}
               error={errors.registerNumber}
               handleChange={(e) => {
-                e.target.value = e.target.value.replace(/\D/g, "");
+                e.target.value = e.target.value.replace(/\D/g, "").slice(0, 15);
                 handleChange(e);
               }}
               handleBlur={handleBlur}

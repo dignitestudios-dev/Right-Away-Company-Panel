@@ -77,8 +77,9 @@ export default function Input({
             {selectOptions.map((opt, idx) => (
               <option
                 key={idx}
-                selected={value == opt.value ? true : false}
                 value={opt.value || opt}
+                selected={value == opt.value ? true : false}
+                disabled={opt.disabled ? true : false} // ✅ disabled condition added
               >
                 {opt.label || opt}
               </option>

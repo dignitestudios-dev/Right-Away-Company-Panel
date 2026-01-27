@@ -277,11 +277,14 @@ export default function EditProduct() {
                   className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm outline-none"
                 >
                   <option value="">Select Category</option>
-                  {categories?.map((cat) => (
-                    <option key={cat._id} value={cat.name}>
-                      {cat.name}
-                    </option>
-                  ))}
+                  {categories?.map(
+                    (cat) =>
+                      cat.name != "All" && (
+                        <option key={cat._id} value={cat.name}>
+                          {cat.name}
+                        </option>
+                      ),
+                  )}
                 </select>
               </div>
 
