@@ -465,16 +465,81 @@ export const getCategories = createAsyncThunk(
     }
   },
 );
-//👽 ----------- Notifications Managment -----------👽
+// 👽 ----------- Notifications APIs -----------👽
+
+// Get all notifications
 export const getNotifications = createAsyncThunk(
-  "/company/notification",
-  async (payload, thunkAPI) => {
+  "/notification/get",
+  async (_, thunkAPI) => {
     try {
-      const response = await instance.get(`/notification`);
-      return response?.data;
+      const res = await instance.get("/notification");
+      return res.data;
     } catch (error) {
-      const message = error.response?.data?.message || error.message;
-      return thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message,
+      );
+    }
+  },
+);
+
+// Mark single notification as read
+export const readNotification = createAsyncThunk(
+  "/notification/read",
+  async (notificationId, thunkAPI) => {
+    try {
+      const res = await instance.post("/notification/read", {
+        notificationId,
+      });
+      return { notificationId };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message,
+      );
+    }
+  },
+);
+
+// Mark all notifications as read
+export const readAllNotifications = createAsyncThunk(
+  "/notification/readAll",
+  async (_, thunkAPI) => {
+    try {
+      await instance.post("/notification/all");
+      return true;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message,
+      );
+    }
+  },
+);
+
+// Delete single notification
+export const deleteNotification = createAsyncThunk(
+  "/notification/deleteOne",
+  async (notificationId, thunkAPI) => {
+    try {
+      await instance.delete(`/notification/${notificationId}`);
+      return notificationId;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message,
+      );
+    }
+  },
+);
+
+// Delete all notifications
+export const deleteAllNotifications = createAsyncThunk(
+  "/notification/deleteAll",
+  async (_, thunkAPI) => {
+    try {
+      await instance.delete("/notification/all");
+      return true;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message,
+      );
     }
   },
 );
@@ -753,8 +818,9 @@ const appSlice = createSlice({
         state.categoriesLoading = false;
         state.error = action.payload.message;
       })
-      //👽 ----------- Notifications State Managment -----------👽
-      .addCase(getNotifications.pending, (state, action) => {
+      // 👽 ----------- Notifications State Management -----------👽
+
+      .addCase(getNotifications.pending, (state) => {
         state.notificationsLoading = true;
       })
       .addCase(getNotifications.fulfilled, (state, action) => {
@@ -763,7 +829,34 @@ const appSlice = createSlice({
       })
       .addCase(getNotifications.rejected, (state, action) => {
         state.notificationsLoading = false;
-        state.error = action.payload.message;
+        state.error = action.payload;
+      })
+
+      // ✅ Read single
+      .addCase(readNotification.fulfilled, (state, action) => {
+        state.notifications = state.notifications.map((n) =>
+          n._id === action.payload.notificationId ? { ...n, isRead: true } : n,
+        );
+      })
+
+      // ✅ Read all
+      .addCase(readAllNotifications.fulfilled, (state) => {
+        state.notifications = state.notifications.map((n) => ({
+          ...n,
+          isRead: true,
+        }));
+      })
+
+      // ❌ Delete single
+      .addCase(deleteNotification.fulfilled, (state, action) => {
+        state.notifications = state.notifications.filter(
+          (n) => n._id !== action.payload,
+        );
+      })
+
+      // ❌ Delete all
+      .addCase(deleteAllNotifications.fulfilled, (state) => {
+        state.notifications = [];
       });
   },
 });

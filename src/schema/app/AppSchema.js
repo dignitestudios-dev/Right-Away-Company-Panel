@@ -23,7 +23,7 @@ export const ProductSchema = Yup.object({
     .required("Description is required"),
 
   category: Yup.string().required("Category is required"),
-  subcategory: Yup.string().required("Sub-category is required"),
+  subCategory: Yup.string().required("Sub-category is required"),
 
   itemHeight: Yup.string()
     .matches(/^\d+$/, "Only numbers allowed")
@@ -94,7 +94,7 @@ export const ProductSchema = Yup.object({
       function (value) {
         const { stock } = this.parent;
         return !value || !stock || value <= stock;
-      }
+      },
     )
 
     // Condition 2: maxOrder >= minOrder
@@ -104,7 +104,7 @@ export const ProductSchema = Yup.object({
       function (value) {
         const { minOrder } = this.parent;
         return !value || !minOrder || value >= minOrder;
-      }
+      },
     ),
   delivery: Yup.boolean().required("Delivery field is required"),
 });

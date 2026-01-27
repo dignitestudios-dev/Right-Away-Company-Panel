@@ -18,7 +18,7 @@ import ProductReview from "./ProductReview";
 import { getStore } from "../../../redux/slices/authSlice";
 import { ErrorToast } from "../../global/Toaster";
 import { IoMdClose } from "react-icons/io";
-export default function AddNewProduct() { 
+export default function AddNewProduct() {
   const [isOpen, setIsOpen] = useState(false);
   const [actionType, setActionType] = useState("");
   const navigate = useNavigate("");
@@ -149,13 +149,6 @@ export default function AddNewProduct() {
     validateOnChange: true,
     validateOnBlur: true,
     onSubmit: async (values) => {
-      console.log(
-        values,
-        productImages,
-        productDocs,
-        inventories,
-        "formData---->",
-      );
       if (productImages.length === 0) {
         setUploadError({ images: "At least one image is required" });
         ErrorToast("At least one image is required");
@@ -210,7 +203,7 @@ export default function AddNewProduct() {
     dispatch(getStore()).unwrap();
     dispatch(getCategories()).unwrap();
   }, []);
-  console.log(errors, "categories-fetch");
+  console.log(categories, "categories-fetch");
   return (
     <div className=" min-h-screen p-2">
       {productReview ? (
@@ -306,10 +299,6 @@ export default function AddNewProduct() {
                     value={values.category}
                     onChange={(e) => {
                       handleChange(e);
-                      // Reset subCategory when category changes
-                      handleChange({
-                        target: { name: "subCategory", value: "" },
-                      });
                     }}
                     className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-[#B7B7B7] outline-none"
                   >
@@ -324,13 +313,13 @@ export default function AddNewProduct() {
 
                 {/* Sub Category */}
                 <div className="w-full">
-                  <label htmlFor="subcategory" className="font-medium text-sm">
+                  <label htmlFor="subCategory" className="font-medium text-sm">
                     Sub Category
                   </label>
                   <br />
                   <select
-                    name="subcategory"
-                    value={values.subcategory}
+                    name="subCategory"
+                    value={values.subCategory}
                     onChange={handleChange}
                     className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-[#B7B7B7] outline-none"
                     disabled={!values.category}
