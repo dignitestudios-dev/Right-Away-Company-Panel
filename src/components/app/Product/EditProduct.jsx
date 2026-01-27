@@ -292,7 +292,7 @@ export default function EditProduct() {
                 </label>
 
                 <select
-                  name="subcategory"  
+                  name="subCategory"
                   value={values.subCategory}
                   onChange={handleChange}
                   disabled={!values.category}
