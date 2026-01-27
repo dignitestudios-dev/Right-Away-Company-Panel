@@ -23,6 +23,8 @@ const initialState = {
   walletHistory: null,
   categories: null,
   categoriesLoading: false,
+  notifications: null,
+  notificationsLoading: false,
 };
 
 //👽 ----------- Dashboard Managment -----------👽
@@ -463,6 +465,20 @@ export const getCategories = createAsyncThunk(
     }
   },
 );
+//👽 ----------- Notifications Managment -----------👽
+export const getNotifications = createAsyncThunk(
+  "/company/notification",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await instance.get(`/notification`);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 const appSlice = createSlice({
   name: "app",
   initialState,
@@ -735,6 +751,18 @@ const appSlice = createSlice({
       })
       .addCase(getCategories.rejected, (state, action) => {
         state.categoriesLoading = false;
+        state.error = action.payload.message;
+      })
+      //👽 ----------- Notifications State Managment -----------👽
+      .addCase(getNotifications.pending, (state, action) => {
+        state.notificationsLoading = true;
+      })
+      .addCase(getNotifications.fulfilled, (state, action) => {
+        state.notificationsLoading = false;
+        state.notifications = action.payload.data;
+      })
+      .addCase(getNotifications.rejected, (state, action) => {
+        state.notificationsLoading = false;
         state.error = action.payload.message;
       });
   },

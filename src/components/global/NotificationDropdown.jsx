@@ -1,49 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getNotifications } from "../../redux/slices/AppSlice";
 
 const Notifications = () => {
-  const notifications = [
-    {
-      id: 1,
-      title: "Title goes here",
-      description:
-        "Lorem ipsum dolor sit amet consectetur. In volutpat et mattis ut tristique viverra blandit.",
-      time: "7:30 PM",
-      badge: true,
-    },
-    {
-      id: 2,
-      title: "Title goes here",
-      description:
-        "Lorem ipsum dolor sit amet consectetur. In volutpat et mattis ut tristique viverra blandit.",
-      time: "7:30 PM",
-      badge: true,
-    },
-    {
-      id: 3,
-      title: "Title goes here",
-      description:
-        "Lorem ipsum dolor sit amet consectetur. In volutpat et mattis ut tristique viverra blandit.",
-      time: "7:30 PM",
-      badge: false,
-    },
-    {
-      id: 4,
-      title: "Title goes here",
-      description:
-        "Lorem ipsum dolor sit amet consectetur. In volutpat et mattis ut tristique viverra blandit.",
-      time: "7:30 PM",
-      badge: false,
-    },
-    {
-      id: 5,
-      title: "Title goes here",
-      description:
-        "Lorem ipsum dolor sit amet consectetur. In volutpat et mattis ut tristique viverra blandit.",
-      time: "7:30 PM",
-      badge: false,
-    },
-  ];
+  const dispatch = useDispatch("");
+  const { notifications, notificationsLoading } = useSelector(
+    (state) => state.app,
+  );
 
+  const handleGetNotifications = async () => {
+    await dispatch(getNotifications());
+  };
+
+  useEffect(() => {
+    handleGetNotifications();
+  }, [dispatch]);
+  console.log(notifications, "get Notifications--->");
   return (
     <div className="w-[500px] top-[100px] h-[493px] overflow-auto absolute left-64 z-10 mx-auto bg-white rounded-2xl shadow-sm p-5">
       <h1 className="text-[16px] font-[600] text-gray-900 mb-5">
@@ -51,7 +23,7 @@ const Notifications = () => {
       </h1>
 
       <div className="space-y-0">
-        {notifications.map((notification, index) => (
+        {notifications?.map((notification, index) => (
           <div key={notification.id}>
             <div className="py-1 flex items-start justify-between">
               <div className="mb-2 items-start w-[80%] ">

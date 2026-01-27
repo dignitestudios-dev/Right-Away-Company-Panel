@@ -210,7 +210,7 @@ export default function AddNewProduct() {
     dispatch(getStore()).unwrap();
     dispatch(getCategories()).unwrap();
   }, []);
-  console.log(categories, "categories-fetch");
+  console.log(errors, "categories-fetch");
   return (
     <div className=" min-h-screen p-2">
       {productReview ? (
@@ -324,13 +324,13 @@ export default function AddNewProduct() {
 
                 {/* Sub Category */}
                 <div className="w-full">
-                  <label htmlFor="subCategory" className="font-medium text-sm">
+                  <label htmlFor="subcategory" className="font-medium text-sm">
                     Sub Category
                   </label>
                   <br />
                   <select
-                    name="subCategory"
-                    value={values.subCategory}
+                    name="subcategory"
+                    value={values.subcategory}
                     onChange={handleChange}
                     className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-[#B7B7B7] outline-none"
                     disabled={!values.category}
