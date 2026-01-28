@@ -49,7 +49,7 @@ export default function Wallet() {
           </h3>
         </div>
         <div>
-          {Banks?.lenght > 0 ? (
+          {wallet?.isBankAccountAdded > 0 ? (
             <Button
               onClick={() => setWithrawModal(!withrawModal)}
               text={"Funds withdraw"}

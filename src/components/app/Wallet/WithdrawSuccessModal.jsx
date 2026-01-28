@@ -11,82 +11,74 @@ export default function WithdrawSuccessModal({
   isSuccess,
   setIsSuccess,
   status,
+  withdrawData,
+  amount,
 }) {
   const [isTransaction, setIsTransaction] = useState(false);
+
+  if (!withdrawData) return null;
+
+  const { referenceId, bankName, bankLast4, createdAt, userName } =
+    withdrawData;
+
   return (
     <>
+      {/* STATUS MODAL */}
       <Modal
         isOpen={isSuccess}
-        contentLabel="Success"
         shouldCloseOnOverlayClick={false}
         shouldCloseOnEsc={false}
-        className="flex items-center justify-center border-none outline-none z-[1000]"
-        overlayClassName="fixed inset-0 bg-[#C6C6C6]/50 backdrop-blur-sm z-[1000] flex justify-center items-center"
+        className="flex items-center justify-center outline-none"
+        overlayClassName="fixed inset-0 bg-[#C6C6C6]/50 backdrop-blur-sm flex justify-center items-center"
       >
-        {(status === "submited" ||
-          status === "approved" ||
-          status === "reject") && (
-          <div className="bg-white rounded-[24px] py-8 flex flex-col gap-4 justify-center items-center px-6 shadow-lg w-[460px]">
-            {/* Close Button */}
-            <div className="flex w-full justify-end items-center">
-              <IoCloseSharp
-                size={22}
-                className="cursor-pointer"
-                onClick={() => {
-                  setIsSuccess(false);
-                  if (status === "approved") {
-                    setIsTransaction(true);
-                  }
-                }}
-              />
-            </div>
-
-            {/* Icon */}
-            <img
-              src={
-                status === "submited" || status === "approved"
-                  ? BorderSuccessIcon
-                  : RedAlertIcon
-              }
-              alt="Status Icon"
-              className="w-[94px]"
+        <div className="bg-white rounded-[24px] py-8 px-6 shadow-lg w-[460px] flex flex-col gap-4 items-center">
+          <div className="flex w-full justify-end">
+            <IoCloseSharp
+              size={22}
+              className="cursor-pointer"
+              onClick={() => {
+                setIsSuccess(false);
+                if (status === "approved") setIsTransaction(true);
+              }}
             />
-
-            {/* Title */}
-            <h3 className="font-[700] text-[24px] text-[#000000] text-center">
-              {status === "submited"
-                ? "Withdrawal Request Submitted"
-                : status === "approved"
-                ? "Withdrawal Request Approved"
-                : "Withdrawal Request Rejected"}
-            </h3>
-
-            {/* Message */}
-            <p className="text-[#3C3C43D9] font-[400] text-[16px] text-center leading-relaxed">
-              {status === "submited" &&
-                `Your withdrawal request of $2,500 has been submitted successfully. It is currently under review by the admin team. You will be notified once it is processed.`}
-
-              {status === "approved" &&
-                `Your withdrawal request of $2,500 has been approved. The funds have been transferred to your registered bank account (Bank of America - XXXX1234). Please allow 1–3 business days for processing.`}
-
-              {status === "reject" &&
-                `Your withdrawal request of $2,500 has been rejected. 
-        Reason: Insufficient account balance / Invalid bank details (Admin specified reason here).`}
-            </p>
           </div>
-        )}
+
+          <img
+            src={status === "rejected" ? RedAlertIcon : BorderSuccessIcon}
+            className="w-[94px]"
+          />
+
+          <h3 className="text-[24px] font-[700] text-center">
+            {status === "submitted"
+              ? "Withdrawal Request Submitted"
+              : status === "approved"
+                ? "Withdrawal Approved"
+                : "Withdrawal Rejected"}
+          </h3>
+
+          <p className="text-center text-[#3C3C43D9]">
+            {status === "submitted" &&
+              `Your withdrawal request of $${amount} has been submitted and is under review.`}
+
+            {status === "approved" &&
+              `Your withdrawal of $${amount} has been approved and sent to your bank account.`}
+
+            {status === "rejected" &&
+              `Your withdrawal request of $${amount} was rejected by admin.`}
+          </p>
+        </div>
       </Modal>
+
+      {/* TRANSACTION DETAIL MODAL */}
       <Modal
         isOpen={isTransaction}
-        contentLabel="Success"
         shouldCloseOnOverlayClick={false}
         shouldCloseOnEsc={false}
-        className="flex items-center justify-center border-none outline-none z-[1000]"
-        overlayClassName="fixed inset-0 bg-[#C6C6C6]/50 backdrop-blur-sm z-[1000] flex justify-center items-center"
+        className="flex items-center justify-center outline-none"
+        overlayClassName="fixed inset-0 bg-[#C6C6C6]/50 backdrop-blur-sm flex justify-center items-center"
       >
-        <div className="bg-white text-center rounded-[24px] py-8 flex flex-col gap-4 justify-center items-center px-6 shadow-lg w-[460px]">
-          {/* Close Button */}
-          <div className="flex w-full justify-end items-center">
+        <div className="bg-white rounded-[24px] py-8 px-6 shadow-lg w-[460px] text-center">
+          <div className="flex w-full justify-end">
             <IoCloseSharp
               size={22}
               className="cursor-pointer"
@@ -94,49 +86,32 @@ export default function WithdrawSuccessModal({
             />
           </div>
 
-          {/* Icon */}
-          <img src={SuccessIcon} alt="Status Icon" className="w-[44px]" />
-          {/* Title */}
-          <h2 className="text-2xl font-bold text-center mb-2">
-            Withdraw Successfully!
-          </h2>
-          <div>
-            <span className="capitalize text-[#959595] text-[13px] font-[500]">
-              amount withdraw
-            </span>
-            <h2 className="text-2xl font-bold text-center">USD $2500!</h2>
-          </div>
-          <div>
-            <span className="capitalize text-[#959595] text-[13px] font-[500]">
-              reference ID
-            </span>
-            <h2 className="text-[15px] font-[600] text-center">
-              9621486393454
-            </h2>
-            <span className="capitalize text-[#959595] text-[13px] font-[500]">
-              name
-            </span>
-            <h2 className="text-[15px] capitalize font-[600] text-center">
-              olivia james
-            </h2>
-            <span className="capitalize text-[#959595] text-[13px] font-[500]">
-              date
-            </span>
-            <h2 className="text-[15px] capitalize font-[600] text-center">
-              wed, 10 jan
-            </h2>
-            <span className="capitalize text-[#959595] text-[13px] font-[500]">
-              type
-            </span>
-            <h2 className="text-[15px] capitalize font-[600] text-center">
-              withdrawal
-            </h2>
-            <span className="capitalize text-[#959595] text-[13px] font-[500]">
-              direct to local bank account
-            </span>
-            <h2 className="text-[15px] capitalize font-[600] text-center">
-              (**** **** ****499)
-            </h2>
+          <img src={SuccessIcon} className="w-[44px] mx-auto mb-4" />
+
+          <h2 className="text-2xl font-bold mb-4">Withdraw Successful!</h2>
+
+          <div className="space-y-2 text-center">
+            <p className="text-[#959595] text-[13px]">Amount Withdrawn</p>
+            <h3 className="text-2xl font-bold">${amount}</h3>
+
+            <p className="text-[#959595] text-[13px]">Reference ID</p>
+            <p className="font-[600]">{referenceId}</p>
+
+            <p className="text-[#959595] text-[13px]">Name</p>
+            <p className="capitalize font-[600]">{userName}</p>
+
+            <p className="text-[#959595] text-[13px]">Date</p>
+            <p className="font-[600]">{new Date(createdAt).toDateString()}</p>
+
+            <p className="text-[#959595] text-[13px]">Type</p>
+            <p className="font-[600] capitalize">Withdrawal</p>
+
+            <p className="text-[#959595] text-[13px]">
+              Direct to local bank account
+            </p>
+            <p className="font-[600]">
+              {bankName} (**** {bankLast4})
+            </p>
           </div>
         </div>
       </Modal>

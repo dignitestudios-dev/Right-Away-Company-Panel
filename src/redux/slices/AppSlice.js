@@ -25,6 +25,7 @@ const initialState = {
   categoriesLoading: false,
   notifications: null,
   notificationsLoading: false,
+  withdrawSuccess: false,
 };
 
 //👽 ----------- Dashboard Managment -----------👽
@@ -452,6 +453,21 @@ export const getWalletHistory = createAsyncThunk(
     }
   },
 );
+// 👽 ----------- Wallet Withdraw -----------👽
+export const withdrawFunds = createAsyncThunk(
+  "/company/wallet/withdraw",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await instance.post("/company/wallet/withdraw", payload);
+
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 //👽 ----------- Categories Managment -----------👽
 export const getCategories = createAsyncThunk(
   "/company/category",
@@ -784,6 +800,21 @@ const appSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload.message;
       })
+      // 👽 ----------- Withdraw Funds State -----------👽
+      .addCase(withdrawFunds.pending, (state) => {
+        state.isLoading = true;
+        state.withdrawSuccess = false;
+      })
+      .addCase(withdrawFunds.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.withdrawSuccess = true;
+      })
+      .addCase(withdrawFunds.rejected, (state, action) => {
+        state.isLoading = false;
+        state.withdrawSuccess = false;
+        state.error = action.payload;
+      })
+
       .addCase(getWalletTransactions.pending, (state, action) => {
         state.isLoading = true;
       })

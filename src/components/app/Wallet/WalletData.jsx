@@ -28,14 +28,14 @@ export default function WalletData() {
         search: filters.search,
         startDate: filters.startDate,
         endDate: filters.endDate,
-      })
+      }),
     ).unwrap();
     await dispatch(
       getWalletHistory({
         search: filters.search,
         startDate: filters.startDate,
         endDate: filters.endDate,
-      })
+      }),
     ).unwrap();
   };
 
@@ -60,7 +60,6 @@ export default function WalletData() {
   const isWithdrawal = activeStatus === "Withdrawal History";
   const columns = isWithdrawal ? withdrawalColumns : transactionColumns;
   const sourceData = isWithdrawal ? walletHistory : walletTransactions || [];
-  console.log(sourceData, "transactions-- data");
   const data = sourceData.map((item, index) => {
     if (isWithdrawal) {
       return {
@@ -78,15 +77,15 @@ export default function WalletData() {
 
     // 🚀 Show Real Transaction Table Data
     return {
-      _id: item._id,
+      _id: item?._id,
       cells: [
-        <p key={index + "-order"}>{item.orderId}</p>,
+        <p key={index + "-order"}>{item?.orderId}</p>,
 
-        <p key={index + "-user"}>{item.user?.name}</p>,
+        <p key={index + "-user"}>{item?.user?.name}</p>,
 
-        <p key={index + "-amount"}>{item.total}</p>,
+        <p key={index + "-amount"}>{item?.total}</p>,
 
-        <p key={index + "-date"}>{formatDate(item.createdAt)}</p>,
+        <p key={index + "-date"}>{formatDate(item?.createdAt)}</p>,
       ],
     };
   });

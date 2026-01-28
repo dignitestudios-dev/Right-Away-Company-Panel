@@ -50,7 +50,7 @@ export default function GlobalTable({
       {/* vertical scroll */}
       <div className="max-h-[500px]  overflow-y-auto">
         <table className="border-collapse w-full min-w-[900px]">
-          <thead className="bg-[#d2efe3e4]  sticky top-0 z-10">
+          <thead className="bg-[#d2efe3e4]   top-0 z-10">
             <tr>
               {columns.map((col, index) => (
                 <th

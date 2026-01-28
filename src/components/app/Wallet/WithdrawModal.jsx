@@ -3,14 +3,48 @@ import { IoCloseSharp } from "react-icons/io5";
 import Modal from "react-modal";
 import Button from "../../global/Button";
 import WithdrawSuccessModal from "./WithdrawSuccessModal";
+import { useDispatch, useSelector } from "react-redux";
+import { withdrawFunds } from "../../../redux/slices/AppSlice";
+import { ErrorToast } from "../../global/Toaster";
 export default function WithdrawModal({ isOpen, setIsOpen }) {
+  const dispatch = useDispatch();
   const [amount, setAmount] = useState("");
-  const [isSubmit, setIsSubmit] = useState(false);
-  const handleChange = (e) => {
-    const value = e.target.value;
-    if (value === "" || Number(value) > 0) setAmount(value);
-  };
+  const [selectedBank, setSelectedBank] = useState(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
+  const { Banks } = useSelector((state) => state.auth);
+  const { isLoading } = useSelector((state) => state.app);
+
+  const [withdrawData, setWithdrawData] = useState(null); // add this
+
+  const handleWithdraw = async () => {
+    if (!amount || Number(amount) <= 0) {
+      ErrorToast("Please enter a valid amount");
+      return;
+    }
+
+    if (!selectedBank) {
+      ErrorToast("Please select a bank account");
+      return;
+    }
+
+    const result = await dispatch(
+      withdrawFunds({
+        ammount: Number(amount),
+        bankAccount: selectedBank._id,
+      }),
+    );
+
+    if (withdrawFunds.fulfilled.match(result)) {
+      setWithdrawData(result.payload); // <-- store API response here
+      setIsSuccess(true);
+      setIsOpen(false);
+      setSelectedBank(null);
+    } else {
+      alert(result.payload || "Withdrawal failed");
+    }
+  };
+  console.log(withdrawData);
   return (
     <>
       <Modal
@@ -20,7 +54,7 @@ export default function WithdrawModal({ isOpen, setIsOpen }) {
       >
         <div className="bg-white rounded-[12px] p-6 shadow-lg w-[461px]">
           {/* Close Button */}
-          <div className="flex justify-end items-center">
+          <div className="flex justify-end">
             <IoCloseSharp
               size={22}
               className="cursor-pointer"
@@ -31,47 +65,61 @@ export default function WithdrawModal({ isOpen, setIsOpen }) {
           {/* Title */}
           <h2 className="text-2xl font-semibold text-center mb-6">Withdraw</h2>
 
-          {/* Bank Account */}
-          <div className="mb-2">
-            <p className="text-[12px] text-[#181919] mb-1">
+          {/* Bank Accounts */}
+          <div className="mb-4">
+            <p className="text-[12px] text-[#181919] mb-2">
               Attached Bank Account
             </p>
-            <div className="w-full rounded-[8px] bg-[#ECE8E8] text-[#202020] py-3 px-4 text-[16px] text-start tracking-widest font-[400]">
-              **** **** **** **** 499
-            </div>
+
+            {Banks?.map((item) => (
+              <div
+                key={item._id}
+                onClick={() => setSelectedBank(item)}
+                className={`w-full mt-2 rounded-[8px] py-3 px-4 text-[14px] cursor-pointer
+                ${
+                  selectedBank?._id === item._id
+                    ? "bg-black text-white"
+                    : "bg-[#ECE8E8] text-[#202020]"
+                }`}
+              >
+                {item.bankName} •••• {item.accountNumber?.slice(-4)}
+              </div>
+            ))}
           </div>
 
-          {/* Withdraw Section */}
-          <div className="mb-2">
-            <p className="font-semibold text-lg mb-4">Withdraw Funds</p>
-            <label className="text-sm text-[#1C1B1F] font-[400]">
-              Enter Amount
-            </label>
+          {/* Amount */}
+          <div className="mb-4">
+            <label className="text-sm font-[400]">Enter Amount</label>
             <input
               type="number"
               placeholder="$20"
               value={amount}
-              onChange={handleChange}
-              className="w-full border border-[#181818] rounded-xl px-4 py-3 mt-1 focus:outline-none focus:border-gray-500"
+              onChange={(e) =>
+                e.target.value === "" || Number(e.target.value) > 0
+                  ? setAmount(e.target.value)
+                  : null
+              }
+              className="w-full border border-[#181818] rounded-xl px-4 py-3 mt-1 focus:outline-none"
             />
           </div>
 
           {/* Button */}
           <Button
-            onClick={() => {
-              setIsSubmit(true);
-              setIsOpen(false);
-            }}
-            text={"Request Withdraw"}
-            customClass={"w-full mt-4"}
+            onClick={handleWithdraw}
+            text={isLoading ? "Processing..." : "Request Withdraw"}
+            customClass={"w-full"}
+            disabled={isLoading}
           />
         </div>
       </Modal>
 
+      {/* Success Modal */}
       <WithdrawSuccessModal
-        status={"approved"}
-        isSuccess={isSubmit}
-        setIsSuccess={setIsSubmit}
+        isSuccess={isSuccess}
+        amount={amount}
+        setIsSuccess={setIsSuccess}
+        status={withdrawData?.status || "submitted"} // or approved/rejected from API
+        withdrawData={withdrawData}
       />
     </>
   );
