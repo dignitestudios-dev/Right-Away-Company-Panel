@@ -48,7 +48,7 @@ export default function GlobalTable({
   return (
     <div className="relative w-full overflow-x-auto">
       {/* vertical scroll */}
-      <div className="max-h-[500px]  overflow-y-auto">
+      <div className="h-full  overflow-y-auto">
         <table className="border-collapse w-full min-w-[900px]">
           <thead className="bg-[#d2efe3e4]   top-0 z-10">
             <tr>

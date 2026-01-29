@@ -426,7 +426,7 @@ export default function AddNewProduct() {
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   text={"Height"}
-                  holder={"ft"}
+                  holder={"in"}
                   name={"itemHeight"}
                   type={"number"}
                   bg={true}
@@ -443,7 +443,7 @@ export default function AddNewProduct() {
                 />
                 <Input
                   text={"Width"}
-                  holder={"ft"}
+                  holder={"in"}
                   name={"itemWidth"}
                   type={"number"}
                   bg={true}
@@ -460,7 +460,7 @@ export default function AddNewProduct() {
                 />
                 <Input
                   text={"Length"}
-                  holder={"ft"}
+                  holder={"in"}
                   name={"itemLength"}
                   type={"number"}
                   bg={true}
@@ -507,7 +507,7 @@ export default function AddNewProduct() {
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   text={"Height"}
-                  holder={"ft"}
+                  holder={"in"}
                   name={"packageHeight"}
                   type={"number"}
                   bg={true}
@@ -524,7 +524,7 @@ export default function AddNewProduct() {
                 />
                 <Input
                   text={"Width"}
-                  holder={"ft"}
+                  holder={"in"}
                   name={"packageWidth"}
                   type={"number"}
                   bg={true}
@@ -541,7 +541,7 @@ export default function AddNewProduct() {
                 />
                 <Input
                   text={"Length"}
-                  holder={"ft"}
+                  holder={"in"}
                   name={"packageLength"}
                   type={"number"}
                   bg={true}
@@ -586,7 +586,7 @@ export default function AddNewProduct() {
               <h2 className="text-[22px] font-[500] text-[#000000] mb-5">
                 Pricing & Inventory
               </h2>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <Input
                   text="Price Per Unit"
                   holder="Fixed Price"
@@ -603,7 +603,7 @@ export default function AddNewProduct() {
                   value={values?.unitPrice}
                   error={errors?.unitPrice}
                 />
-                <Input
+                {/* <Input
                   text="Unit of Measurement"
                   holder="lbs"
                   type={"number"}
@@ -618,7 +618,7 @@ export default function AddNewProduct() {
                   handleBlur={handleBlur}
                   value={values?.unitMessurement}
                   error={errors?.unitMessurement}
-                />
+                /> */}
 
                 {/* Min Quantity */}
                 <Input
@@ -684,7 +684,7 @@ export default function AddNewProduct() {
                     setEditIndex={setEditIndex}
                   />
                 ))}
-                <div className="col-span-6 mt-2 flex justify-between items-center px-2 h-[50px] rounded-[10px] bg-[#F8F8F899] border-none ">
+                <div className="col-span-12 mt-2 flex justify-between items-center px-2 h-[50px] rounded-[10px] bg-[#F8F8F899] border-none ">
                   <p className="text-[#959393] font-[400] text-[16px]">
                     Add Inventory Details
                   </p>

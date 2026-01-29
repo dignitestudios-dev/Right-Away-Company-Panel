@@ -15,8 +15,8 @@ const ShippingActivity = ({ setOrderStatus, orderStatus, rider }) => {
   ]);
   const statusToStepIndex = {
     "Picked Up/ On The Way": 1, // pickUp
-    "Out for Delivery": 3, // delivery
-    Delivered: 4, // completed
+    "Out for Delivery": 2, // delivery
+    Delivered: 3, // completed
   };
 
   const [openModal, setOpenModal] = useState(false);

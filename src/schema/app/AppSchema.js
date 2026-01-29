@@ -70,10 +70,10 @@ export const ProductSchema = Yup.object({
     .max(4, "Max 4 digits allowed")
     .required("Unit price is required"),
 
-  unitMessurement: Yup.string()
-    .matches(/^\d+$/, "Only numbers allowed")
-    .max(4, "Max 4 digits allowed")
-    .required("Unit measurement is required"),
+  // unitMessurement: Yup.string()
+  //   .matches(/^\d+$/, "Only numbers allowed")
+  //   .max(4, "Max 4 digits allowed")
+  //   .required("Unit measurement is required"),
 
   instructions: Yup.string()
     .max(300, "Special instructions can't exceed 300 characters")

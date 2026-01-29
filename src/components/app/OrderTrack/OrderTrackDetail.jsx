@@ -5,6 +5,7 @@ import {
   CallIcon,
   ChatBtnIcon,
   MessageIcon,
+  ReplyComment,
   SubTitleIcon,
   TruckIcon,
 } from "../../../assets/export";
@@ -22,10 +23,13 @@ import { ErrorToast, SuccessToast } from "../../global/Toaster";
 import { OpenRiderChat } from "../../../redux/slices/ChatSlice";
 import QRCode from "react-qr-code";
 import OrderTrackingModal from "../../global/OrderTrackingModal";
+import ReplyReviewModal from "../Product/ReplyReviewModal";
 
-const CustomerReviewCard = ({ review }) => {
-  const { userRecord, rating, reviews, createdAt, reply } = review[0];
-
+const CustomerReviewCard = ({ reviews, getOrderDetail }) => {
+  const [selectedReviewId, setSelectedReviewId] = useState(null);
+  const { company } = useSelector((state) => state.auth);
+  const [isOpen, setIsOpen] = useState(false);
+  console.log(reviews, "reviewss");
   return (
     <div className="w-full mt-4 bg-white rounded-2xl shadow-[0_4px_25px_rgba(0,0,0,0.1)] p-4">
       {/* Header */}
@@ -35,51 +39,96 @@ const CustomerReviewCard = ({ review }) => {
         </h2>
       </div>
 
-      {/* Rating */}
-      <div className="flex items-center gap-1 mb-2">
-        {[1, 2, 3, 4, 5].map((star) =>
-          star <= rating ? (
-            <FaStar key={star} className="text-yellow-400 text-lg" />
-          ) : (
-            <FaRegStar key={star} className="text-yellow-400 text-lg" />
-          ),
-        )}
-      </div>
+      <div className="space-y-6">
+        {reviews?.map((review) => (
+          <div
+            key={review._id}
+            className="border-b border-gray-200 pb-6 last:border-none"
+          >
+            <div className="flex items-center space-x-1 mb-2">
+              {[...Array(5)].map((_, i) => (
+                <FaStar
+                  key={i}
+                  className={`${
+                    i < review.rating ? "text-yellow-400" : "text-gray-300"
+                  } text-lg`}
+                />
+              ))}
+            </div>
 
-      {/* Review Text */}
-      <p className="text-[#181818] text-[12px] mb-2 font-[400]">{reviews}</p>
+            <div className="flex justify-between gap-4 items-start ">
+              <p className="text-[#181818] text-[12px] font-[400] leading-relaxed">
+                {review.reviews}
+              </p>
 
-      {/* User Info */}
-      <div className="flex items-center gap-3 mb-3">
-        <img
-          src={userRecord?.profilePicture}
-          alt="Profile"
-          className="w-10 h-10 rounded-full border-2 border-[#00B39F]"
-        />
-        <div>
-          <h3 className="text-[12px] font-[500] text-[#181818]">
-            {userRecord?.name}
-          </h3>
-          <p className="text-[10px] font-[400] text-[#5C5C5C]">
-            {new Date(createdAt).toLocaleDateString()}
-          </p>
-        </div>
-      </div>
+              {!review.reply && (
+                <Button
+                  onClick={() => {
+                    setSelectedReviewId(review._id);
+                    setIsOpen(true);
+                  }}
+                  text={"Write a Reply"}
+                  customClass={
+                    "w-[120px] !text-[14px] !font-[400] !rounded-[15px]"
+                  }
+                />
+              )}
+            </div>
 
-      {/* Reply Section */}
-      {reply && (
-        <>
-          <div className="pl-3 ml-6 mb-2">
-            <p className="text-[#181818] text-[12px] font-[400]">{reply}</p>
+            <div className="flex justify-between items-center">
+              <div className="flex relative items-center space-x-3">
+                <img
+                  src={review.userRecord?.profilePicture}
+                  alt={review.userRecord?.name}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+
+                {review.reply && (
+                  <img
+                    src={ReplyComment}
+                    className="absolute top-11 left-2 w-[12px]"
+                    alt="ReplyComment"
+                  />
+                )}
+
+                <div className="flex items-center gap-2">
+                  <p className="font-medium text-[12px] text-[#181818]">
+                    {review.user?.name}
+                  </p>
+                  <p className="text-[#838383] text-[12px] font-[400]">
+                    {formatDate(review.createdAt)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {review.reply && (
+              <div className="mt-2 ml-8 pl-4">
+                <p className="text-[#181818] text-[12px] w-[260px] font-[400] mb-2">
+                  {review.reply}
+                </p>
+                <p className="text-[#181818] flex items-center mt-2 gap-2 text-[12px] font-medium">
+                  <img
+                    src={company?.profilePicture}
+                    alt="reply-user"
+                    className="w-10 h-10 rounded-full object-cover"
+                  />{" "}
+                  Replied By You
+                </p>
+              </div>
+            )}
           </div>
-
-          <div className="flex items-center gap-2 ml-8">
-            <p className="text-[#181818] flex items-center mt-2 gap-2 text-[12px] font-medium">
-              Replied By You
-            </p>
-          </div>
-        </>
-      )}
+        ))}
+      </div>
+      <ReplyReviewModal
+        apiCallOnReplye={async () => {
+          await dispatch(getProductReviewByID(selectedReviewId)).unwrap();
+          await getOrderDetail();
+        }}
+        reviewId={selectedReviewId}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      />
     </div>
   );
 };
@@ -124,12 +173,12 @@ export default function OrderTrackDetail() {
   const { singleOrder, isLoading } = useSelector((state) => state?.app);
   const loc = useLocation();
   const orderId = loc?.state?.id;
-  const gerOrderDetail = async () => {
+  const getOrderDetail = async () => {
     dispatch(getOrderById(orderId)).unwrap();
   };
   useEffect(() => {
     const fetchProductId = async () => {
-      await gerOrderDetail();
+      await getOrderDetail();
     };
 
     fetchProductId();
@@ -559,7 +608,10 @@ export default function OrderTrackDetail() {
 
               {statusMap[orderStatus] == "Delivered" &&
                 singleOrder?.review?.length > 0 && (
-                  <CustomerReviewCard review={singleOrder?.review} />
+                  <CustomerReviewCard
+                    getOrderDetail={getOrderDetail}
+                    reviews={singleOrder?.review}
+                  />
                 )}
             </div>
           </div>

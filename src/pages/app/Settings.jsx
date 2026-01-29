@@ -11,6 +11,8 @@ export default function Settings() {
   const [activeModal, setActiveModal] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [successFullUpdate, SetSuccessfulUpdate] = useState(false);
+  const [notificationEnabled, setNotificationEnabled] = useState(true);
+
   const navigate = useNavigate("");
   const menuItems = [
     { label: "Notification Settings", color: "text-gray-800" },
@@ -36,17 +38,42 @@ export default function Settings() {
         {menuItems.map((item, index) => (
           <div
             key={index}
-            onClick={() =>
-              item.label == "Payment Method"
-                ? navigate("/app/payment-methods")
-                : handleItemClick(item.label)
-            }
+            onClick={() => {
+              if (item.label === "Payment Method") {
+                navigate("/app/payment-methods");
+              } else if (item.label === "Notification Settings") {
+                setNotificationEnabled((prev) => !prev);
+              } else {
+                handleItemClick(item.label);
+              }
+            }}
             className="flex items-center mb-2 justify-between rounded-[12px] px-6 py-4 bg-[#FFFFFF] border-b border-gray-100 hover:bg-gray-200 cursor-pointer transition-colors duration-200"
           >
             <span className={`text-[14px] font-medium ${item.color}`}>
               {item.label}
             </span>
-            <MdOutlineKeyboardArrowRight size={20} className="text-[#22B573]" />
+            {item.label === "Notification Settings" ? (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // 🛑 prevent parent click
+                  setNotificationEnabled((prev) => !prev);
+                }}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
+                  notificationEnabled ? "bg-[#22B573]" : "bg-gray-300"
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                    notificationEnabled ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            ) : (
+              <MdOutlineKeyboardArrowRight
+                size={20}
+                className="text-[#22B573]"
+              />
+            )}
           </div>
         ))}
       </div>

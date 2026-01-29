@@ -139,15 +139,13 @@ export default function EditProduct() {
         form.append("images[]", "");
       }
       newImages.forEach((file) => form.append("updateImages", file));
-
-      // 🔸 Append documents
       // 🔸 Append documents
       if (oldDocs.length > 0) {
         oldDocs.forEach((file) => form.append("productDoc[]", file));
       } else {
         form.append("productDoc[]", ""); // 👈 empty key
       }
-      newDocs.forEach((file) => form.append("updateProductDoc[]", file));
+      newDocs.forEach((file) => form.append("updateProductDoc", file));
 
       // ✅ Add only allowed fields from values
       Object.entries(values).forEach(([key, value]) => {
@@ -404,7 +402,7 @@ export default function EditProduct() {
             <div className="grid grid-cols-2 gap-4">
               <Input
                 text="Height"
-                holder="ft"
+                holder={"in"}
                 name="itemHeight"
                 type="number"
                 bg
@@ -421,7 +419,7 @@ export default function EditProduct() {
               />
               <Input
                 text="Width"
-                holder="ft"
+                holder={"in"}
                 name="itemWidth"
                 type="number"
                 bg
@@ -438,7 +436,7 @@ export default function EditProduct() {
               />
               <Input
                 text="Length"
-                holder="ft"
+                holder={"in"}
                 name="itemLength"
                 type="number"
                 bg
@@ -479,7 +477,7 @@ export default function EditProduct() {
             <div className="grid grid-cols-2 gap-4">
               <Input
                 text="Height"
-                holder="ft"
+                holder={"in"}
                 name="packageHeight"
                 type="number"
                 bg
@@ -496,7 +494,7 @@ export default function EditProduct() {
               />
               <Input
                 text="Width"
-                holder="ft"
+                holder={"in"}
                 name="packageWidth"
                 type="number"
                 bg
@@ -513,7 +511,7 @@ export default function EditProduct() {
               />
               <Input
                 text="Length"
-                holder="ft"
+                holder={"in"}
                 name="packageLength"
                 type="number"
                 bg
@@ -551,7 +549,7 @@ export default function EditProduct() {
           {/* Pricing & Inventory */}
           <div className="bg-white p-6 col-span-12 rounded-2xl shadow-sm">
             <h2 className="text-[22px] font-[500] mb-5">Pricing & Inventory</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <Input
                 text="Price Per Unit"
                 holder="Fixed Price"
@@ -568,7 +566,7 @@ export default function EditProduct() {
                 error={errors.unitPrice}
                 touched={touched.unitPrice}
               />
-              <Input
+              {/* <Input
                 text="Unit of Measurement"
                 holder="lbs"
                 name="unitMessurement"
@@ -583,7 +581,7 @@ export default function EditProduct() {
                 handleBlur={handleBlur}
                 error={errors.unitMessurement}
                 touched={touched.unitMessurement}
-              />
+              /> */}
 
               {/* Min Quantity */}
               <Input
@@ -710,6 +708,7 @@ export default function EditProduct() {
                 multiple
                 className="hidden"
                 id="productDocs"
+                accept=".pdf"
                 onChange={handleDocChange}
               />
             </label>

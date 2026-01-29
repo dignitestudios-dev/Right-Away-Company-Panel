@@ -49,9 +49,7 @@ export default function WalletData() {
   // Withdrawal Table Columns
   const withdrawalColumns = [
     "Transactions ID",
-    "Routing Number",
     "Withdrawal Amount",
-    "Transfer Method",
     "Status",
     "Withdrawal Date",
   ];
@@ -66,9 +64,7 @@ export default function WalletData() {
         _id: item._id,
         cells: [
           <p key={index + "-id"}>{item.transactionId}</p>,
-          <p key={index + "-acc"}>{item.routingNumber || "--"}</p>,
           <p key={index + "-amount"}>{item.amount || "--"}</p>,
-          <p key={index + "-method"}>{item.paymentMethod || "--"}</p>,
           <p key={index + "-status"}>{item.status || "--"}</p>,
           <p key={index + "-date"}>{item.date}</p>,
         ],

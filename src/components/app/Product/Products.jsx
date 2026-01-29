@@ -30,7 +30,7 @@ export default function ProductsData() {
         search: filters.search,
         startDate: filters.startDate,
         endDate: filters.endDate,
-      })
+      }),
     );
   }, [dispatch, filters]); // 👈 re-fetch when filters change
 
@@ -77,7 +77,7 @@ export default function ProductsData() {
               updateProductStock({
                 id: item?._id,
                 isStock: e.target.checked,
-              })
+              }),
             ).unwrap();
             await dispatch(getProducts({})).unwrap();
           }}
@@ -116,7 +116,7 @@ export default function ProductsData() {
         <Filter onFilterChange={setFilters} /> {/* ✅ pass callback */}
       </div>
 
-      <div className="mt-2 rounded-2xl shadow-sm border-t p-3 border-[#B9B9B9] bg-[#FFFFFF]">
+      <div className="mt-2 rounded-2xl shadow-sm border-t p-3  border-[#B9B9B9] bg-[#FFFFFF]">
         <GlobalTable
           data={data}
           columns={columns}

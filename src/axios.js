@@ -2,8 +2,7 @@ import axios from "axios";
 import { ErrorToast } from "./components/global/Toaster";
 import Cookies from "js-cookie";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { useDispatch } from "react-redux";
-import { logout } from "./redux/slices/authSlice";
+
 
 export const baseUrl = "https://api.rightawayapp.com/";
 // export const baseUrl = "https://toneless-aprioristically-sacha.ngrok-free.dev/";

@@ -12,7 +12,7 @@ export const ProductValues = {
   packageLength: "",
   packageWeight: "",
   unitPrice: "",
-  unitMessurement: "",
+  // unitMessurement: "",
   instructions: "",
   delivery: true,
   maxOrder:"",
