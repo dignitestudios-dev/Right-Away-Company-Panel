@@ -58,7 +58,7 @@ export default function WalletData() {
   const isWithdrawal = activeStatus === "Withdrawal History";
   const columns = isWithdrawal ? withdrawalColumns : transactionColumns;
   const sourceData = isWithdrawal ? walletHistory : walletTransactions || [];
-  const data = sourceData.map((item, index) => {
+  const data = sourceData?.map((item, index) => {
     if (isWithdrawal) {
       return {
         _id: item._id,

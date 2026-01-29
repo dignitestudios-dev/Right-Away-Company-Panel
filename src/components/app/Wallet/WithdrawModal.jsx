@@ -36,7 +36,7 @@ export default function WithdrawModal({ isOpen, setIsOpen }) {
     );
 
     if (withdrawFunds.fulfilled.match(result)) {
-      setWithdrawData(result.payload); // <-- store API response here
+      setWithdrawData(result?.payload); // <-- store API response here
       setIsSuccess(true);
       setIsOpen(false);
       setSelectedBank(null);
