@@ -20,7 +20,7 @@ export default function WalletData() {
   const statuses = ["Transaction History", "Withdrawal History"];
   const dispatch = useDispatch();
   const { walletTransactions, walletHistory, isLoading, pagination } =
-    useSelector((state) => state.app);
+    useSelector((state) => state?.app);
 
   const handleWalletTransactions = async () => {
     await dispatch(
@@ -57,8 +57,15 @@ export default function WalletData() {
   // ✅ Decide which data & columns to show
   const isWithdrawal = activeStatus === "Withdrawal History";
   const columns = isWithdrawal ? withdrawalColumns : transactionColumns;
-  const sourceData = isWithdrawal ? walletHistory : walletTransactions || [];
-  const data = sourceData?.map((item, index) => {
+  const sourceData = isWithdrawal
+    ? Array.isArray(walletHistory)
+      ? walletHistory
+      : []
+    : Array.isArray(walletTransactions)
+      ? walletTransactions
+      : [];
+
+  const data = sourceData.map((item, index) => {
     if (isWithdrawal) {
       return {
         _id: item._id,
@@ -71,17 +78,13 @@ export default function WalletData() {
       };
     }
 
-    // 🚀 Show Real Transaction Table Data
     return {
-      _id: item?._id,
+      _id: item._id,
       cells: [
-        <p key={index + "-order"}>{item?.orderId}</p>,
-
-        <p key={index + "-user"}>{item?.user?.name}</p>,
-
-        <p key={index + "-amount"}>{item?.total}</p>,
-
-        <p key={index + "-date"}>{formatDate(item?.createdAt)}</p>,
+        <p key={index + "-order"}>{item.orderId}</p>,
+        <p key={index + "-user"}>{item.user?.name}</p>,
+        <p key={index + "-amount"}>{item.total}</p>,
+        <p key={index + "-date"}>{formatDate(item.createdAt)}</p>,
       ],
     };
   });
