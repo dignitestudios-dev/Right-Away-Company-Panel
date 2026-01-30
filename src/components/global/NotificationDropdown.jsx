@@ -8,12 +8,14 @@ import {
   readNotification,
 } from "../../redux/slices/AppSlice";
 import { formatTime } from "../../lib/helpers";
-
+import { MdKeyboardArrowRight } from "react-icons/md";
+import { useNavigate } from "react-router";
 const Notifications = () => {
   const dispatch = useDispatch("");
   const { notifications, notificationsLoading } = useSelector(
     (state) => state.app,
   );
+  const navigate = useNavigate("");
 
   const handleGetNotifications = async () => {
     await dispatch(getNotifications());
@@ -139,6 +141,19 @@ const Notifications = () => {
                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                       />
                     </svg>
+                  </button>
+                  <button
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      await handleRead(notification?._id);
+                      navigate("/app/order-detail", {
+                        state: { id: notification?.metaData?._id },
+                      });
+                    }}
+                    className=" transition-opacity p-1.5 hover:bg-teal-50 rounded-md"
+                    aria-label="Redirect Order notification"
+                  >
+                    <MdKeyboardArrowRight className="text-teal-600" size={20} />
                   </button>
                 </div>
               </div>
