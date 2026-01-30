@@ -96,7 +96,7 @@ const Notifications = () => {
                 }`}
                 onClick={() => handleRead(notification._id)}
               >
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-1">
                   {/* Unread Indicator */}
                   <div className="pt-1.5">
                     {!notification.isRead && (
@@ -107,14 +107,14 @@ const Notifications = () => {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-1">
-                      <h2 className="text-sm font-semibold text-gray-900">
+                      <h2 className="text-sm capitalize font-semibold text-gray-900">
                         {notification.title}
                       </h2>
                       <span className="text-xs text-gray-400 ml-2 whitespace-nowrap">
                         {formatTime(notification.createdAt)}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 leading-relaxed">
+                    <p className="text-sm capitalize text-gray-600 leading-relaxed">
                       {notification.description}
                     </p>
                   </div>
@@ -125,7 +125,7 @@ const Notifications = () => {
                       e.stopPropagation();
                       handleDelete(notification._id);
                     }}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-red-50 rounded-md"
+                    className=" transition-opacity px-1 hover:bg-red-50 rounded-md"
                     aria-label="Delete notification"
                   >
                     <svg
@@ -150,7 +150,7 @@ const Notifications = () => {
                         state: { id: notification?.metaData?._id },
                       });
                     }}
-                    className=" transition-opacity p-1.5 hover:bg-teal-50 rounded-md"
+                    className=" transition-opacity px-1 hover:bg-teal-50 rounded-md"
                     aria-label="Redirect Order notification"
                   >
                     <MdKeyboardArrowRight className="text-teal-600" size={20} />
