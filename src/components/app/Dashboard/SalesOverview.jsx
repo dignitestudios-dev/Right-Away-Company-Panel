@@ -19,41 +19,51 @@ const SalesOverview = () => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    if (!startDate || !endDate) return;
+    const payload = {
+      type: viewMode === "weekly" ? "week" : "year",
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate }),
+    };
 
-    dispatch(
-      getSalesGraph({
-        type: viewMode === "weekly" ? "week" : "year",
-        startDate,
-        endDate,
-      })
-    );
+    dispatch(getSalesGraph(payload));
   }, [dispatch, viewMode, startDate, endDate]);
 
-  const formatGraphData = (data, type = "week") => {
+  const formatGraphData = (data, type = "month") => {
     if (!Array.isArray(data)) return [];
 
+    // ✅ WEEKLY GRAPH
+    if (type === "week") {
+      return data.map((item) => {
+        const dateObj = new Date(item.date); // ✅ API date use karo
+
+        return {
+          label: dateObj.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+          }),
+          value: item.totalRevenue ?? 0,
+        };
+      });
+    }
+
+    // ✅ MONTHLY GRAPH
     return data.map((item) => {
-      const dateObj = new Date(item.date);
+      const dateObj = new Date(item.year, item.month - 1, 1);
 
       return {
-        label:
-          type === "week"
-            ? dateObj.toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short",
-              })
-            : dateObj.toLocaleDateString("en-US", {
-                month: "short",
-              }),
-        value: Math.round(item.totalRevenue),
+        label: dateObj.toLocaleDateString("en-US", {
+          month: "short",
+        }),
+        value: item.count ?? 0,
       };
     });
   };
+
   const graphData = formatGraphData(
     salesGraph,
-    viewMode === "weekly" ? "week" : "month"
+    viewMode === "weekly" ? "week" : "month",
   );
+
   console.log(graphData);
   const [hoveredMonth, setHoveredMonth] = useState("AUG");
 

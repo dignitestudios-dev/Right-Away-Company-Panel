@@ -38,17 +38,21 @@ const TransactionGraph = () => {
   const formatTransactionData = (data) => {
     if (!Array.isArray(data)) return [];
 
-    return data.map((item) => {
-      const dateObj = new Date(item.date);
-      return {
-        label: dateObj.toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-        }),
-        upper: item.totalReceived,
-        lower: item.totalSent,
-      };
-    });
+    return data
+      .map((item) => {
+        if (!item.date) return null;
+
+        // Split the date manually to avoid timezone issues
+        const [year, month, day] = item.date.split("-");
+        const dateObj = new Date(year, month - 1, day); // ✅ exact date
+
+        return {
+          label: `${day} ${dateObj.toLocaleDateString("en-GB", { month: "short" })}`,
+          upper: item.totalReceived ?? 0,
+          lower: item.totalSent ?? 0,
+        };
+      })
+      .filter(Boolean);
   };
 
   const chartData = formatTransactionData(transactionGraph);
