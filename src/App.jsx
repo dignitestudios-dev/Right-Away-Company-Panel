@@ -34,6 +34,7 @@ import { useSelector } from "react-redux";
 import PrivacyPolicy from "./pages/app/PrivacyPolicy";
 import TermsConditions from "./pages/app/TermsConditions";
 import SocialRegister from "./pages/onboarding/SocialRegister";
+import MobileOnlyScreen from "./pages/app/RiderInterfaceConfrimPopup";
 
 function App() {
   function DefaultRedirect() {
@@ -48,6 +49,7 @@ function App() {
   }
   return (
     <Routes>
+      <Route path="/confirmation" element={<MobileOnlyScreen />} />
       <Route path="/" element={<DefaultRedirect />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/terms-condition" element={<TermsConditions />} />
