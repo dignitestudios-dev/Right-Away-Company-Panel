@@ -27,7 +27,7 @@ const ReviewsSection = ({ id }) => {
   };
 console.log(SingleProductReview)
   return (
-    <div className="bg-[#FFFFFF] rounded-2xl shadow-sm border-[0.3px] border-gray-200 p-6 mt-10 mx-auto font-inter">
+    <div className="bg-[#FFFFFF] rounded-2xl  shadow-sm border-[0.3px] border-gray-200 p-6 mt-10 mx-auto font-inter">
       <h2 className="text-[18px] font-semibold text-[#181818] mb-6">
         Reviews{" "}
         <span className="text-[#5C5C5C] text-[13px] font-[400]">
@@ -106,7 +106,7 @@ console.log(SingleProductReview)
 
             {review.reply && (
               <div className="mt-2 ml-8 pl-4">
-                <p className="text-[#181818] text-[12px] w-[260px] font-[400] mb-2">
+                <p className="text-[#181818] break-words w-auto  max-w-[1000px] text-[12px]  font-[400] mb-2">
                   {review.reply}
                 </p>
                 <p className="text-[#181818] flex items-center mt-2 gap-2 text-[12px] font-medium">

@@ -177,7 +177,10 @@ export default function AddNewProduct() {
 
       // 🔸 Append product fields
       Object.entries(values).forEach(([key, value]) => {
-        form.append(key, value);
+        if (value !== "" && value !== null && value !== undefined) {
+          console.log(key,"keysss")
+          form.append(key, value);
+        }
       });
 
       // 🔸 Append inventory list

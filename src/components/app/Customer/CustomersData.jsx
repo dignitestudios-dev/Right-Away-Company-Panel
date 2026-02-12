@@ -9,13 +9,55 @@ import { GoArrowLeft } from "react-icons/go";
 import Filter from "../../global/Filter";
 
 export default function CustomersData() {
-  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { Customers, isLoading, pagination } = useSelector(
+    (state) => state?.app,
+  );
+
+  // Filters state
   const [filters, setFilters] = useState({
     search: "",
     startDate: "",
     endDate: "",
+    page: 1,
   });
+
+  // Debounced search state
+  const [debouncedSearch, setDebouncedSearch] = useState(filters.search);
+
+  // Update debouncedSearch after 500ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(filters.search);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [filters.search]);
+
+  // Fetch customers whenever debouncedSearch, dates, or page changes
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      await dispatch(
+        getCustomers({
+          search: debouncedSearch,
+          startDate: filters.startDate,
+          endDate: filters.endDate,
+          page: filters.page,
+          limit: 10,
+        }),
+      ).unwrap();
+    };
+
+    fetchCustomers();
+  }, [
+    dispatch,
+    debouncedSearch,
+    filters.startDate,
+    filters.endDate,
+    filters.page,
+  ]);
+
   const columns = [
     "Customer Name",
     "Email Address",
@@ -24,169 +66,84 @@ export default function CustomersData() {
     "Action",
   ];
 
-  const { Customers, isLoading, pagination } = useSelector(
-    (state) => state?.app
-  );
-  const dispatch = useDispatch();
-  const fetchCustomers = async () => {
-    await dispatch(
-      getCustomers({
-        search: filters.search,
-        startDate: filters.startDate,
-        endDate: filters.endDate,
-      })
-    ).unwrap();
-  };
-  useEffect(() => {
-    fetchCustomers();
-  }, [dispatch, filters]);
-
-  // const customers = [
-  //   {
-  //     _id: "1",
-  //     name: "Christine Easom",
-  //     email: "christine@example.com",
-  //     phone: "+1 (555) 123-4567",
-  //     location: "New York, USA",
-  //   },
-  //   {
-  //     _id: "2",
-  //     name: "Michael Johnson",
-  //     email: "michael.j@example.com",
-  //     phone: "+1 (555) 987-6543",
-  //     location: "Los Angeles, USA",
-  //   },
-  //   {
-  //     _id: "3",
-  //     name: "Sarah Williams",
-  //     email: "sarah.w@example.com",
-  //     phone: "+1 (555) 222-3344",
-  //     location: "Chicago, USA",
-  //   },
-  //   {
-  //     _id: "4",
-  //     name: "David Brown",
-  //     email: "david.b@example.com",
-  //     phone: "+1 (555) 876-5432",
-  //     location: "Houston, USA",
-  //   },
-  //   {
-  //     _id: "5",
-  //     name: "Emily Davis",
-  //     email: "emily.d@example.com",
-  //     phone: "+1 (555) 444-1122",
-  //     location: "San Francisco, USA",
-  //   },
-  //   {
-  //     _id: "6",
-  //     name: "Daniel Garcia",
-  //     email: "daniel.g@example.com",
-  //     phone: "+1 (555) 666-7788",
-  //     location: "Miami, USA",
-  //   },
-  //   {
-  //     _id: "7",
-  //     name: "Sophia Martinez",
-  //     email: "sophia.m@example.com",
-  //     phone: "+1 (555) 999-1234",
-  //     location: "Seattle, USA",
-  //   },
-  //   {
-  //     _id: "8",
-  //     name: "James Anderson",
-  //     email: "james.a@example.com",
-  //     phone: "+1 (555) 333-5566",
-  //     location: "Denver, USA",
-  //   },
-  //   {
-  //     _id: "9",
-  //     name: "Olivia Taylor",
-  //     email: "olivia.t@example.com",
-  //     phone: "+1 (555) 777-8888",
-  //     location: "Boston, USA",
-  //   },
-  //   {
-  //     _id: "10",
-  //     name: "William Thompson",
-  //     email: "william.t@example.com",
-  //     phone: "+1 (555) 555-9999",
-  //     location: "Atlanta, USA",
-  //   },
-  // ];
-
-  // ✅ Properly structure rows for GlobalTable
-  console.log(Customers, "customer--->");
-  const data = Customers?.map((item, index) => ({
-    _id: item.userId,
-    cells: [
-      <div key={index + "-name"} className="flex items-center gap-3">
-        <img
-          src={Person2}
-          alt="Person"
-          className="w-10 h-10 rounded-full border border-[#00C49A] object-cover"
-        />
-        <div>
-          <p className="font-medium text-[14px]">{item?.name}</p>
-        </div>
-      </div>,
-
-      <p
-        key={index + "-description"}
-        className="text-[#181818] text-[14px] font-[400]"
-      >
-        {item?.email}
-      </p>,
-      <p
-        key={index + "-date"}
-        className="text-[#181818] text-[14px] font-[400]"
-      >
-        {item?.phone}
-      </p>,
-      <p
-        key={index + "-date"}
-        className="text-[#181818] text-[14px] font-[400]"
-      >
-        {item?.address}
-      </p>,
-      <div key={index + "-action"} className="flex items-center gap-3">
-        <NavLink
-          to={"/app/customer-detail"}
-          state={{ customer: item }}
-          className="text-[#00C49A] text-nowrap font-[500] border-b border-[#00C49A]"
+  // Format table rows
+  const data =
+    Customers?.map((item, index) => ({
+      _id: item.userId,
+      cells: [
+        <div key={index + "-name"} className="flex items-center gap-3">
+          <img
+            src={item?.profilePicture || Person2}
+            alt="Person"
+            className="w-10 h-10 rounded-full border border-[#00C49A] object-cover"
+          />
+          <div>
+            <p className="font-medium text-[14px]">{item?.name}</p>
+          </div>
+        </div>,
+        <p
+          key={index + "-email"}
+          className="text-[#181818] text-[14px] font-[400]"
         >
-          View Details
-        </NavLink>
-      </div>,
-    ],
-  }));
+          {item?.email}
+        </p>,
+        <p
+          key={index + "-phone"}
+          className="text-[#181818] text-[14px] font-[400]"
+        >
+          {item?.phone}
+        </p>,
+        <p
+          key={index + "-address"}
+          className="text-[#181818] text-[14px] font-[400]"
+        >
+          {item?.address}
+        </p>,
+        <div key={index + "-action"} className="flex items-center gap-3">
+          <NavLink
+            to={"/app/customer-detail"}
+            state={{ customer: item }}
+            className="text-[#00C49A] text-nowrap font-[500] border-b border-[#00C49A]"
+          >
+            View Details
+          </NavLink>
+        </div>,
+      ],
+    })) || [];
+
   return (
     <>
       <div className="flex justify-between ">
         <h3 className="font-[600] text-[32px] flex items-center gap-2">
-          {" "}
           <GoArrowLeft
             onClick={() => navigate(-1)}
-            className="text-[#03958A] cursor-pointer "
+            className="text-[#03958A] cursor-pointer"
             size={21}
-          />{" "}
+          />
           Customer
         </h3>
+
         <div className="flex items-center gap-4">
-          <Filter hide={true} onFilterChange={setFilters} />
+          {/* Show Filter with debounce */}
+          <Filter
+            hide={false} // show input
+            onFilterChange={(newFilters) =>
+              setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }))
+            }
+          />
         </div>
       </div>
-      <div className="mt-4 rounded-2xl shadow-sm border-t p-2 border-[#B9B9B9] bg-[#FFFFFF] ">
-        {/* ✅ Pass structured data to GlobalTable */}
+
+      <div className="mt-4 rounded-2xl shadow-sm border-t p-2 border-[#B9B9B9] bg-[#FFFFFF]">
         <GlobalTable data={data} columns={columns} loading={isLoading} />
       </div>
+
       <Pagination
-        currentPage={pagination?.currentPage}
-        totalPages={pagination?.totalPages}
-        totalItems={pagination?.totalItems}
-        itemsPerPage={pagination?.itemsPerPage}
-        onPageChange={(page) =>
-          dispatch(getCustomers({ ...filters, page, limit: 10 }))
-        }
+        currentPage={pagination?.currentPage || 1}
+        totalPages={pagination?.totalPages || 1}
+        totalItems={pagination?.totalItems || 0}
+        itemsPerPage={pagination?.itemsPerPage || 10}
+        onPageChange={(page) => setFilters((prev) => ({ ...prev, page }))}
       />
     </>
   );

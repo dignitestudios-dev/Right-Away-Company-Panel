@@ -26,7 +26,7 @@ export default function OrdersData() {
       type: "manage",
       ...(activeStatus !== "All" && { status: activeStatus }),
       page: pagination?.currentPage,
-      limit:10,
+      limit: 10,
       search: filters.search,
       startDate: filters.startDate,
       endDate: filters.endDate,
@@ -35,7 +35,7 @@ export default function OrdersData() {
     dispatch(getOrders(payload));
   }, [dispatch, filters, activeStatus]); // 👈 re-fetch when filters change
 
-  const statuses = ["All", "incoming" ,"cancelled"];
+  const statuses = ["All", "incoming", "cancelled"];
 
   const columns = [
     "Order ID",
@@ -80,7 +80,7 @@ export default function OrdersData() {
 
       // Delivery Type
       <p
-        key={`order-${index}-type`} 
+        key={`order-${index}-type`}
         className="text-[#181818] capitalize text-[14px] font-[400]"
       >
         {item.type}
@@ -101,10 +101,10 @@ export default function OrdersData() {
           item.status === "Completed"
             ? "text-[#00C853]"
             : item.status === "cancelled"
-            ? "text-[#FF3B30]"
-            : item.status === "processing"
-            ? "text-[#FF9800]"
-            : "text-[#03958A]"
+              ? "text-[#FF3B30]"
+              : item.status === "processing"
+                ? "text-[#FF9800]"
+                : "text-[#03958A]"
         }`}
       >
         {item.status}
@@ -161,13 +161,21 @@ export default function OrdersData() {
       </div>
 
       {/* ✅ Pagination */}
+      {/* ✅ Pagination */}
       <Pagination
         currentPage={pagination?.currentPage}
         totalPages={pagination?.totalPages}
         totalItems={pagination?.totalItems}
         itemsPerPage={pagination?.itemsPerPage}
         onPageChange={(page) =>
-          dispatch(getOrders({...filters,type:"manage",page, limit: 10 }))
+          dispatch(
+            getOrders({
+              ...filters,
+              type: "manage",
+              page,
+              limit: pagination?.itemsPerPage || 10,
+            }),
+          )
         }
       />
     </div>

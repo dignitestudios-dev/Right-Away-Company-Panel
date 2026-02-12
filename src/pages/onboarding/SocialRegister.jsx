@@ -21,7 +21,7 @@ export default function SocialRegister() {
   const providerSteps = [
     { icon: RxFileText, title: "Business Details" },
     { icon: CiFileOn, title: "Identification and Verification" },
-    { icon: LiaIdCard, title: "Company details" },
+    { icon: LiaIdCard, title: "Company Details" },
     { icon: PiCertificateBold, title: "Multiple Store Location" },
     { icon: MdOutlinePayment, title: "Payment Method" },
   ];
@@ -31,6 +31,7 @@ export default function SocialRegister() {
     completed: index < currentStep,
     active: index === currentStep,
   }));
+
   useEffect(() => {
     if (isOnboardingStep != currentStep) {
       setCurrentStep(isOnboardingStep);

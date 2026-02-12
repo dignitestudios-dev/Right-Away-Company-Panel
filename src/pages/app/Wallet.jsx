@@ -52,7 +52,7 @@ export default function Wallet() {
           {wallet?.isBankAccountAdded > 0 ? (
             <Button
               onClick={() => setWithrawModal(!withrawModal)}
-              text={"Funds withdraw"}
+              text={"Withdraw Funds"}
               customClass={"w-[173px]"}
             />
           ) : (

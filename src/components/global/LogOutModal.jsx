@@ -21,13 +21,13 @@ const LogOutModal = ({ isOpen, setIsOpen }) => {
       overlayClassName="fixed inset-0 bg-[#C6C6C6] bg-opacity-50 backdrop-blur-sm z-[1000]  flex justify-center items-center"
     >
       <div className="bg-white rounded-[24px] p-4 shadow-lg w-[320px] h-[226px]">
-        <div className="flex justify-end items-center">
+        {/* <div className="flex justify-end items-center">
           <IoCloseSharp
             size={22}
             className="cursor-pointer"
             onClick={() => setIsOpen(false)}
           />
-        </div>
+        </div> */}
         <div className="flex flex-col g text-center justify-center items-center">
           <img src={LogOutImg} className="w-[35px] h-[35px]" alt="CrossIcon" />
           <h3 className="font-[600] mt-2 text-[20px] text-[#181818] ">

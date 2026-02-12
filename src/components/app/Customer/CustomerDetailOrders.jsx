@@ -17,10 +17,12 @@ export default function CustomerDetailOrders({ customer }) {
     "Action",
   ];
   console.log(customer, "customer_id");
-  const { CustomerOrders, isLoading } = useSelector((state) => state?.app);
+  const { CustomerOrders, isLoading, pagination } = useSelector(
+    (state) => state?.app,
+  );
   const dispatch = useDispatch();
   const fetchCustomersOrders = async () => {
-    await dispatch(getCustomerOrders(customer?.userId)).unwrap();
+    await dispatch(getCustomerOrders({ userId: customer?.userId })).unwrap();
   };
   useEffect(() => {
     fetchCustomersOrders();
@@ -39,12 +41,14 @@ export default function CustomerDetailOrders({ customer }) {
 
       <div key={`order-${index}-user`} className="flex items-center gap-3">
         <img
-          src={item?.user?.profilePicture || Person2}
+          src={item?.item[0]?.products?.images[0]}
           alt="User"
-          className="w-10 h-10 rounded-full border border-[#00C49A] object-cover"
+          className="w-10 h-10 rounded-md border  object-cover"
         />
         <div>
-          <p className="font-medium text-[14px]">{item?.user?.name}</p>
+          <p className="font-medium text-[14px]">
+            {item?.item[0]?.products?.name}
+          </p>
         </div>
       </div>,
 
@@ -85,7 +89,17 @@ export default function CustomerDetailOrders({ customer }) {
         {/* ✅ Pass structured data to GlobalTable */}
         <GlobalTable data={data} columns={columns} loading={isLoading} />
       </div>
-      <Pagination />
+      <Pagination
+        currentPage={pagination?.currentPage}
+        totalPages={pagination?.totalPages}
+        totalItems={pagination?.totalItems}
+        itemsPerPage={pagination?.itemsPerPage}
+        onPageChange={(page) =>
+          dispatch(
+            getCustomerOrders({ userId: customer?.userId, page }),
+          ).unwrap()
+        }
+      />
     </>
   );
 }

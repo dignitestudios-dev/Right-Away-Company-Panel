@@ -15,11 +15,50 @@ export default function ProductReviewsData() {
   const navigate = useNavigate();
   const [selected, setIsSelected] = useState(null);
   const { ProductReview, pagination } = useSelector((state) => state?.app);
+
+  // Filters state
   const [filters, setFilters] = useState({
     search: "",
     startDate: "",
     endDate: "",
+    page: 1,
   });
+
+  // Debounced search
+  const [debouncedSearch, setDebouncedSearch] = useState(filters.search);
+
+  // Update debounce value after 500ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(filters.search);
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [filters.search]);
+
+  // Fetch Product Reviews whenever debouncedSearch, startDate, endDate, or page changes
+  useEffect(() => {
+    const fetchProductReview = async () => {
+      await dispatch(
+        getProductReview({
+          search: debouncedSearch,
+          startDate: filters.startDate,
+          endDate: filters.endDate,
+          page: filters.page,
+          limit: 10,
+        }),
+      ).unwrap();
+    };
+
+    fetchProductReview();
+  }, [
+    dispatch,
+    debouncedSearch,
+    filters.startDate,
+    filters.endDate,
+    filters.page,
+  ]);
+
   const columns = [
     "Customer Name",
     "Product",
@@ -29,27 +68,11 @@ export default function ProductReviewsData() {
     "Action",
   ];
 
-  // Fetch Product Reviews
-  const fetchProductReview = async () => {
-    await dispatch(
-      getProductReview({
-        search: filters.search,
-        startDate: filters.startDate,
-        endDate: filters.endDate,
-      })
-    ).unwrap();
-  };
-
-  useEffect(() => {
-    fetchProductReview();
-  }, [dispatch, filters]);
-
-  // ✅ Format the reviews for GlobalTable
+  // Format table data
   const data =
     ProductReview?.map((item, index) => ({
       _id: item._id,
       cells: [
-        // 🧍 Customer Name + Avatar
         <div key={`user-${index}`} className="flex items-center gap-3">
           <img
             src={item?.userRecord?.profilePicture}
@@ -61,7 +84,6 @@ export default function ProductReviewsData() {
           </p>
         </div>,
 
-        // 🛒 Product Name + Image
         <div key={`product-${index}`} className="flex items-center gap-3">
           <img
             src={item?.productRecord?.images?.[0]}
@@ -73,7 +95,6 @@ export default function ProductReviewsData() {
           </p>
         </div>,
 
-        // 📝 Description
         <p
           key={`desc-${index}`}
           className="text-[#181818] text-[14px] font-[400]"
@@ -81,7 +102,6 @@ export default function ProductReviewsData() {
           {item?.productRecord?.description || "No description"}
         </p>,
 
-        // ⭐ Rating
         <div key={`rating-${index}`} className="flex items-center gap-1">
           <img src={RatingIcon} alt="rating" className="w-[16px] h-[15px]" />
           <p className="text-[#181818] text-[14px] font-[400]">
@@ -89,7 +109,6 @@ export default function ProductReviewsData() {
           </p>
         </div>,
 
-        // 📅 Date
         <p
           key={`date-${index}`}
           className="text-[#181818] text-[14px] font-[400]"
@@ -101,7 +120,6 @@ export default function ProductReviewsData() {
           })}
         </p>,
 
-        // 🔍 Action
         <button
           key={`action-${index}`}
           onClick={() => {
@@ -119,32 +137,42 @@ export default function ProductReviewsData() {
     <>
       <div className="flex justify-between ">
         <h3 className="font-[600] text-[32px] flex items-center gap-2">
-          {" "}
           <GoArrowLeft
             onClick={() => navigate(-1)}
             className="text-[#03958A] cursor-pointer "
             size={21}
-          />{" "}
+          />
           Product Reviews
         </h3>
 
         <div className="flex items-center gap-4">
-          <Filter hide={true} onFilterChange={setFilters} />
+          {/* Show Filter with debounce */}
+          <Filter
+            hide={false} // show input
+            onFilterChange={(newFilters) =>
+              setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }))
+            }
+          />
         </div>
       </div>
+
       <div className="mt-4 rounded-2xl shadow-sm border-t p-2 border-[#B9B9B9] bg-[#FFFFFF]">
         <GlobalTable data={data} columns={columns} />
       </div>
+
       <Pagination
-        currentPage={pagination?.currentPage}
-        totalPages={pagination?.totalPages}
-        totalItems={pagination?.totalItems}
-        itemsPerPage={pagination?.itemsPerPage}
-        onPageChange={(page) =>
-          dispatch(getProductReview({ ...filters, page, limit: 10 }))
-        }
+        currentPage={pagination?.currentPage || 1}
+        totalPages={pagination?.totalPages || 1}
+        totalItems={pagination?.totalItems || 0}
+        itemsPerPage={pagination?.itemsPerPage || 10}
+        onPageChange={(page) => setFilters((prev) => ({ ...prev, page }))}
       />
-      <ProductRatingReviewModal selected={selected} isOpen={isOpen} setIsOpen={setIsOpen} />
+
+      <ProductRatingReviewModal
+        selected={selected}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      />
     </>
   );
 }

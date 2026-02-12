@@ -294,15 +294,15 @@ export const getCustomers = createAsyncThunk(
 
 export const getCustomerOrders = createAsyncThunk(
   "company/getCustomerOrders",
-  async (payload, thunkAPI) => {
+  async ({ userId, page = 1, limit = 10 }, thunkAPI) => {
     try {
       // ❌ Don't hit API if payload is missing
-      if (!payload) {
+      if (!userId) {
         return thunkAPI.rejectWithValue("User ID is required");
       }
 
       const response = await instance.get(
-        `/company/user/${payload}/order?search=&page=1&limit=10`,
+        `/company/user/${userId}/order?search=&page=${page}&limit=${limit}`,
       );
 
       return response.data;
@@ -739,6 +739,7 @@ const appSlice = createSlice({
       .addCase(getCustomerOrders.fulfilled, (state, action) => {
         state.isLoading = false;
         state.CustomerOrders = action.payload.data;
+        state.pagination = action.payload.pagination;
       })
       .addCase(getCustomerOrders.rejected, (state, action) => {
         state.isLoading = false;

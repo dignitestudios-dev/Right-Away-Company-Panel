@@ -58,15 +58,15 @@ export default function CustomerDetail() {
         {/* Right Side: Details */}
         <div className="mt-5 col-span-8 lg:mt-0">      
           <div className="flex-1 mt-3 py-3 grid-cols-1 grid lg:grid-cols-3 gap-y-4 gap-x-8 text-sm text-gray-700">
-            <div className="border-r  border-[#BDBDBD]">
+            {/* <div className="border-r  border-[#BDBDBD]">
               <p className="text-[#959393] text-[16px] font-[400]">Country</p>
               <p className="font-[400] text-[16px] text-[#000000]">
                 {customer?.country}
               </p>
-            </div>
+            </div> */}
             <div className="border-r border-[#BDBDBD]">
               <p className="text-[#959393] text-[16px] font-[400]">City</p>
-              <p className="font-[400] text-[16px] text-[#000000]">
+              <p className="font-[400] capitalize text-[16px] text-[#000000]">
                 {customer?.city}
               </p>
             </div>

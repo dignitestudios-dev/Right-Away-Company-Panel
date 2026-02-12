@@ -22,10 +22,10 @@ const EditStoreModal = ({ isOpen, setIsOpen, isSelected }) => {
   const [showModal, setShowModal] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [availability, setAvailability] = useState(null);
-
+  console.log(isSelected, "isSelectedValues");
   const [mapCenter, setMapCenter] = useState({
-    lat: isSelected?.coordinates?.[1] || 37.7749,
-    lng: isSelected?.coordinates?.[0] || -122.4194,
+    lat: isSelected?.location?.coordinates?.[1] || 37.7749,
+    lng: isSelected?.location?.coordinates?.[0] || -122.4194,
   });
 
   const dayAbbreviations = {
@@ -55,6 +55,7 @@ const EditStoreModal = ({ isOpen, setIsOpen, isSelected }) => {
     validationSchema: AddNewStoreSchema,
     onSubmit: async (values, action) => {
       try {
+        console.log(values, "values--longititude");
         const payload = {
           id: isSelected?._id,
           data: {
@@ -64,8 +65,8 @@ const EditStoreModal = ({ isOpen, setIsOpen, isSelected }) => {
             state: values.state, // ✅
             type: "Point",
             coordinates: [
-              values.longitude || mapCenter.lng,
-              values.latitude || mapCenter.lat,
+              isSelected?.location?.coordinates?.[0],
+              isSelected?.location?.coordinates?.[1],
             ],
             isOpen: true,
             isActive: true,
@@ -92,9 +93,13 @@ const EditStoreModal = ({ isOpen, setIsOpen, isSelected }) => {
 
   // 🔄 Prefill store data
   useEffect(() => {
+    console.log(isSelected, "isSelectedValues");
     if (isSelected) {
       setFieldValue("businessName", isSelected?.name);
       setFieldValue("address", isSelected?.address);
+      // ✅ ADD THESE TWO LINES
+      setFieldValue("city", isSelected?.city || "");
+      setFieldValue("state", isSelected?.state || "");
 
       setMapCenter({
         lat: isSelected?.coordinates?.[1],

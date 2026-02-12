@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { formatToAmPm } from "../../lib/helpers";
 
 export default function AddAvailabilityModal({ onClose, onSave, edit, data }) {
   const [startTime, setStartTime] = useState("09:00");
@@ -88,8 +89,8 @@ export default function AddAvailabilityModal({ onClose, onSave, edit, data }) {
     // Clear any previous error and call onSave
     setError("");
     onSave({
-      start_time: startTime,
-      end_time: endTime,
+      start_time: formatToAmPm(startTime),
+      end_time: formatToAmPm(endTime),
       days: selectedDays,
     });
   };
@@ -127,7 +128,9 @@ export default function AddAvailabilityModal({ onClose, onSave, edit, data }) {
         {/* Time inputs */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <label className="block text-sm font-medium mb-1">Opening Time</label>
+            <label className="block text-sm font-medium mb-1">
+              Opening Time
+            </label>
             <input
               type="time"
               value={startTime}
@@ -136,7 +139,9 @@ export default function AddAvailabilityModal({ onClose, onSave, edit, data }) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Closing Time</label>
+            <label className="block text-sm font-medium mb-1">
+              Closing Time
+            </label>
             <input
               type="time"
               value={endTime}

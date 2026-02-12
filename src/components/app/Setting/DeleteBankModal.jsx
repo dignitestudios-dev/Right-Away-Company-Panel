@@ -32,18 +32,16 @@ const DeleteBankModal = ({ isOpen, setIsOpen, selectedBank }) => {
           <p className="text-[#838383] text-[16px] font-[400]">
             Are you sure you want to delete credit/debit card?
           </p>
-          <div className="flex gap-3 items-center mt-3">
+          <div className="flex justify-center gap-4 mt-5 w-full">
             <button
-              className="bg-[#21293514] w-[140px] text-[#212935] font-[600] text-[12px] rounded-[8px] p-3"
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => setIsOpen(false)}
+              className="flex-1 max-w-[150px] bg-[#21293514] text-[#212935] font-semibold text-[14px] rounded-lg py-2 transition hover:bg-gray-200"
             >
               Don’t delete
             </button>
             <button
-              onClick={() => {
-                handleDelete();
-              }}
-              className="bg-[#EE3131] w-[140px] text-[white] font-[600] text-[12px] rounded-[8px] p-3"
+              onClick={handleDelete}
+              className="flex-1 max-w-[150px] bg-[#EE3131] text-white font-semibold text-[14px] rounded-lg py-2 transition hover:opacity-90"
             >
               {!isLoading ? "Delete now" : "Deleting..."}
             </button>

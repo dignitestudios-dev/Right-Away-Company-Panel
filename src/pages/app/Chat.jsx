@@ -24,7 +24,7 @@ const Chat = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isActiveTab, setIsActiveTab] = useState("");
   const dispatch = useDispatch();
-  const { socket, sendMessage } = useContext(SocketContext);
+  const { socket, sendMessage, joinChat, readChat } = useContext(SocketContext);
 
   const { selectedChat, messages } = useSelector((state) => state.chat);
   useEffect(() => {
@@ -79,10 +79,14 @@ const Chat = () => {
   };
   const messagesEndRef = useRef(null);
   useEffect(() => {
+    if (!socket) return;
+
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
     });
-  }, [messages]);
+    readChat(selectedChat?.id);
+    joinChat(selectedChat?.id);
+  }, [messages, selectedChat]);
 
   return (
     <div className="h-[calc(100%-4.5rem)]">

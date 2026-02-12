@@ -92,19 +92,44 @@ function formatDate(dateString) {
 }
 
 export const EpocformatDate = (epoch) => {
-  if (!epoch) return "";
+  if (!epoch) return "-";
 
   let time = Number(epoch);
-  if (time < 1e12) time *= 1000;
 
-  return new Date(time).toLocaleString("en-US", {
+  // Convert seconds → milliseconds
+  if (time < 1e12) {
+    time *= 1000;
+  }
+
+  const date = new Date(time);
+  if (isNaN(date.getTime())) return "-";
+
+  return date.toLocaleString("en-US", {
     month: "short",
     day: "2-digit",
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: false,
+    hour12: true, // ✅ AM/PM enable
   });
 };
 
-export { formatDays, formatTime, formatOperatingDays, formatDate };
+const formatToAmPm = (time24) => {
+  const [hourStr, minute] = time24.split(":");
+  let hour = parseInt(hourStr, 10);
+
+  const ampm = hour >= 12 ? " PM " : " AM ";
+
+  hour = hour % 12;
+  hour = hour === 0 ? 12 : hour; // 0 → 12
+
+  return `${hour.toString().padStart(2, "0")}:${minute + " "}${ampm}`;
+};
+
+export {
+  formatDays,
+  formatTime,
+  formatOperatingDays,
+  formatDate,
+  formatToAmPm,
+};

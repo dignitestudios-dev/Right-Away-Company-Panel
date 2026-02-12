@@ -159,7 +159,38 @@ export default function OrderDetail() {
   // ✅ Always safely select a style (fallback = 'incoming')
   const currentStyle =
     statusStyles[orderStatus?.toLowerCase?.()] || statusStyles["incoming"];
-    console.log(singleOrder?.scheduledDateTime,"datess")
+
+  const [showButton, setShowButton] = useState(false);
+
+  useEffect(() => {
+    if (!singleOrder) return;
+
+    // Check only for scheduled orders
+    if (singleOrder.type === "scheduled" && singleOrder.scheduledDateTime) {
+      const scheduledTime =
+        String(singleOrder.scheduledDateTime).length === 10
+          ? Number(singleOrder.scheduledDateTime) * 1000
+          : Number(singleOrder.scheduledDateTime);
+
+      const now = Date.now();
+
+      setShowButton(now >= scheduledTime);
+
+      // Optional: Timer to automatically show button when time comes
+      const timer = setInterval(() => {
+        if (Date.now() >= scheduledTime) {
+          setShowButton(true);
+          clearInterval(timer);
+        }
+      }, 1000); // check every second
+
+      return () => clearInterval(timer);
+    } else {
+      // Non-scheduled orders → show button immediately
+      setShowButton(true);
+    }
+  }, [singleOrder]);
+
   return (
     <>
       {isLoading ? (
@@ -380,7 +411,7 @@ export default function OrderDetail() {
                   </p>
                 </div>
               </div>
-              {orderStatus === "incoming" && (
+              {showButton && orderStatus === "incoming" && (
                 <div className="bg-[#FFFFFF] p-4 mt-4 h-[150px] drop-shadow-sm rounded-[14px]">
                   <h3 className="text-[20px] font-[600] mb-4 text-[#000000]">
                     Delivery Options

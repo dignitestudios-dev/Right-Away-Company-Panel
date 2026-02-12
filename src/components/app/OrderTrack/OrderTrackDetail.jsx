@@ -353,7 +353,7 @@ export default function OrderTrackDetail() {
                   <p className="text-[#7C7C7C]  font-[400] text-[16px]">
                     Special Instructions
                   </p>
-                  <p className="text-[#000000]  font-[400] text-[16px]">
+                  <p className="text-[#000000] text-right  font-[400] text-[16px]">
                     {singleOrder?.instruction || "-"}
                   </p>
                 </div>

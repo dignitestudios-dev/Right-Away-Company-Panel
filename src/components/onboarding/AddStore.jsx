@@ -8,6 +8,7 @@ import EditStoreModal from "./EditStoreModal";
 import DeleteStoreModal from "./DeleteStoreModal";
 import { useDispatch, useSelector } from "react-redux";
 import { getStore } from "../../redux/slices/authSlice";
+import { formatOperatingDays } from "../../lib/helpers";
 
 export default function AddStore({ handleNext }) {
   const [isStoreModal, setIsStoreModal] = useState(false);
@@ -58,8 +59,8 @@ export default function AddStore({ handleNext }) {
                 </p>
                 <h4 className="font-[500] text-[14px] mt-1">{item?.name}</h4>
                 <p className="text-[#1F1F1F] font-[500] text-[14px] mt-1">
-                  {item?.openingTime} AM - {item?.closingTime} PM, Monday to
-                  Saturday
+                  {item?.openingTime} AM - {item?.closingTime} PM,
+                  {formatOperatingDays(item?.operatingDays)}
                 </p>
               </div>
               <div className="mr-4 flex gap-2">
@@ -93,7 +94,7 @@ export default function AddStore({ handleNext }) {
             customClass={"w-[360px] mt-10"}
           />
         ) : (
-          <>           
+          <>
             <button
               onClick={() => setIsSkipStoreModal(true)}
               className="mt-8 w-[360px] bg-[#EDEDED] hover:bg-[#d9d9d9] text-[#181818] px-12 py-3 rounded-xl text-[13px] font-[700] transition-all duration-200"

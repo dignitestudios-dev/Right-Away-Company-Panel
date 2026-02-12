@@ -4,7 +4,11 @@ import Modal from "react-modal";
 import Button from "../../global/Button";
 import WithdrawSuccessModal from "./WithdrawSuccessModal";
 import { useDispatch, useSelector } from "react-redux";
-import { withdrawFunds } from "../../../redux/slices/AppSlice";
+import {
+  getWallet,
+  getWalletHistory,
+  withdrawFunds,
+} from "../../../redux/slices/AppSlice";
 import { ErrorToast } from "../../global/Toaster";
 export default function WithdrawModal({ isOpen, setIsOpen }) {
   const dispatch = useDispatch();
@@ -19,7 +23,7 @@ export default function WithdrawModal({ isOpen, setIsOpen }) {
 
   const handleWithdraw = async () => {
     if (!amount || Number(amount) <= 0) {
-      ErrorToast("Please enter a valid amount");
+      ErrorToast("Please enter a valid amount"); // alert text fixed
       return;
     }
 
@@ -34,14 +38,15 @@ export default function WithdrawModal({ isOpen, setIsOpen }) {
         bankAccount: selectedBank._id,
       }),
     );
-
+    await dispatch(getWalletHistory({})).unwrap();
+    await dispatch(getWallet()).unwrap();
     if (withdrawFunds.fulfilled.match(result)) {
       setWithdrawData(result?.payload); // <-- store API response here
       setIsSuccess(true);
       setIsOpen(false);
       setSelectedBank(null);
     } else {
-      alert(result.payload || "Withdrawal failed");
+      ErrorToast(result.payload || "Withdrawal failed");
     }
   };
   console.log(withdrawData);
@@ -63,7 +68,9 @@ export default function WithdrawModal({ isOpen, setIsOpen }) {
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl font-semibold text-center mb-6">Withdraw</h2>
+          <h2 className="text-2xl font-semibold text-center mb-6">
+            Withdraw Funds
+          </h2>
 
           {/* Bank Accounts */}
           <div className="mb-4">
@@ -88,19 +95,28 @@ export default function WithdrawModal({ isOpen, setIsOpen }) {
           </div>
 
           {/* Amount */}
+          {/* Amount */}
           <div className="mb-4">
             <label className="text-sm font-[400]">Enter Amount</label>
             <input
               type="number"
               placeholder="$20"
               value={amount}
-              onChange={(e) =>
-                e.target.value === "" || Number(e.target.value) > 0
-                  ? setAmount(e.target.value)
-                  : null
-              }
+              maxLength={6} // input property doesn't work on number type, will handle manually
+              onChange={(e) => {
+                const val = e.target.value;
+                // Allow empty string or number up to 6 digits
+                if (val === "" || (Number(val) > 0 && val.length <= 6)) {
+                  setAmount(val);
+                }
+              }}
               className="w-full border border-[#181818] rounded-xl px-4 py-3 mt-1 focus:outline-none"
             />
+            {amount.length > 6 && (
+              <p className="text-red-500 text-[12px] mt-1">
+                Amount cannot exceed 6 digits
+              </p>
+            )}
           </div>
 
           {/* Button */}

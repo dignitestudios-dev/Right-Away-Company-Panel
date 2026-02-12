@@ -23,7 +23,7 @@ export default function SignUp() {
     { icon: RxFileText, title: "Business Details" },
     { icon: IoMailOutline, title: "Verify email" },
     { icon: CiFileOn, title: "Identification and Verification" },
-    { icon: LiaIdCard, title: "Company details" },
+    { icon: LiaIdCard, title: "Company Details" },
     { icon: PiCertificateBold, title: "Multiple Store Location" },
     { icon: MdOutlinePayment, title: "Payment Method" },
   ];
