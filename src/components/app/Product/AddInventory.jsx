@@ -38,7 +38,7 @@ const AddInventory = ({
       setUploadError({ ...uploadError, inventories: "" });
     },
   });
-  console.log(inventories,stores,"stores-->checker")
+  console.log(inventories, stores, "stores-->checker");
   return (
     <Modal
       isOpen={isOpen}
@@ -76,7 +76,9 @@ const AddInventory = ({
                   value: item._id,
                   label: item.name,
                   disabled: inventories?.some(
-                    (inv) => inv.storeName === item._id,
+                    (inv) =>
+                      inv.storeName === item._id ||
+                      inv.storeRecord?._id === item._id,
                   ), // ❌ Disable if already added
                 }))}
               />

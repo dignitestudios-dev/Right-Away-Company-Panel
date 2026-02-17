@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { UploadFiles } from "../../assets/export";
 import Button from "../global/Button";
 import RequestStatus from "./RequestStatus";
@@ -17,12 +17,22 @@ export default function VerifyDocuments({ handleNext }) {
     },
     { key: "proofAddress", label: "Proof of Address", required: true },
   ];
-  const { isLoading } = useSelector((state) => state?.auth);
+  const { isLoading, company } = useSelector((state) => state?.auth);
+
   const dispatch = useDispatch();
   const [files, setFiles] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
-  // handle file selection
+  useEffect(() => {
+    if (company?.profileStatus === "in-review") {
+      setSubmitted(true);
+    } else if (company?.profileStatus === "not-provided") {
+      setSubmitted(false);
+    } else if (company?.profileStatus === "approved") {
+      handleNext();
+    }
+  }, [company]);
+
   // handle file selection with validation
   const handleFileChange = (key, file) => {
     if (!file) return;
@@ -74,7 +84,12 @@ export default function VerifyDocuments({ handleNext }) {
   };
 
   if (submitted) {
-    return <RequestStatus status="submitted" handleNext={handleNext} />;
+    return (
+      <RequestStatus
+        ProfileStatus={company?.profileStatus || "submitted"}
+        handleNext={handleNext}
+      />
+    );
   }
 
   return (
@@ -99,7 +114,7 @@ export default function VerifyDocuments({ handleNext }) {
             <div className="h-full border mt-2 border-gray-200 rounded-xl bg-white shadow-sm hover:border-gray-300 transition">
               <input
                 type="file"
-                 accept=".png,.jpg,.jpeg"
+                accept=".png,.jpg,.jpeg"
                 className="absolute inset-0 opacity-0 cursor-pointer z-10"
                 onChange={(e) => handleFileChange(field.key, e.target.files[0])}
               />

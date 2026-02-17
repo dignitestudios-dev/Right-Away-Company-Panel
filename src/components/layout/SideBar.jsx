@@ -92,14 +92,14 @@ const SideBar = () => {
               alt="Person1"
               className="rounded-full w-full h-full"
             />
-            <div className="bg-white  shadow-sm w-[45px] absolute -bottom-3 gap-1 left-2 flex items-center rounded-[8px] justify-center h-[20px] ">
+            {/* <div className="bg-white  shadow-sm w-[45px] absolute -bottom-3 gap-1 left-2 flex items-center rounded-[8px] justify-center h-[20px] ">
               {company?.rating || 0}{" "}
               <img
                 src={RatingIcon}
                 alt="ratingStar.png"
                 className="w-[12px] h-[12px]"
               />{" "}
-            </div>
+            </div> */}
           </div>
           <h3 className="font-[600] relative z-10 text-[18px] mt-4 ">
             {company?.name}

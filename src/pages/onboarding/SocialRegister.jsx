@@ -20,7 +20,7 @@ export default function SocialRegister() {
   const { isOnboardingStep } = useSelector((state) => state.auth);
   const providerSteps = [
     { icon: RxFileText, title: "Business Details" },
-    { icon: CiFileOn, title: "Identification and Verification" },
+    { icon: CiFileOn, title: "Identification And Verification" },
     { icon: LiaIdCard, title: "Company Details" },
     { icon: PiCertificateBold, title: "Multiple Store Location" },
     { icon: MdOutlinePayment, title: "Payment Method" },

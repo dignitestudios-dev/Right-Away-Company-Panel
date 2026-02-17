@@ -13,39 +13,64 @@ import VerifyDocuments from "../../components/onboarding/VerifyDocuments";
 import CompanyProfile from "../../components/onboarding/CompanyProfile";
 import AddStore from "../../components/onboarding/AddStore";
 import PaymentMethod from "../../components/onboarding/PaymentMethod";
-import { setOnboardingStep } from "../../redux/slices/authSlice";
+import { getProfile, setOnboardingStep } from "../../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 export default function SignUp() {
   const [currentStep, setCurrentStep] = useState(0);
   const dispatch = useDispatch();
-  const { isOnboardingStep } = useSelector(state => state.auth);
+  const { isOnboardingStep, company } = useSelector((state) => state.auth);
   const providerSteps = [
     { icon: RxFileText, title: "Business Details" },
-    { icon: IoMailOutline, title: "Verify email" },
-    { icon: CiFileOn, title: "Identification and Verification" },
+    { icon: IoMailOutline, title: "Verify Email" },
+    { icon: CiFileOn, title: "Identification And Verification" },
     { icon: LiaIdCard, title: "Company Details" },
     { icon: PiCertificateBold, title: "Multiple Store Location" },
     { icon: MdOutlinePayment, title: "Payment Method" },
   ];
-  console.log(isOnboardingStep, "reduxCurrentStep");
+
   const [email, setEmail] = useState("");
   const steps = providerSteps.map((step, index) => ({
     ...step,
     completed: index < currentStep,
     active: index === currentStep,
   }));
+
   useEffect(() => {
-    if (isOnboardingStep != currentStep) {
-      setCurrentStep(isOnboardingStep);
-    }
-  }, [isOnboardingStep]);
+    const fetchProfileAndSetStep = async () => {
+      try {
+        const res = await dispatch(getProfile()).unwrap();
+        const updatedCompany = res?.data?.company;
+        console.log(updatedCompany, "updatedCOmpany");
+        if (!updatedCompany) return;
+
+        if (updatedCompany.profileStatus === "in-review") {
+          setCurrentStep(2);
+        } else if (
+          updatedCompany.profileStatus === "approved" &&
+          updatedCompany.isDetails
+        ) {
+          setCurrentStep(4);
+        } else if (updatedCompany.profileStatus === "approved") {
+          setCurrentStep(3);
+        } else if (updatedCompany.isStripeCompleted) {
+          setCurrentStep(5);
+        } else {
+          setCurrentStep(0);
+        }
+      } catch (error) {
+        console.error("Profile fetch failed:", error);
+      }
+    };
+
+    fetchProfileAndSetStep();
+  }, [dispatch]);
+
   const handleNext = () => {
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
       dispatch(setOnboardingStep(currentStep + 1));
     }
   };
-
 
   return (
     <div className={`grid grid-cols-12 gap-6  h-full w-full`}>

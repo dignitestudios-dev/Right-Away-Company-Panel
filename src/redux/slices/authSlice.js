@@ -131,6 +131,7 @@ export const CompanyLogin = createAsyncThunk(
       // 4️⃣ Send request to backend
       const response = await instance.post("/auth/signIn", payload);
       // SuccessToast(response?.data?.message || "CompanyLogin successful!");
+      Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       return response?.data;
     } catch (error) {
       console.error("CompanyLogin error:", error);
@@ -402,6 +403,20 @@ export const UpdateCompanyProfile = createAsyncThunk(
         payload,
       );
       // SuccessToast(response?.data?.message);
+      return response?.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      ErrorToast(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+export const getProfile = createAsyncThunk(
+  "get/company/get-profile",
+  async (payload, thunkAPI) => {
+    try {
+      // 4️⃣ Send request to backend
+      const response = await instance.get("/company/profile");
       return response?.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -684,6 +699,17 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload.message;
       })
+      .addCase(getProfile.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getProfile.fulfilled, (state, action) => {
+        state.company = action.payload?.data;
+        state.isLoading = false;
+      })
+      .addCase(getProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
       .addCase(UpdateCompanyProfile.pending, (state, action) => {
         state.isLoading = true;
       })
@@ -786,6 +812,8 @@ const authSlice = createSlice({
       })
       .addCase(CompanyLogin.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.company = action.payload?.data?.user;
+        state.token = action.payload?.data?.token;
       })
       .addCase(CompanyLogin.rejected, (state, action) => {
         state.isLoading = false;

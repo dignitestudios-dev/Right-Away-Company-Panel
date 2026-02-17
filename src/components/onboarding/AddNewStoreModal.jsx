@@ -76,6 +76,7 @@ const AddNewStoreModal = ({ isOpen, setIsOpen }) => {
           setIsSuccess(true);
           setIsOpen(!isOpen);
           action.resetForm();
+          setAvailability(null);
         } catch (err) {
           console.error("Store Creating failed:", err);
         }
@@ -107,7 +108,7 @@ const AddNewStoreModal = ({ isOpen, setIsOpen }) => {
               <div className="col-span-12">
                 <Input
                   text={"Store Name"}
-                  holder={"e.g. Main Warehouse, Downtown Branch"}
+                  holder={"Enter store name"}
                   type={"text"}
                   touched={touched.businessName}
                   handleChange={handleChange}

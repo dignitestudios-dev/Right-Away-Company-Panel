@@ -252,7 +252,7 @@ export default function EditProduct() {
               name="description"
               value={values.description}
               onChange={handleChange}
-              className="w-full border bg-[#F8F8F8] border-[#F8F8F8] rounded-[15px] p-3 text-sm text-[#959393] outline-none resize-none"
+              className="w-full border bg-[#F8F8F899] border-[#F8F8F8] rounded-[15px] p-3 text-sm text-black outline-none resize-none"
             />
             {errors.description && touched.description && (
               <p className="text-red-500 text-sm mt-1">{errors.description}</p>
@@ -272,9 +272,11 @@ export default function EditProduct() {
                     setFieldValue("category", e.target.value);
                     setFieldValue("subCategory", ""); // ✅ proper reset
                   }}
-                  className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm outline-none"
+                  className="border w-full bg-[#F8F8F899] border-gray-200 rounded-xl p-3 text-sm outline-none"
                 >
-                  <option value="">Select Category</option>
+                  <option disabled value="">
+                    Select Category
+                  </option>
                   {categories?.map(
                     (cat) =>
                       cat.name != "All" && (
@@ -297,9 +299,11 @@ export default function EditProduct() {
                   value={values.subCategory}
                   onChange={handleChange}
                   disabled={!values.category}
-                  className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm outline-none"
+                  className="border w-full bg-[#F8F8F899] border-gray-200 rounded-xl p-3 text-sm outline-none"
                 >
-                  <option value="">Select Sub Category</option>
+                  <option disabled value="">
+                    Select Sub Category
+                  </option>
 
                   {values.category &&
                     categories
@@ -409,8 +413,8 @@ export default function EditProduct() {
                 value={values.itemHeight}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+                  if (value === "" || value.length <= 4) {
+                    handleChange(e); // Formik ko event pass karo
                   }
                 }}
                 handleBlur={handleBlur}
@@ -426,8 +430,8 @@ export default function EditProduct() {
                 value={values.itemWidth}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+                  if (value === "" || value.length <= 4) {
+                    handleChange(e); // Formik ko event pass karo
                   }
                 }}
                 handleBlur={handleBlur}
@@ -443,8 +447,8 @@ export default function EditProduct() {
                 value={values.itemLength}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+                  if (value === "" || value.length <= 4) {
+                    handleChange(e); // Formik ko event pass karo
                   }
                 }}
                 handleBlur={handleBlur}
@@ -460,8 +464,8 @@ export default function EditProduct() {
                 value={values.itemWeight}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+                  if (value === "" || value.length <= 4) {
+                    handleChange(e); // Formik ko event pass karo
                   }
                 }}
                 handleBlur={handleBlur}
@@ -484,8 +488,8 @@ export default function EditProduct() {
                 value={values.packageHeight}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+                  if (value === "" || value.length <= 4) {
+                    handleChange(e); // Formik ko event pass karo
                   }
                 }}
                 handleBlur={handleBlur}
@@ -501,8 +505,8 @@ export default function EditProduct() {
                 value={values.packageWidth}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+                  if (value === "" || value.length <= 4) {
+                    handleChange(e); // Formik ko event pass karo
                   }
                 }}
                 handleBlur={handleBlur}
@@ -518,8 +522,8 @@ export default function EditProduct() {
                 value={values.packageLength}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+                  if (value === "" || value.length <= 4) {
+                    handleChange(e); // Formik ko event pass karo
                   }
                 }}
                 handleBlur={handleBlur}
@@ -535,8 +539,8 @@ export default function EditProduct() {
                 value={values.packageWeight}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+                  if (value === "" || value.length <= 4) {
+                    handleChange(e); // Formik ko event pass karo
                   }
                 }}
                 handleBlur={handleBlur}
@@ -558,8 +562,8 @@ export default function EditProduct() {
                 value={values.unitPrice}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
+                  if (value === "" || value.length <= 4) {
+                    handleChange(e); // Formik ko event pass karo
                   }
                 }}
                 handleBlur={handleBlur}
@@ -574,9 +578,9 @@ export default function EditProduct() {
                 value={values.unitMessurement}
                 handleChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) > 0) {
-                    handleChange(e); // pass the event, not just value
-                  }
+                   if (value === "" || value.length <= 4) {
+                      handleChange(e); // Formik ko event pass karo
+                    }
                 }}
                 handleBlur={handleBlur}
                 error={errors.unitMessurement}
@@ -783,6 +787,7 @@ export default function EditProduct() {
       )}
       {actionType == "add" && (
         <AddInventory
+          inventories={inventories}
           setInventories={setInventories}
           isOpen={isOpen}
           setIsOpen={setIsOpen}

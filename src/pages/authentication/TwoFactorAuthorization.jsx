@@ -151,7 +151,7 @@ const TwoFactorAuthentication = () => {
               Two Factor Authentication
             </h3>
             <p className="text-[#838383] text-center text-[16px] font-[400] ">
-              Please enter OTP code sent to {location?.state?.email}
+              Please enter OTP sent to {location?.state?.email}
             </p>
           </div>
 

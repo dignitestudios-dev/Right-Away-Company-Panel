@@ -10,7 +10,7 @@ export default function VerifyAccount({handleNext}) {
       <div className="flex flex-col items-center gap-4">
         <h3 className="font-[600] text-[36px]">Verification</h3>
         <p className="text-[#838383] text-[16px] font-[400] ">
-          Please enter OTP code sent to {company?.email}
+          Please enter OTP sent to {company?.email}
         </p>
       </div>
       <div className="flex justify-center w-full">

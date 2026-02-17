@@ -126,7 +126,7 @@ export default function AddAvailabilityModal({ onClose, onSave, edit, data }) {
         </h2>
 
         {/* Time inputs */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-4 mb-2">
           <div>
             <label className="block text-sm font-medium mb-1">
               Opening Time
@@ -150,7 +150,12 @@ export default function AddAvailabilityModal({ onClose, onSave, edit, data }) {
             />
           </div>
         </div>
-
+        {!canSave() && (
+          <p className="text-red-500 text-sm mb-4">
+            Please ensure end time is after start time and at least one day is
+            selected.
+          </p>
+        )}
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
         {/* Working Days */}

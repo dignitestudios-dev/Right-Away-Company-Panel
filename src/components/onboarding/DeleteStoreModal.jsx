@@ -6,13 +6,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteStore, getStore } from "../../redux/slices/authSlice";
 
 const DeleteStoreModal = ({ isOpen, setIsOpen, isSelected }) => {
-  const { isDeleteLoading } = useSelector((state => state?.auth));
+  const { isDeleteLoading } = useSelector((state) => state?.auth);
   const dispatch = useDispatch();
   const handleSubmit = async () => {
     try {
       await dispatch(deleteStore(isSelected));
       await dispatch(getStore());
-      setIsOpen(false)
+      setIsOpen(false);
     } catch (error) {
       ErrorToast(error);
     }
@@ -27,14 +27,7 @@ const DeleteStoreModal = ({ isOpen, setIsOpen, isSelected }) => {
       overlayClassName="fixed inset-0 bg-[#C6C6C6] bg-opacity-50 backdrop-blur-sm z-[1000]  flex justify-center items-center"
     >
       <div className="bg-white rounded-[24px] p-4 shadow-lg w-[320px] h-[228px]">
-        <div className="flex justify-end items-center">
-          <IoCloseSharp
-            size={22}
-            className="cursor-pointer"
-            onClick={() => setIsOpen(false)}
-          />
-        </div>
-        <div className="flex flex-col gap-2 text-center justify-center items-center">
+        <div className="flex flex-col mt-4 gap-2 text-center justify-center items-center">
           <img src={CrossIcon} className="w-[35px] h-[35px]" alt="CrossIcon" />
           <h3 className="font-[600] mt-2 text-[20px] text-[#181818] ">
             Delete Store

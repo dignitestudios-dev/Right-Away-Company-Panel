@@ -8,6 +8,7 @@ import AddBankModal from "../../components/app/Wallet/AddBankModal";
 import WithdrawModal from "../../components/app/Wallet/WithdrawModal";
 import { useDispatch, useSelector } from "react-redux";
 import { getWallet } from "../../redux/slices/AppSlice";
+import { GetBanks } from "../../redux/slices/authSlice";
 
 export default function Wallet() {
   const navigate = useNavigate("");
@@ -18,6 +19,7 @@ export default function Wallet() {
   const { Banks } = useSelector((state) => state?.auth);
   const handleGetWallet = async () => {
     await dispatch(getWallet()).unwrap();
+    await dispatch(GetBanks()).unwrap();
   };
   useEffect(() => {
     handleGetWallet();
@@ -45,7 +47,7 @@ export default function Wallet() {
             Remaining Balance
           </p>
           <h3 className="gradient-text font-[700] text-[40px] ">
-            $ {wallet?.dollars}
+            $ {wallet?.dollars.toFixed(2) || "0.00"}
           </h3>
         </div>
         <div>

@@ -21,7 +21,6 @@ export default function AddStore({ handleNext }) {
   useEffect(() => {
     dispatch(getStore());
   }, []);
-  console.log(stores, "stores");
   return (
     <div className="w-full py-10 px-10 lg:px-28">
       {/* Header */}
@@ -59,7 +58,7 @@ export default function AddStore({ handleNext }) {
                 </p>
                 <h4 className="font-[500] text-[14px] mt-1">{item?.name}</h4>
                 <p className="text-[#1F1F1F] font-[500] text-[14px] mt-1">
-                  {item?.openingTime} AM - {item?.closingTime} PM,
+                  {item?.openingTime} - {item?.closingTime},
                   {formatOperatingDays(item?.operatingDays)}
                 </p>
               </div>

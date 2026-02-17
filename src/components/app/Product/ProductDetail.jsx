@@ -8,7 +8,10 @@ import ReviewsSection from "./UserReviews";
 import DeleteProductModal from "./DeleteProductModal";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getProductsById } from "../../../redux/slices/AppSlice";
+import {
+  getProductsById,
+  updateProductStock,
+} from "../../../redux/slices/AppSlice";
 
 const RatingDisplay = ({ rating = 0 }) => {
   const totalRatings = rating;
@@ -29,11 +32,6 @@ const RatingDisplay = ({ rating = 0 }) => {
 
       {/* Rating Value */}
       <p className="text-[#181818] font-[600] text-[14px]">{rating}</p>
-
-      {/* Total Ratings */}
-      <p className="text-[#0084FF] text-[13px] font-[300]">
-        {totalRatings} Ratings
-      </p>
     </div>
   );
 };
@@ -54,6 +52,7 @@ export default function ProductDetail() {
     };
     fetchProduct();
   }, [id]);
+  console.log(singleProduct?.unitMessurement, "unitstest", singleProduct);
   return (
     <div className=" min-h-screen p-2">
       <div className="max-w-8xl mx-auto space-y-6">
@@ -143,7 +142,7 @@ export default function ProductDetail() {
                     </a>
                   ))
               ) : (
-                <p className="text-sm text-gray-500">No documents uploaded</p>
+                <p className="text-sm text-nowrap text-gray-500">No documents uploaded</p>
               )}
             </div>
           </div>
@@ -156,25 +155,39 @@ export default function ProductDetail() {
             <div className="flex items-center gap-2">
               <h1 className="text-[22px] font-[600] text-[#000000]">
                 {singleProduct?.name}
+                {!singleProduct?.isStock && (
+                  <span className="ml-2 text-[11px] font-[400] text-[#EE3131] bg-[#EE313126] px-2 py-[2px] rounded-full">
+                    Out Of Stock
+                  </span>
+                )}
               </h1>
               <RatingDisplay rating={singleProduct?.rating || 0} />
             </div>
             <div className="flex items-center gap-2">
               <label className="inline-flex font-[400] text-nowrap text-[10px] text-[#000000] items-center cursor-pointer">
-                <span className="mr-2">Delivery:</span>
+                <span className="mr-2">Out Of Stock:</span>
                 <input
                   type="checkbox"
                   className="sr-only peer"
-                  checked={singleProduct?.delivery}
+                  checked={singleProduct?.isStock === false}
+                  onChange={async (e) => {
+                    await dispatch(
+                      updateProductStock({
+                        id: singleProduct?._id,
+                        isStock: e.target.checked,
+                      }),
+                    ).unwrap();
+                    await dispatch(
+                      getProductsById(singleProduct?._id),
+                    ).unwrap();
+                  }}
                   readOnly
                 />
                 <div className="w-11 h-6 bg-gray-200 rounded-full peer py-[2.5px] peer-checked:bg-[#0EBB8E] after:content-[''] after:absolute after:w-5 after:h-5 after:bg-white after:rounded-full after:transition-all peer-checked:after:translate-x-5 relative"></div>
               </label>
               <h2 className="gradient-text font-bold text-[24px]">
                 ${Number(singleProduct?.unitPrice || 0).toFixed(2)}
-                <span className="text-[10px] font-[400] ">
-                  /{singleProduct?.unitMessurement} Unit
-                </span>
+                <span className="text-[10px] font-[400] ">/Unit</span>
               </h2>
             </div>
           </div>

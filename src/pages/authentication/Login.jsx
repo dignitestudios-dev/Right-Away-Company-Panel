@@ -36,13 +36,19 @@ const Login = () => {
           password: values?.password,
           role: "company",
         };
-        await dispatch(CompanyLogin(data)).unwrap();
-        await dispatch(
-          SendOtpFa({ email: values?.email, role: "company" })
-        ).unwrap();
-        navigate("/auth/two-factor-verfication", {
-          state: { email: values?.email },
-        });
+        const response = await dispatch(CompanyLogin(data)).unwrap();
+        const company = response?.data?.user;
+        if (!company?.isDetails) {
+          navigate("/auth/signup");
+        } else {
+          await dispatch(
+            SendOtpFa({ email: values?.email, role: "company" }),
+          ).unwrap();
+
+          navigate("/auth/two-factor-verfication", {
+            state: { email: values?.email },
+          });
+        }
       },
     });
   const handleGoogleLogin = async () => {
@@ -58,15 +64,15 @@ const Login = () => {
         role: "company",
         fcmToken: fcmToken,
       };
-      console.log(payload, "payload,");
 
       await dispatch(SocialLogin(payload))
-        .then((e) => {
-          console.log(e?.payload?.data?.company?.registationNo, "response");
-          if (e?.payload?.data?.company?.registationNo) {
-            navigate("/app/dashboard");
+        .then((res) => {
+          const company = res?.payload?.data?.user;
+
+          if (!company?.isDetails) {
+            navigate("/auth/signup");
           } else {
-            navigate("/auth/social-register");
+            navigate("/app/dashboard");
           }
         })
         .unwrap();
@@ -86,11 +92,15 @@ const Login = () => {
         role: "company",
         fcmToken: fcmToken,
       };
-      console.log(payload, "payload,");
 
-      await dispatch(SocialLogin(payload)).unwrap();
-      // Navigate after successful login
-      navigate("/app/dashboard");
+      const res = await dispatch(SocialLogin(payload)).unwrap();
+      const company = res?.data?.user;
+
+      if (!company?.isDetails) {
+        navigate("/auth/signup");
+      } else {
+        navigate("/app/dashboard");
+      }
     } catch (error) {
       console.error("Apple login error:", error);
     }

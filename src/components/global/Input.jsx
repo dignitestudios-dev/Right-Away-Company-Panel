@@ -73,7 +73,7 @@ export default function Input({
             onBlur={handleBlur}
             className="w-full bg-transparent outline-none text-[16px] text-[#262626]"
           >
-            <option value="">{holder || "Select Option"}</option>
+            <option value="" disabled>{holder || "Select Option"}</option>
             {selectOptions.map((opt, idx) => (
               <option
                 key={idx}
@@ -142,7 +142,7 @@ export default function Input({
 
       <div
         className={`h-[49px] flex justify-start items-center w-full relative border-[0.8px] rounded-[18px] ${
-          bg ? "bg-[#F8F8F899] border-none" : "bg-white"
+          bg ? "bg-[#F8F8F899] outline-none border-none" : "bg-white"
         } ${error && touched ? "border-red-500" : "border-[#D9D9D9]"}`}
       >
         {text?.includes("Phone Number") && (
@@ -164,7 +164,7 @@ export default function Input({
           placeholder={holder}
           disabled={disabled}
           onKeyDown={onKeyDown}
-          className={`w-full h-[49px] bg-transparent outline-none px-3 text-[16px] text-[#262626] placeholder:text-[#959393] ${disabled && "cursor-not-allowed"}`}
+          className={`w-[95%] h-[49px] bg-transparent outline-none px-3 text-[16px] text-[#262626] placeholder:text-[#959393] ${disabled && "cursor-not-allowed"}`}
         />
 
         {type === "password" && (

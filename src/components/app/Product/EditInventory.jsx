@@ -42,6 +42,7 @@ const EditInventory = ({
         setIsOpen(false);
       },
     });
+    console.log("edit inventory values", inventories)
   return (
     <Modal
       isOpen={isOpen}
@@ -80,6 +81,9 @@ const EditInventory = ({
                 selectOptions={stores?.map((item) => ({
                   value: item._id,
                   label: item.name,
+                  disabled: inventories?.some(
+                    (inv) => inv.storeName === item._id || inv.storeRecord?._id === item._id,
+                  ), // ❌ Disable if already added
                 }))}
               />
             </div>

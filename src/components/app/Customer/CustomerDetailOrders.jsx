@@ -36,7 +36,7 @@ export default function CustomerDetailOrders({ customer }) {
         key={`order-${index}-id`}
         className="text-[#181818] text-[14px] font-[400]"
       >
-        {item.orderId}
+        #{item.orderId}
       </p>,
 
       <div key={`order-${index}-user`} className="flex items-center gap-3">
@@ -61,7 +61,7 @@ export default function CustomerDetailOrders({ customer }) {
 
       <p
         key={`order-${index}-type`}
-        className="text-[#181818] text-[14px] font-[400]"
+        className="text-[#181818] capitalize text-[14px] font-[400]"
       >
         {item.type}
       </p>,

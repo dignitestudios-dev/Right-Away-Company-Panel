@@ -105,6 +105,14 @@ const OtpVerification = () => {
     navigate("/auth/reset-password");
   };
 
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace") {
+      if (otp[index] === "" && index > 0) {
+        otpRefs.current[index - 1].focus();
+      }
+    }
+  };
+
   return (
     <div className={`grid grid-cols-1  h-full w-full xl:grid-cols-2`}>
       <div className=" md:px-5 pb-5 flex flex-col justify-end"></div>
@@ -128,7 +136,7 @@ const OtpVerification = () => {
           <div className="flex flex-col items-center gap-2">
             <h3 className="font-[600] text-[36px]">Verification</h3>
             <p className="text-[#838383] text-[16px] font-[400] ">
-              Please enter OTP code sent to designer@dignitestudios.com
+              Please enter OTP sent to {email}
             </p>
           </div>
           <form
@@ -142,6 +150,7 @@ const OtpVerification = () => {
                   value={item}
                   onChange={(e) => handleChange(e, index)}
                   name="otp"
+                  onKeyDown={(e) => handleKeyDown(e, index)}
                   className="flex-1 min-w-[40px] max-w-[80px] h-[70px] rounded-[16px] bg-transparent outline-none text-center border border-[#c2c6cb] text-3xl focus:bg-[#D0FCB333] focus-within:border-[#3C043A]"
                   maxLength={1}
                   onPaste={handlePaste}

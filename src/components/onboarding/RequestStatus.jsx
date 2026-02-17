@@ -4,41 +4,41 @@ import { AiOutlineInfo } from "react-icons/ai";
 import { SuccessIcon } from "../../assets/export";
 import Button from "../global/Button";
 
-export default function RequestStatus({ handleNext }) {
-  const [status, setStatus] = useState("submited");
-  useEffect(() => {
-    let timer1, timer2, timer3;
+export default function RequestStatus({ handleNext, ProfileStatus }) {
+  const [status, setStatus] = useState(ProfileStatus || "submitted");
+  // useEffect(() => {
+  //   let timer1, timer2, timer3;
 
-    // Step 1: After 1 second → pending
-    timer1 = setTimeout(() => setStatus("pending"), 1000);
+  //   // Step 1: After 1 second → pending
+  //   timer1 = setTimeout(() => setStatus("pending"), 1000);
 
-    // Step 2: After 2 seconds → rejected OR congratulation
-    timer2 = setTimeout(() => {
-      const isRejected = Math.random() < 0.5; // 50% chance (optional)
-      setStatus(isRejected ? "rejected" : "congratulation");
-    }, 2000);
+  //   // Step 2: After 2 seconds → rejected OR congratulation
+  //   timer2 = setTimeout(() => {
+  //     const isRejected = Math.random() < 0.5; // 50% chance (optional)
+  //     setStatus(isRejected ? "rejected" : "congratulation");
+  //   }, 2000);
 
-    // Step 3: After 3 seconds → if congratulated, go next
-    timer3 = setTimeout(() => {
-      if (status === "congratulation" && handleNext) handleNext();
-    }, 3000);
+  //   // Step 3: After 3 seconds → if congratulated, go next
+  //   timer3 = setTimeout(() => {
+  //     if (status === "congratulation" && handleNext) handleNext();
+  //   }, 3000);
 
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-    };
-  }, []);
+  //   return () => {
+  //     clearTimeout(timer1);
+  //     clearTimeout(timer2);
+  //     clearTimeout(timer3);
+  //   };
+  // }, []);
 
-  const isSubmited = status === "submited";
-  const isPending = status === "pending";
+  // const isSubmited = status === "submited";
+  const isPending = status === "in-review";
   const isRejected = status === "rejected";
-  const isCongratulation = status === "congratulation";
+  const isCongratulation = status === "approved";
 
   return (
     <div className="w-full flex items-center justify-center">
       {/* ✅ Submitted */}
-      {isSubmited && (
+      {/* {isSubmited && (
         <div className="flex flex-col text-center items-center space-y-4">
           <div className="bg-[#0AA48B] text-white rounded-full w-12 h-12 flex items-center justify-center">
             <img src={SuccessIcon} className="w-8" alt="success" />
@@ -51,7 +51,7 @@ export default function RequestStatus({ handleNext }) {
             email once your request has been approved by the admin.
           </p>
         </div>
-      )}
+      )} */}
 
       {/* ⏳ Pending */}
       {isPending && (
@@ -60,7 +60,7 @@ export default function RequestStatus({ handleNext }) {
             <AiOutlineInfo size={28} />
           </div>
           <h2 className="text-[32px] font-semibold text-gray-900">
-            Request Pending!
+            Request In-Review!
           </h2>
           <p className="text-[16px] font-[400] text-[#505050] max-w-sm">
             You will receive an email once your request has been approved by the
@@ -130,7 +130,11 @@ export default function RequestStatus({ handleNext }) {
           <p className="text-[16px] font-[400] text-[#505050] max-w-sm">
             Your request has been approved.
           </p>
-          <Button onClick={()=>handleNext()} text={"Get Started"} customClass={"w-[360px]"} />
+          <Button
+            onClick={() => handleNext()}
+            text={"Get Started"}
+            customClass={"w-[360px]"}
+          />
         </div>
       )}
     </div>

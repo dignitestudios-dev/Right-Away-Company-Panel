@@ -126,7 +126,8 @@ export default function CustomersData() {
         <div className="flex items-center gap-4">
           {/* Show Filter with debounce */}
           <Filter
-            hide={false} // show input
+            hide={true} // show input
+            
             onFilterChange={(newFilters) =>
               setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }))
             }

@@ -178,7 +178,7 @@ export default function AddNewProduct() {
       // 🔸 Append product fields
       Object.entries(values).forEach(([key, value]) => {
         if (value !== "" && value !== null && value !== undefined) {
-          console.log(key,"keysss")
+          console.log(key, "keysss");
           form.append(key, value);
         }
       });
@@ -283,7 +283,7 @@ export default function AddNewProduct() {
                   name="description"
                   value={values.description}
                   onChange={handleChange}
-                  className="w-full mt-1 border bg-[#F8F8F8] border-[#F8F8F8] rounded-[15px] p-3 text-sm text-[#959393] outline-none resize-none"
+                  className="w-full mt-1 border bg-[#F8F8F899] border-[#F8F8F8] rounded-[15px] p-3 text-sm text-black outline-none resize-none"
                 ></textarea>
                 {errors.description && touched.description && (
                   <p className="text-red-700 text-sm font-medium">
@@ -304,9 +304,11 @@ export default function AddNewProduct() {
                     onChange={(e) => {
                       handleChange(e);
                     }}
-                    className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-black outline-none"
+                    className="border w-full bg-[#F8F8F899] border-gray-200 rounded-xl p-3 text-sm text-black outline-none"
                   >
-                    <option value="">Select Category</option>
+                    <option value="" disabled>
+                      Select Category
+                    </option>
                     {categories?.map(
                       (cat) =>
                         cat.name != "All" && (
@@ -333,10 +335,12 @@ export default function AddNewProduct() {
                     name="subCategory"
                     value={values.subCategory}
                     onChange={handleChange}
-                    className="border w-full bg-[#F8F8F8] border-gray-200 rounded-xl p-3 text-sm text-black outline-none"
+                    className="border w-full bg-[#F8F8F899] border-gray-200 rounded-xl p-3 text-sm text-black outline-none"
                     disabled={!values.category}
                   >
-                    <option value="">Select Sub Category</option>
+                    <option value="" disabled>
+                      Select Sub Category
+                    </option>
                     {values.category &&
                       categories
                         ?.find((c) => c.name === values.category)
@@ -437,8 +441,9 @@ export default function AddNewProduct() {
                   error={errors?.itemHeight}
                   handleChange={(e) => {
                     const value = e.target.value;
-                    if (value === "" || Number(value) > 0) {
-                      handleChange(e); // pass the event, not just value
+                    // allow empty OR max 4 digits
+                    if (value === "" || value.length <= 4) {
+                      handleChange(e); // Formik ko event pass karo
                     }
                   }}
                   touched={touched.itemHeight}
@@ -454,8 +459,9 @@ export default function AddNewProduct() {
                   error={errors?.itemWidth}
                   handleChange={(e) => {
                     const value = e.target.value;
-                    if (value === "" || Number(value) > 0) {
-                      handleChange(e); // pass the event, not just value
+                    // allow empty OR max 4 digits
+                    if (value === "" || value.length <= 4) {
+                      handleChange(e); // Formik ko event pass karo
                     }
                   }}
                   touched={touched.itemWidth}
@@ -471,8 +477,9 @@ export default function AddNewProduct() {
                   error={errors?.itemLength}
                   handleChange={(e) => {
                     const value = e.target.value;
-                    if (value === "" || Number(value) > 0) {
-                      handleChange(e); // pass the event, not just value
+                    // allow empty OR max 4 digits
+                    if (value === "" || value.length <= 4) {
+                      handleChange(e); // Formik ko event pass karo
                     }
                   }}
                   touched={touched.itemLength}
@@ -488,8 +495,9 @@ export default function AddNewProduct() {
                   error={errors?.itemWeight}
                   handleChange={(e) => {
                     const value = e.target.value;
-                    if (value === "" || Number(value) > 0) {
-                      handleChange(e); // pass the event, not just value
+                    // allow empty OR max 4 digits
+                    if (value === "" || value.length <= 4) {
+                      handleChange(e); // Formik ko event pass karo
                     }
                   }}
                   touched={touched.itemWeight}
@@ -518,8 +526,9 @@ export default function AddNewProduct() {
                   error={errors?.packageHeight}
                   handleChange={(e) => {
                     const value = e.target.value;
-                    if (value === "" || Number(value) > 0) {
-                      handleChange(e); // pass the event, not just value
+                    // allow empty OR max 4 digits
+                    if (value === "" || value.length <= 4) {
+                      handleChange(e); // Formik ko event pass karo
                     }
                   }}
                   touched={touched.packageHeight}
@@ -535,8 +544,9 @@ export default function AddNewProduct() {
                   error={errors?.packageWidth}
                   handleChange={(e) => {
                     const value = e.target.value;
-                    if (value === "" || Number(value) > 0) {
-                      handleChange(e); // pass the event, not just value
+                    // allow empty OR max 4 digits
+                    if (value === "" || value.length <= 4) {
+                      handleChange(e); // Formik ko event pass karo
                     }
                   }}
                   touched={touched.packageWidth}
@@ -552,8 +562,9 @@ export default function AddNewProduct() {
                   error={errors?.packageLength}
                   handleChange={(e) => {
                     const value = e.target.value;
-                    if (value === "" || Number(value) > 0) {
-                      handleChange(e); // pass the event, not just value
+                    // allow empty OR max 4 digits
+                    if (value === "" || value.length <= 4) {
+                      handleChange(e); // Formik ko event pass karo
                     }
                   }}
                   touched={touched.packageLength}
@@ -569,8 +580,9 @@ export default function AddNewProduct() {
                   error={errors?.packageWeight}
                   handleChange={(e) => {
                     const value = e.target.value;
-                    if (value === "" || Number(value) > 0) {
-                      handleChange(e); // pass the event, not just value
+                    // allow empty OR max 4 digits
+                    if (value === "" || value.length <= 4) {
+                      handleChange(e); // Formik ko event pass karo
                     }
                   }}
                   touched={touched.packageWeight}
@@ -594,11 +606,13 @@ export default function AddNewProduct() {
                   text="Price Per Unit"
                   holder="Fixed Price"
                   name="unitPrice"
-                  type={"number"}
+                  type="number"
                   handleChange={(e) => {
                     const value = e.target.value;
-                    if (value === "" || Number(value) > 0) {
-                      handleChange(e); // pass the event, not just value
+
+                    // allow empty OR max 4 digits
+                    if (value === "" || value.length <= 4) {
+                      handleChange(e); // Formik ko event pass karo
                     }
                   }}
                   touched={touched.unitPrice}
@@ -606,6 +620,7 @@ export default function AddNewProduct() {
                   value={values?.unitPrice}
                   error={errors?.unitPrice}
                 />
+
                 {/* <Input
                   text="Unit of Measurement"
                   holder="lbs"
