@@ -17,7 +17,7 @@ import CreateSocialAccount from "../../components/onboarding/CreateSocialAccount
 export default function SocialRegister() {
   const [currentStep, setCurrentStep] = useState(0);
   const dispatch = useDispatch();
-  const { isOnboardingStep } = useSelector((state) => state.auth);
+  const { isOnboardingStep, token } = useSelector((state) => state.auth);
   const providerSteps = [
     { icon: RxFileText, title: "Business Details" },
     { icon: CiFileOn, title: "Identification And Verification" },
@@ -35,7 +35,7 @@ export default function SocialRegister() {
   useEffect(() => {
     const fetchProfileAndSetStep = async () => {
       try {
-        const res = await dispatch(getProfile()).unwrap();
+        const res = token && (await dispatch(getProfile()).unwrap());
         const updatedCompany = res?.data?.company;
         if (!updatedCompany) return;
         if (updatedCompany.profileStatus === "not-provided") {

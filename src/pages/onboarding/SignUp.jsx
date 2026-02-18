@@ -18,7 +18,9 @@ import { useDispatch, useSelector } from "react-redux";
 export default function SignUp() {
   const [currentStep, setCurrentStep] = useState(0);
   const dispatch = useDispatch();
-  const { isOnboardingStep, company } = useSelector((state) => state.auth);
+  const { isOnboardingStep, company, token } = useSelector(
+    (state) => state.auth,
+  );
   const providerSteps = [
     { icon: RxFileText, title: "Business Details" },
     { icon: IoMailOutline, title: "Verify Email" },
@@ -38,11 +40,13 @@ export default function SignUp() {
   useEffect(() => {
     const fetchProfileAndSetStep = async () => {
       try {
-        const res = await dispatch(getProfile()).unwrap();
+        const res = token && (await dispatch(getProfile()).unwrap());
         const updatedCompany = res?.data?.company;
         if (!updatedCompany) return;
 
         if (updatedCompany.profileStatus === "in-review") {
+          setCurrentStep(2);
+        } else if (updatedCompany.isEmailVerified) {
           setCurrentStep(2);
         } else if (
           updatedCompany.profileStatus === "approved" &&
