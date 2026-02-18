@@ -40,7 +40,6 @@ export default function SignUp() {
       try {
         const res = await dispatch(getProfile()).unwrap();
         const updatedCompany = res?.data?.company;
-        console.log(updatedCompany, "updatedCOmpany");
         if (!updatedCompany) return;
 
         if (updatedCompany.profileStatus === "in-review") {

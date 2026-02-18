@@ -703,7 +703,7 @@ const authSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getProfile.fulfilled, (state, action) => {
-        state.company = action.payload?.data;
+        state.company = action.payload?.data?.company;
         state.isLoading = false;
       })
       .addCase(getProfile.rejected, (state, action) => {

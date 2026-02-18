@@ -70,7 +70,7 @@ const Login = () => {
           const company = res?.payload?.data?.user;
 
           if (!company?.isDetails) {
-            navigate("/auth/signup");
+            navigate("/auth/social-register");
           } else {
             navigate("/app/dashboard");
           }
@@ -97,7 +97,7 @@ const Login = () => {
       const company = res?.data?.user;
 
       if (!company?.isDetails) {
-        navigate("/auth/signup");
+        navigate("/auth/social-register");
       } else {
         navigate("/app/dashboard");
       }

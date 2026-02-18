@@ -11,7 +11,7 @@ import VerifyDocuments from "../../components/onboarding/VerifyDocuments";
 import CompanyProfile from "../../components/onboarding/CompanyProfile";
 import AddStore from "../../components/onboarding/AddStore";
 import PaymentMethod from "../../components/onboarding/PaymentMethod";
-import { setOnboardingStep } from "../../redux/slices/authSlice";
+import { getProfile, setOnboardingStep } from "../../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import CreateSocialAccount from "../../components/onboarding/CreateSocialAccount";
 export default function SocialRegister() {
@@ -33,10 +33,34 @@ export default function SocialRegister() {
   }));
 
   useEffect(() => {
-    if (isOnboardingStep != currentStep) {
-      setCurrentStep(isOnboardingStep);
-    }
-  }, [isOnboardingStep]);
+    const fetchProfileAndSetStep = async () => {
+      try {
+        const res = await dispatch(getProfile()).unwrap();
+        const updatedCompany = res?.data?.company;
+        if (!updatedCompany) return;
+        if (updatedCompany.profileStatus === "not-provided") {
+          setCurrentStep(0);
+        } else if (updatedCompany.profileStatus === "in-review") {
+          setCurrentStep(1);
+        } else if (
+          updatedCompany.profileStatus === "approved" &&
+          updatedCompany.isDetails
+        ) {
+          setCurrentStep(3);
+        } else if (updatedCompany.profileStatus === "approved") {
+          setCurrentStep(2);
+        } else if (!updatedCompany.isStripeCompleted) {
+          setCurrentStep(4);
+        } else {
+          setCurrentStep(0);
+        }
+      } catch (error) {
+        console.error("Profile fetch failed:", error);
+      }
+    };
+
+    fetchProfileAndSetStep();
+  }, [dispatch]);
   const handleNext = () => {
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
