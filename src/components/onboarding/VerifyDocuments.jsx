@@ -86,7 +86,7 @@ export default function VerifyDocuments({ handleNext }) {
   if (submitted) {
     return (
       <RequestStatus
-        ProfileStatus={company?.profileStatus || "submitted"}
+        ProfileStatus={company?.profileStatus}
         handleNext={handleNext}
       />
     );

@@ -115,7 +115,7 @@ export const SocialRegister = createAsyncThunk(
         "/auth/socialRegister/company",
         finalPayload,
       );
-      Cookies.set("token", response?.data?.data?.token, { expires: 7 });
+      // Cookies.set("token", response?.data?.data?.token, { expires: 7 });
       // SuccessToast(response?.data?.message || "Registration successful!");
       return response?.data;
     } catch (error) {

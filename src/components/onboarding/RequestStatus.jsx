@@ -5,7 +5,7 @@ import { SuccessIcon } from "../../assets/export";
 import Button from "../global/Button";
 
 export default function RequestStatus({ handleNext, ProfileStatus }) {
-  const [status, setStatus] = useState(ProfileStatus || "submitted");
+  const [status, setStatus] = useState(ProfileStatus || "not-provided");
   // useEffect(() => {
   //   let timer1, timer2, timer3;
 
@@ -30,7 +30,7 @@ export default function RequestStatus({ handleNext, ProfileStatus }) {
   //   };
   // }, []);
 
-  // const isSubmited = status === "submited";
+  const isSubmited = status === "not-provided";
   const isPending = status === "in-review";
   const isRejected = status === "rejected";
   const isCongratulation = status === "approved";
@@ -38,7 +38,7 @@ export default function RequestStatus({ handleNext, ProfileStatus }) {
   return (
     <div className="w-full flex items-center justify-center">
       {/* ✅ Submitted */}
-      {/* {isSubmited && (
+      {isSubmited && (
         <div className="flex flex-col text-center items-center space-y-4">
           <div className="bg-[#0AA48B] text-white rounded-full w-12 h-12 flex items-center justify-center">
             <img src={SuccessIcon} className="w-8" alt="success" />
@@ -51,7 +51,7 @@ export default function RequestStatus({ handleNext, ProfileStatus }) {
             email once your request has been approved by the admin.
           </p>
         </div>
-      )} */}
+      )}
 
       {/* ⏳ Pending */}
       {isPending && (
