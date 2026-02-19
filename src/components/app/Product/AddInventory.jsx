@@ -64,7 +64,7 @@ const AddInventory = ({
             <div className="col-span-12">
               <Input
                 text="Store Name"
-                holder="e.g. Main Warehouse, Downtown Branch"
+                holder="Select Branch"
                 type="select"
                 name="storeName"
                 value={values.storeName}

@@ -142,7 +142,9 @@ export default function ProductDetail() {
                     </a>
                   ))
               ) : (
-                <p className="text-sm text-nowrap text-gray-500">No documents uploaded</p>
+                <p className="text-sm text-nowrap text-gray-500">
+                  No documents uploaded
+                </p>
               )}
             </div>
           </div>

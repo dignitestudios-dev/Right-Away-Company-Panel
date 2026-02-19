@@ -7,13 +7,13 @@ const passwordRules = Yup.string()
   .matches(/[0-9]/, "Password must contain at least one number")
   .matches(
     /[@$!%*?&#^()_\-+=<>.,{}[\]|/~]/,
-    "Password must contain at least one special character"
+    "Password must contain at least one special character",
   )
   .required("Password is required");
 
 const confirmPasswordRule = (
   refField = "password",
-  label = "Confirm Password"
+  label = "Confirm Password",
 ) =>
   Yup.string()
     .oneOf([Yup.ref(refField)], `${label} must match password`)
@@ -28,7 +28,7 @@ export const signInSchema = Yup.object({
     .min(6, "Password must contain at least 6 characters.")
     .matches(
       /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
-      "Password must contain at least one special character"
+      "Password must contain at least one special character",
     )
     .required("Please enter your password"),
 });
@@ -68,7 +68,7 @@ export const RegisterSchema = Yup.object({
   email: Yup.string()
     .matches(
       /^[A-Za-z0-9](?:[A-Za-z0-9._%+-]*[A-Za-z0-9])?@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
-      "Invalid email format"
+      "Invalid email format",
     )
     .matches(/^(?!.*\.\.)/, "Email cannot contain consecutive dots")
     .required("Business email is required"),
@@ -82,9 +82,7 @@ export const RegisterSchema = Yup.object({
     .min(3, "Registration number is too short")
     .required("Company registration number is required"),
 
-  address: Yup.string()
-    .min(5, "Address must be at least 5 characters long")
-    .required("Business address is required"),
+  address: Yup.string().required("Business address is required"),
 
   password: passwordRules,
 
@@ -105,9 +103,7 @@ export const SocialRegisterSchema = Yup.object({
     .min(3, "Registration number is too short")
     .required("Company registration number is required"),
 
-  address: Yup.string()
-    .min(5, "Address must be at least 5 characters long")
-    .required("Business address is required"),
+  address: Yup.string().required("Business address is required"),
 });
 
 export const CompleteProfileSchema = Yup.object({
@@ -146,7 +142,7 @@ export const CompleteProfileSchema = Yup.object({
     .min(10, "Description must be at least 10 characters"),
 
   fulfillmentMethod: Yup.string().required(
-    "Please select a fulfillment method"
+    "Please select a fulfillment method",
   ),
 });
 
