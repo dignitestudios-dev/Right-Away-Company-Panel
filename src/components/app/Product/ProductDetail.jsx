@@ -52,7 +52,6 @@ export default function ProductDetail() {
     };
     fetchProduct();
   }, [id]);
-  console.log(singleProduct?.unitMessurement, "unitstest", singleProduct);
   return (
     <div className=" min-h-screen p-2">
       <div className="max-w-8xl mx-auto space-y-6">
